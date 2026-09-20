@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Temporary: just navigate forward so the flow is testable
-        Intent intent = new Intent(LoginActivity.this, StudentDashboardActivity.class);
-        startActivity(intent);
+      //  Intent intent = new Intent(LoginActivity.this, StudentDashboardActivity.class);
+       // startActivity(intent);
     }
 }
