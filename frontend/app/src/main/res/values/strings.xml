@@ -12,4 +12,13 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="no_account_sign_up">Don\'t have an Account? Sign Up</string>
+
+    <string name="sign_up">Sign Up</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="student_name">Student Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="already_have_account">Already have an Account? Sign in</string>
 </resources>
