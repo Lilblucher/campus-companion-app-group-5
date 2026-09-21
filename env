@@ -1,8 +1,8 @@
 PORT=3000
 DB_HOST=localhost
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
-JWT_SECRET=
+DB_USER=root
+DB_PASSWORD=Goku
+DB_NAME=campus_companion
+DB_P0RT=3306
+JWT_SECRET=hello world
 NODE_ENV=development
-CORS_ORIGIN=*
