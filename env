@@ -1,8 +1,15 @@
 PORT=3000
 DB_HOST=localhost
+<<<<<<< HEAD
 DB_USER=root
 DB_PASSWORD=Goku
 DB_NAME=campus_companion
 DB_P0RT=3306
 JWT_SECRET=hello world
+=======
+DB_USER=admin
+DB_PASSWORD=123
+DB_NAME=campus_companion
+JWT_SECRET=
+>>>>>>> 3c714c52318e2934a44b57ac3d4b15bfecbc3296
 NODE_ENV=development

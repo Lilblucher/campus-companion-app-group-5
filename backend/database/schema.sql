@@ -11,10 +11,9 @@
 --   * Soft deletion with deletion markers + number reservation
 --   * Record versions for sync / conflict resolution
 --   * Programme reference data (CS, IT, DS)
---   * Claim codes live on the students row (claim_code column) —
---     the lecturer pre-creates a profile with a claim_code, and a
---     student "claims" it during registration by supplying that
---     code; the column is cleared (set to NULL) once used.
+--   * The lecturer pre-creates the student profile; the student
+--     then registers against it by student_number (one account
+--     per profile, enforced by uq_student_account).
 -- =============================================================
 
 DROP DATABASE IF EXISTS campus_companion;
@@ -72,7 +71,6 @@ CREATE TABLE students (
   lab_group_id    INT          NULL,                      -- NULL = Unassigned
   status          ENUM('active','unassigned','pending','deleted')
                                NOT NULL DEFAULT 'unassigned',
-  claim_code      VARCHAR(20)  NULL,                      -- set by lecturer; cleared once claimed
   is_deleted      TINYINT(1)   NOT NULL DEFAULT 0,
   deleted_at      TIMESTAMP    NULL,
   record_version  INT          NOT NULL DEFAULT 1,        -- optimistic locking / sync

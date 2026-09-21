@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# campus-companion-app
+
+>>>>>>> 3c714c52318e2934a44b57ac3d4b15bfecbc3296
 markdown
 # Campus Companion App
 
@@ -74,6 +79,7 @@ campus-companion-app/
 ├── docs/
 ├── README.md
 └── .gitignore
+<<<<<<< HEAD
 
 text
 
@@ -312,3 +318,5 @@ One concept learned
 
 One bug solved
 
+=======
+>>>>>>> 3c714c52318e2934a44b57ac3d4b15bfecbc3296

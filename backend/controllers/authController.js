@@ -12,15 +12,15 @@ const JWT_EXPIRES_IN = '2h';
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/register  (students only — lecturer account is seeded)
-// Body: { name, student_number, programme_code, claim_code, password }
+// Body: { name, student_number, programme_code, password }
 //
-// Claim flow: a lecturer pre-creates the student's profile row with a
-// claim_code set. Registering here means supplying that exact code for the
-// matching student_number; once used, the code is cleared (set to NULL) so
-// it can't be replayed.
+// A lecturer pre-creates the student's profile row. Registering here links a
+// new account to that existing profile (per spec: "Never create a second
+// profile"). If no profile exists, or the profile already has an account,
+// registration is rejected.
 // ---------------------------------------------------------------------------
 async function register(req, res) {
-  const { name, student_number, programme_code, claim_code, password } = req.body;
+  const { name, student_number, programme_code, password } = req.body;
 
   // --- basic validation (server is the source of truth; app also validates) ---
   if (!name || name.trim().length < 2 || name.trim().length > 100) {
@@ -44,37 +44,37 @@ async function register(req, res) {
   try {
     await conn.beginTransaction();
 
-    // If the lecturer already created this student's profile, link to it
-    // instead of creating a duplicate (per spec: "Never create a second profile").
+    // Find the profile the lecturer already created for this student.
     const [existing] = await conn.query(
-      'SELECT * FROM students WHERE student_number = ? AND is_deleted = 0',
+      'SELECT student_id FROM students WHERE student_number = ? AND is_deleted = 0',
       [trimmedNumber]
     );
 
-    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    let studentId;
-
-    if (existing.length > 0) {
-      const profile = existing[0];
-
-      // Claim code proves the person registering owns that student number.
-      if (!profile.claim_code || profile.claim_code !== claim_code) {
-        await conn.rollback();
-        return res.status(400).json({ error: 'Invalid or already-used claim code' });
-      }
-
-      studentId = profile.student_id;
-      await conn.query(
-        `UPDATE students
-         SET name = ?, programme_code = ?, claim_code = NULL, status = 'active'
-         WHERE student_id = ?`,
-        [name.trim(), programme_code, studentId]
-      );
-    } else {
-      // No lecturer-created profile exists, so there's nothing to claim.
+    if (existing.length === 0) {
       await conn.rollback();
-      return res.status(400).json({ error: 'Invalid or already-used claim code' });
+      return res.status(400).json({ error: 'No student profile found for this student number' });
     }
+
+    const studentId = existing[0].student_id;
+
+    // Stop a second registration against the same profile.
+    const [taken] = await conn.query(
+      'SELECT account_id FROM accounts WHERE student_id = ?',
+      [studentId]
+    );
+    if (taken.length > 0) {
+      await conn.rollback();
+      return res.status(409).json({ error: 'student_number already registered' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    await conn.query(
+      `UPDATE students
+       SET name = ?, programme_code = ?, status = 'active'
+       WHERE student_id = ?`,
+      [name.trim(), programme_code, studentId]
+    );
 
     await conn.query(
       `INSERT INTO accounts (username, student_id, role, password_hash)
