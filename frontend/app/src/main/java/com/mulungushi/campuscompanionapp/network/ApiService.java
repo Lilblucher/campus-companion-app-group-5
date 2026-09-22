@@ -9,7 +9,7 @@ public interface ApiService {
         Call<AuthResponse> login(@Body LoginRequest request);
 
         @POST("api/auth/register")
-        Call<AuthResponse> register(@Body RegisterRequest request);
+        Call<RegisterResponse> register(@Body RegisterRequest request);
 
 
 }
