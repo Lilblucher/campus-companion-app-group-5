@@ -14,10 +14,10 @@ const JWT_EXPIRES_IN = '2h';
 // POST /api/auth/register  (students only — lecturer account is seeded)
 // Body: { name, student_number, programme_code, password }
 //
-// A lecturer pre-creates the student's profile row. Registering here links a
-// new account to that existing profile (per spec: "Never create a second
-// profile"). If no profile exists, or the profile already has an account,
-// registration is rejected.
+// Open self-registration: creates the student's profile row and the linked
+// account in one transaction. New students start with lab_group_id = NULL
+// and status = 'unassigned' (the schema default) until a lecturer assigns
+// them to a lab group.
 // ---------------------------------------------------------------------------
 async function register(req, res) {
   const { name, student_number, programme_code, password } = req.body;
@@ -44,37 +44,17 @@ async function register(req, res) {
   try {
     await conn.beginTransaction();
 
-    // Find the profile the lecturer already created for this student.
-    const [existing] = await conn.query(
-      'SELECT student_id FROM students WHERE student_number = ? AND is_deleted = 0',
-      [trimmedNumber]
+    // Create the student's profile row. UNIQUE(student_number) enforces
+    // one profile per student; FK on programme_code enforces a valid
+    // programme without needing a separate lookup here.
+    const [insertResult] = await conn.query(
+      `INSERT INTO students (student_number, name, programme_code)
+       VALUES (?, ?, ?)`,
+      [trimmedNumber, name.trim(), programme_code]
     );
 
-    if (existing.length === 0) {
-      await conn.rollback();
-      return res.status(400).json({ error: 'No student profile found for this student number' });
-    }
-
-    const studentId = existing[0].student_id;
-
-    // Stop a second registration against the same profile.
-    const [taken] = await conn.query(
-      'SELECT account_id FROM accounts WHERE student_id = ?',
-      [studentId]
-    );
-    if (taken.length > 0) {
-      await conn.rollback();
-      return res.status(409).json({ error: 'student_number already registered' });
-    }
-
+    const studentId = insertResult.insertId;
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-
-    await conn.query(
-      `UPDATE students
-       SET name = ?, programme_code = ?, status = 'active'
-       WHERE student_id = ?`,
-      [name.trim(), programme_code, studentId]
-    );
 
     await conn.query(
       `INSERT INTO accounts (username, student_id, role, password_hash)
@@ -88,6 +68,9 @@ async function register(req, res) {
     await conn.rollback();
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: 'student_number already registered' });
+    }
+    if (err.code === 'ER_NO_REFERENCED_ROW' || err.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({ error: 'Invalid programme_code' });
     }
     console.error('register error:', err);
     return res.status(500).json({ error: 'Registration failed' });
