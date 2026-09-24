@@ -10,9 +10,12 @@ const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '2h';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^\+?\d{7,15}$/;
+
 // ---------------------------------------------------------------------------
 // POST /api/auth/register  (students only — lecturer account is seeded)
-// Body: { name, student_number, programme_code, password }
+// Body: { name, student_number, programme_code, email, phone, password }
 //
 // Open self-registration: creates the student's profile row and the linked
 // account in one transaction. New students start with lab_group_id = NULL
@@ -20,7 +23,7 @@ const JWT_EXPIRES_IN = '2h';
 // them to a lab group.
 // ---------------------------------------------------------------------------
 async function register(req, res) {
-  const { name, student_number, programme_code, password } = req.body;
+  const { name, student_number, programme_code, email, phone, password } = req.body;
 
   // --- basic validation (server is the source of truth; app also validates) ---
   if (!name || name.trim().length < 2 || name.trim().length > 100) {
@@ -36,6 +39,16 @@ async function register(req, res) {
     return res.status(400).json({ error: 'programme_code must be CS, IT or DS' });
   }
 
+  const trimmedEmail = (email || '').trim().toLowerCase();
+  if (!EMAIL_RE.test(trimmedEmail)) {
+    return res.status(400).json({ error: 'email must be a valid email address' });
+  }
+
+  const trimmedPhone = (phone || '').trim();
+  if (!PHONE_RE.test(trimmedPhone)) {
+    return res.status(400).json({ error: 'phone must be 7-15 digits, optionally starting with +' });
+  }
+
   if (!password || password.length < 8) {
     return res.status(400).json({ error: 'password must be at least 8 characters' });
   }
@@ -44,13 +57,13 @@ async function register(req, res) {
   try {
     await conn.beginTransaction();
 
-    // Create the student's profile row. UNIQUE(student_number) enforces
-    // one profile per student; FK on programme_code enforces a valid
-    // programme without needing a separate lookup here.
+    // Create the student's profile row. UNIQUE(student_number),
+    // UNIQUE(email), and the programme_code FK enforce validity without a
+    // separate lookup here.
     const [insertResult] = await conn.query(
-      `INSERT INTO students (student_number, name, programme_code)
-       VALUES (?, ?, ?)`,
-      [trimmedNumber, name.trim(), programme_code]
+      `INSERT INTO students (student_number, name, programme_code, email, phone)
+       VALUES (?, ?, ?, ?, ?)`,
+      [trimmedNumber, name.trim(), programme_code, trimmedEmail, trimmedPhone]
     );
 
     const studentId = insertResult.insertId;
@@ -67,6 +80,10 @@ async function register(req, res) {
   } catch (err) {
     await conn.rollback();
     if (err.code === 'ER_DUP_ENTRY') {
+      const msg = err.sqlMessage || '';
+      if (msg.includes('uq_student_email')) {
+        return res.status(409).json({ error: 'email already registered' });
+      }
       return res.status(409).json({ error: 'student_number already registered' });
     }
     if (err.code === 'ER_NO_REFERENCED_ROW' || err.code === 'ER_NO_REFERENCED_ROW_2') {

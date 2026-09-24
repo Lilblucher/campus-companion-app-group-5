@@ -77,6 +77,16 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!phone.matches("\\+?\\d{7,15}")) {
+            Toast.makeText(this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (password.length() < 8) {
             Toast.makeText(this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
             return;
@@ -90,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegisterSetEnabled(false);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        RegisterRequest request = new RegisterRequest(name, studentNumber, programmeCode, password);
+        RegisterRequest request = new RegisterRequest(name, studentNumber, programmeCode, email, phone, password);
 
         apiService.register(request).enqueue(new Callback<RegisterResponse>() {
             @Override
