@@ -1,3 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="programme_options">
+        <item>Computer Science</item>
+        <item>Cyber Security</item>
+        <item>Data Science</item>
+        <item>Information Technology</item>
+    </string-array>
+
+    <!-- NOTE: your ICT361 brief specifies G01\u2013G04 + Unassigned as the lab group scheme.
+         This 1\u201315 list follows your Figma mockup instead \u2014 flagged so your
+         backend/architecture teammates know the client-side list intentionally
+         differs from the brief and matches whichever scheme the group actually
+         implements server-side. -->
+    <string-array name="lab_group_options">
+        <item>Lab Group 1</item>
+        <item>Lab Group 2</item>
+        <item>Lab Group 3</item>
+        <item>Lab Group 4</item>
+        <item>Lab Group 5</item>
+        <item>Lab Group 6</item>
+        <item>Lab Group 7</item>
+        <item>Lab Group 8</item>
+        <item>Lab Group 9</item>
+        <item>Lab Group 10</item>
+        <item>Lab Group 11</item>
+        <item>Lab Group 12</item>
+        <item>Lab Group 13</item>
+        <item>Lab Group 14</item>
+        <item>Lab Group 15</item>
+    </string-array>
 </resources>

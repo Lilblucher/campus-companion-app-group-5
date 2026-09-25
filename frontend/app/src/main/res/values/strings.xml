@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name_full">Campus Companion App</string>
-    <string name="splash_tagline">Connect • Manage • Grow</string>
+    <string name="splash_tagline">Get Connected.</string>
     <string name="get_started">Get Started</string>
     <string name="app_icon_desc">App icon</string>
     <string name="app_name">Campus Companion</string>
-
     <string name="sign_in">Sign In</string>
     <string name="sign_in_to_continue">Sign in to continue</string>
     <string name="student_number">Student Number</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="no_account_sign_up">Don\'t have an Account? Sign Up</string>
-
     <string name="sign_up">Sign Up</string>
     <string name="create_an_account">Create an Account</string>
     <string name="student_name">Student Name</string>
@@ -21,4 +19,53 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="register">Register</string>
     <string name="already_have_account">Already have an Account? Sign in</string>
+
+    <!-- New: needed for the illustration on the redesigned splash screen -->
+    <string name="illustration_description">Illustration of a school building</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="or_continue_with">Or continue with</string>
+    <string name="social_login_coming_soon">Social login isn\'t set up yet</string>
+    <string name="forgot_password_coming_soon">Password recovery isn\'t set up yet</string>
+    <string name="content_desc_facebook_login">Continue with Facebook</string>
+    <string name="content_desc_google_login">Continue with Google</string>
+    <string name="registration_title">Registration</string>
+    <string name="programme">Programme</string>
+    <string name="lab_group">Lab Group</string>
+    <string name="prompt_already_have_account">Already have an account?</string>
+    <string name="content_desc_back">Back</string>
+    <string name="claim_code_label">Lecturer Claim Code (optional)</string>
+    <string name="claim_code_helper">If your lecturer already added you, enter the code they gave you</string>
+    <string name="password_strength_weak">Weak password</string>
+    <string name="password_strength_fair">Fair password</string>
+    <string name="password_strength_strong">Strong password</string>
+    <string name="password_matched">Password Matched</string>
+    <string name="password_not_matched">Passwords do not match</string>
+    <string name="error_name_length">Name must be 2\u2013100 characters</string>
+    <string name="error_student_id_length">Student ID must be exactly 9 digits</string>
+    <string name="error_programme_required">Select a programme</string>
+    <string name="error_lab_group_required">Select a lab group</string>
+    <string name="error_password_required">Enter a password</string>
+    <string name="error_confirm_password_required">Confirm your password</string>
+    <string name="forgot_password_title">Forgot your Password?</string>
+    <string name="reset_password_heading">Reset Password</string>
+    <string name="enter_reset_code_heading">Enter Reset Code</string>
+    <string name="hint_enter_email">Enter your email</string>
+    <string name="get_code">Get code</string>
+    <string name="code_sent_message">We sent a 6-digit code to %1$s</string>
+    <string name="reset_code_label">Reset Code</string>
+    <string name="hint_enter_code">Enter the 6-digit code</string>
+    <string name="new_password_label">New Password</string>
+    <string name="confirm_new_password_label">Confirm New Password</string>
+    <string name="resend_code">Resend code</string>
+    <string name="resend_code_in">Resend code in %1$ds</string>
+    <string name="reset_password_button">Reset Password</string>
+    <string name="error_email_required">Enter your email</string>
+    <string name="error_email_invalid">Enter a valid email address</string>
+    <string name="error_email_not_found">No account found with this email</string>
+    <string name="error_code_required">Enter the code</string>
+    <string name="error_code_invalid">Incorrect or expired code</string>
+    <string name="error_new_password_required">Enter a new password</string>
+    <string name="resend_code_toast">A new code has been sent (stub \u2014 no backend yet)</string>
 </resources>
