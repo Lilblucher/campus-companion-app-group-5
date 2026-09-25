@@ -11,10 +11,10 @@
 --   * Soft deletion with deletion markers + number reservation
 --   * Record versions for sync / conflict resolution
 --   * Programme reference data (CS, IT, DS)
---   * Claim codes live on the students row (claim_code column) —
---     the lecturer pre-creates a profile with a claim_code, and a
---     student "claims" it during registration by supplying that
---     code; the column is cleared (set to NULL) once used.
+--   * Students self-register directly (creating their own profile
+--     row and account together); a lecturer subsequently assigns
+--     them to a lab group. One account per profile is still
+--     enforced by uq_student_account.
 -- =============================================================
 
 DROP DATABASE IF EXISTS campus_companion;
@@ -33,6 +33,11 @@ CREATE TABLE programmes (
   PRIMARY KEY (programme_code)
 ) ENGINE=InnoDB;
 
+INSERT INTO programmes (programme_code, programme_name) VALUES
+  ('CS', 'Computer Science'),
+  ('IT', 'Information Technology'),
+  ('DS', 'Data Science');
+
 -- -------------------------------------------------------------
 -- 2. lab_groups  (G01–G04, hard cap 15 members)
 -- -------------------------------------------------------------
@@ -45,6 +50,9 @@ CREATE TABLE lab_groups (
   UNIQUE KEY uq_group_name (group_name),
   CONSTRAINT chk_max_members CHECK (max_members BETWEEN 1 AND 15)
 ) ENGINE=InnoDB;
+
+INSERT INTO lab_groups (group_name) VALUES
+  ('G01'), ('G02'), ('G03'), ('G04');
 
 -- -------------------------------------------------------------
 -- 3. lecturers  (created BEFORE students/accounts because both
@@ -69,10 +77,11 @@ CREATE TABLE students (
   student_number  CHAR(9)      NOT NULL,                  -- 9 digits, leading zeros kept
   name            VARCHAR(100) NOT NULL,
   programme_code  VARCHAR(10)  NOT NULL,
+  email           VARCHAR(100) NOT NULL,
+  phone           VARCHAR(20)  NOT NULL,
   lab_group_id    INT          NULL,                      -- NULL = Unassigned
   status          ENUM('active','unassigned','pending','deleted')
                                NOT NULL DEFAULT 'unassigned',
-  claim_code      VARCHAR(20)  NULL,                      -- set by lecturer; cleared once claimed
   is_deleted      TINYINT(1)   NOT NULL DEFAULT 0,
   deleted_at      TIMESTAMP    NULL,
   record_version  INT          NOT NULL DEFAULT 1,        -- optimistic locking / sync
@@ -81,6 +90,7 @@ CREATE TABLE students (
                                ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (student_id),
   UNIQUE KEY uq_student_number (student_number),
+  UNIQUE KEY uq_student_email (email),
   KEY idx_students_group (lab_group_id),
   KEY idx_students_programme (programme_code),
   KEY idx_students_name (name),

@@ -2,6 +2,7 @@
 
 require("dotenv").config(); // Load .env variables FIRST, before anything else
 
+const logger  = require("./logger"); // structured logger + daily rotating log files
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -37,15 +38,11 @@ app.use(express.json());
 // Parse URL-encoded bodies (form submissions, if any)
 app.use(express.urlencoded({ extended: true }));
 
-// ── Request logger (dev only) ──────────────────────────────────
-// Prints every request to the console so the team can see what's hitting the server.
-// Remove or replace with a proper logger (e.g. morgan) before final submission.
-if (process.env.NODE_ENV !== "production") {
-  app.use((req, _res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-    next();
-  });
-}
+// ── Request logger ─────────────────────────────────────────────
+// Writes every request to the daily log file.
+// On the console it suppresses noisy bot probes (/.env, /wp-admin, etc.)
+// so real traffic stays readable. Works in both dev and production.
+app.use(logger.requestMiddleware);
 
 // ── Health check ───────────────────────────────────────────────
 // GET /health — the Android app (or anyone) can ping this to check the server is up.
@@ -81,7 +78,7 @@ app.use((_req, res) => {
 // Keeps error responses consistent across the whole API.
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
-  console.error("[ERROR]", err.stack || err.message);
+  logger.error(err.message, { stack: (err.stack || '').split('\n')[1]?.trim() });
 
   // Don't leak stack traces to clients in production
   const message =
@@ -97,23 +94,22 @@ app.use((err, _req, res, _next) => {
 // This catches a wrong password or unreachable host early.
 db.getConnection()
   .then((connection) => {
-      console.log("%MySQL connection pool is ready");
+    connection.release(); // release back to pool immediately
+    logger.info('MySQL connection pool is ready');
 
     app.listen(PORT, () => {
-      console.log(`!!server running on port ${PORT}`);
-      console.log(`   Health check -> http://localhost:${PORT}/health`);
-      console.log(`   Auth         -> http://localhost:${PORT}/api/auth`);
-      console.log(`   Students     -> http://localhost:${PORT}/api/students`);
-      console.log(`   Groups       -> http://localhost:${PORT}/api/groups`);
-      console.log(`   Sync         -> http://localhost:${PORT}/api/sync`);
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Health check  -> http://localhost:${PORT}/health`);
+      logger.info(`Auth          -> http://localhost:${PORT}/api/auth`);
+      logger.info(`Students      -> http://localhost:${PORT}/api/students`);
+      logger.info(`Groups        -> http://localhost:${PORT}/api/groups`);
+      logger.info(`Sync          -> http://localhost:${PORT}/api/sync`);
     });
   })
   .catch((err) => {
-    console.error("!Failed to connect to MySQL:", err.message);
-    console.error(
-      "   Check your .env file DB_HOST, DB_USER, DB_PASSWORD, DB_NAME"
-    );
-    process.exit(1); // Exit so the team knows immediately something is wrong
+    logger.error('Failed to connect to MySQL: ' + err.message);
+    logger.error('Check your .env file: DB_HOST, DB_USER, DB_PASSWORD, DB_NAME');
+    process.exit(1);
   });
 
 module.exports = app; // exported so the Testing team can import it in tests

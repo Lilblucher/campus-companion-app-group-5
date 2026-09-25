@@ -7,6 +7,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,33 +21,23 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.regex.Pattern;
 
+import com.google.gson.Gson;
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.RegisterRequest;
+import com.mulungushi.campuscompanionapp.network.RegisterResponse;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class RegisterActivity extends AppCompatActivity {
 
-    // TODO: replace this whole draft mechanism with Room once Activity B/E's local
-    // database exists. SharedPreferences is a temporary stand-in so typed input
-    // survives rotation/app-kill today, per the brief's "preserve user work" requirement.
-    private static final String DRAFT_PREFS_NAME = "registration_draft_prefs";
-    private static final String KEY_DRAFT_NAME = "draft_student_name";
-    private static final String KEY_DRAFT_ID = "draft_student_id";
-    private static final String KEY_DRAFT_CLAIM_CODE = "draft_claim_code";
-    private static final String KEY_DRAFT_PROGRAMME = "draft_programme";
-    private static final String KEY_DRAFT_LAB_GROUP = "draft_lab_group";
-    // Password fields are intentionally NOT persisted to the draft, even locally —
-    // don't save passwords on the phone (per the brief's auth/permissions section).
+    private EditText etStudentName, etStudentNumber, etPhoneNumber, etEmail, etPassword, etConfirmPassword;
+    private Spinner spProgramme;
 
-    private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
-    private static final Pattern LOWERCASE = Pattern.compile(".*[a-z].*");
-    private static final Pattern DIGIT = Pattern.compile(".*[0-9].*");
-    private static final Pattern SYMBOL = Pattern.compile(".*[^A-Za-z0-9].*");
-
-    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilLabGroup,
-            tilPassword, tilConfirmPassword;
-    private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword;
-    private AutoCompleteTextView actProgramme, actLabGroup;
-    private TextView tvPasswordStrength, tvPasswordMatch;
-    private android.view.View strengthDot1, strengthDot2, strengthDot3;
-
-    private SharedPreferences draftPrefs;
+    // Codes must match what authController.js's register() accepts exactly.
+    private static final String[] PROGRAMME_CODES = {"CS", "IT", "DS"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +70,12 @@ public class RegisterActivity extends AppCompatActivity {
         etClaimCode = findViewById(R.id.etClaimCode);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
+        spProgramme = findViewById(R.id.spProgramme);
+
+        ArrayAdapter<String> programmeAdapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, PROGRAMME_CODES);
+        programmeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spProgramme.setAdapter(programmeAdapter);
 
         actProgramme = findViewById(R.id.actProgramme);
         actLabGroup = findViewById(R.id.actLabGroup);
@@ -198,13 +197,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void attemptRegister() {
-        String name = getText(etStudentName);
-        String studentId = getText(etStudentId);
-        String claimCode = getText(etClaimCode);
-        String programme = actProgramme.getText().toString().trim();
-        String labGroup = actLabGroup.getText().toString().trim();
-        String password = getText(etPassword);
-        String confirmPassword = getText(etConfirmPassword);
+        String name = etStudentName.getText().toString().trim();
+        String studentNumber = etStudentNumber.getText().toString().trim();
+        String phone = etPhoneNumber.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString();
+        String confirmPassword = etConfirmPassword.getText().toString();
+        String programmeCode = (String) spProgramme.getSelectedItem();
 
         boolean isValid = true;
 
@@ -245,16 +244,81 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: replace with a real Retrofit call to POST /register, sending:
-        // name, studentId, claimCode (nullable), programme, labGroup, password.
-        // On success: clear the draft, then navigate to LoginActivity (or straight
-        // to MainActivity if your backend returns a session token immediately).
-        // On GROUP_FULL / duplicate student number: surface that as a field error
-        // rather than a generic toast, per the brief's validation requirements.
-        clearDraft();
-        Toast.makeText(this, "Registration submitted (stub — no backend yet)", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-        finish();
+        if (studentNumber.length() != 9) {
+            Toast.makeText(this, "Student number must be 9 digits", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!phone.matches("\\+?\\d{7,15}")) {
+            Toast.makeText(this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.length() < 8) {
+            Toast.makeText(this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnRegisterSetEnabled(false);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        RegisterRequest request = new RegisterRequest(name, studentNumber, programmeCode, email, phone, password);
+
+        apiService.register(request).enqueue(new Callback<RegisterResponse>() {
+            @Override
+            public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                btnRegisterSetEnabled(true);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    String msg = response.body().getMessage();
+                    Toast.makeText(RegisterActivity.this,
+                            msg != null ? msg : "Registered successfully",
+                            Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                    finish();
+                    return;
+                }
+
+                String errorMsg = "Registration failed";
+                if (response.errorBody() != null) {
+                    try {
+                        RegisterResponse errorResponse = new Gson().fromJson(
+                                response.errorBody().charStream(), RegisterResponse.class);
+                        if (errorResponse != null && errorResponse.getError() != null) {
+                            errorMsg = errorResponse.getError();
+                        }
+                    } catch (Exception ignored) {
+                        // fall back to default message
+                    }
+                }
+                Toast.makeText(RegisterActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<RegisterResponse> call, Throwable t) {
+                btnRegisterSetEnabled(true);
+                Toast.makeText(RegisterActivity.this,
+                        "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void btnRegisterSetEnabled(boolean enabled) {
+        Button btnRegister = findViewById(R.id.btnRegister);
+        if (btnRegister != null) {
+            btnRegister.setEnabled(enabled);
+        }
+    }
     }
 
     // ---- Draft persistence (temporary SharedPreferences stand-in for Room) ----

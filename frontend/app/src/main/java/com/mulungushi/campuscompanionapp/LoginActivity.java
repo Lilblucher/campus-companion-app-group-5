@@ -8,6 +8,15 @@ import android.text.TextWatcher;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.LoginRequest;
+import com.mulungushi.campuscompanionapp.network.RegisterRequest;
+import com.mulungushi.campuscompanionapp.network.AuthResponse;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -37,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         tilPassword = findViewById(R.id.tilPassword);
         etStudentId = findViewById(R.id.etStudentId);
         etPassword = findViewById(R.id.etPassword);
+Button btnLogin = findViewById(R.id.btnLogin);
+btnLogin.setOnClickListener(v -> attemptLogin());
+TextView tvSignUpLink = findViewById(R.id.tvSignUpLink);
 
         clearErrorsOnEdit(etStudentId, tilStudentId);
         clearErrorsOnEdit(etPassword, tilPassword);
@@ -62,30 +74,44 @@ public class LoginActivity extends AppCompatActivity {
         String studentId = getText(etStudentId);
         String password = getText(etPassword);
 
-        boolean isValid = true;
+boolean isValid = true;
 
-        if (studentId.length() != 9) {
-            tilStudentId.setError(getString(R.string.student_number));
-            isValid = false;
-        }
+if (studentId.length() != 9) {
+    tilStudentId.setError(getString(R.string.student_number));
+    isValid = false;
+}
 
-        if (password.isEmpty()) {
-            tilPassword.setError(getString(R.string.password));
-            isValid = false;
-        }
+if (password.isEmpty()) {
+    tilPassword.setError(getString(R.string.password));
+    isValid = false;
+}
 
-        if (!isValid) {
-            return;
-        }
+if (!isValid) {
+    return;
+}
 
-        // TODO: replace this stubbed check with a real Retrofit call to POST /login,
-        // e.g. authApi.login(studentId, password).enqueue(...)
-        if (studentId.equals(STUB_VALID_STUDENT_ID) && password.equals(STUB_VALID_PASSWORD)) {
+LoginRequest req = new LoginRequest(studentId, password);
+ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+apiService.login(req).enqueue(new retrofit2.Callback<AuthResponse>() {
+    @Override
+    public void onResponse(retrofit2.Call<AuthResponse> call, retrofit2.Response<AuthResponse> response) {
+        if (response.isSuccessful() && response.body() != null) {
+            Toast.makeText(LoginActivity.this, "Welcome, " + response.body().getName(), Toast.LENGTH_SHORT).show();
+            // TODO: save token (SharedPreferences), then navigate to dashboard
             setLoggedIn();
             goToMain();
         } else {
+            Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
             showWrongCredentials();
         }
+    }
+
+    @Override
+    public void onFailure(retrofit2.Call<AuthResponse> call, Throwable t) {
+        Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+});
     }
 
     private void showWrongCredentials() {
