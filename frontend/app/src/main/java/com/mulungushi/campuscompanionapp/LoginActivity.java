@@ -124,16 +124,40 @@ apiService.login(req).enqueue(new retrofit2.Callback<AuthResponse>() {
     private void clearErrorsOnEdit(TextInputEditText editText, TextInputLayout layout) {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
+<<<<<<< HEAD
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 layout.setError(null);
+=======
+            public void onResponse(retrofit2.Call<AuthResponse> call, retrofit2.Response<AuthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(LoginActivity.this, "Welcome, " + response.body().getName(), Toast.LENGTH_SHORT).show();
+                    // TODO: save token (SharedPreferences), then navigate to dashboard
+                    // Intent intent = new Intent(LoginActivity.this, StudentDashboardActivity.class);
+                    // startActivity(intent);
+                } else {
+                    String errorBody = "";
+                    try {
+                        errorBody = response.errorBody().string();
+                    } catch (Exception e) {
+                        errorBody = "could not read error";
+                    }
+                    Toast.makeText(LoginActivity.this,
+                            "Code: " + response.code() + " | " + errorBody,
+                            Toast.LENGTH_LONG).show();
+                }
+>>>>>>> 434e046 (link backend to frontend)
             }
 
             @Override
             public void afterTextChanged(Editable s) { }
         });
+
+
+
+
     }
 
     private String getText(TextInputEditText editText) {
