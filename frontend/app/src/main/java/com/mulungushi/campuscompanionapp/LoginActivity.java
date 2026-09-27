@@ -1,5 +1,6 @@
-package com.mulungushi.campuscompanionapp; // TODO: replace with your actual package name
+package com.mulungushi.campuscompanionapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,27 +9,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.mulungushi.campuscompanionapp.ForgotPasswordActivity;
-import com.mulungushi.campuscompanionapp.MainActivity;
-import com.mulungushi.campuscompanionapp.R;
-import com.mulungushi.campuscompanionapp.RegisterActivity;
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.AuthResponse;
+import com.mulungushi.campuscompanionapp.network.LoginRequest;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etStudentNumber, etPassword;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etStudentNumber = findViewById(R.id.etStudentNumber);
+        etStudentNumber = findViewById(R.id.etStudentId);
         etPassword = findViewById(R.id.etPassword);
         Button btnLogin = findViewById(R.id.btnLogin);
-        TextView tvSignUpLink = findViewById(R.id.tvSignUpLink);
-
-        btnLogin.setOnClickListener(v -> attemptLogin());
+        TextView tvSignUpLink = findViewById(R.id.tvNoAccount);
 
         btnLogin.setOnClickListener(v -> attemptLogin());
 
@@ -45,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
 
         findViewById(R.id.btnFacebookLogin).setOnClickListener(v -> showSocialLoginPlaceholder());
         findViewById(R.id.btnGoogleLogin).setOnClickListener(v -> showSocialLoginPlaceholder());
-        });
     }
 
     private void attemptLogin() {
@@ -78,5 +76,9 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showSocialLoginPlaceholder() {
+        Toast.makeText(this, "Social login coming soon", Toast.LENGTH_SHORT).show();
     }
 }
