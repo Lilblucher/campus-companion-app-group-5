@@ -12,18 +12,23 @@ const JWT_EXPIRES_IN = '2h';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?\d{7,15}$/;
+const CLAIM_CODE_RE = /^[A-Za-z0-9-]{3,20}$/;
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/register  (students only — lecturer account is seeded)
-// Body: { name, student_number, programme_code, email, phone, password }
+// Body: { name, student_number, programme_code, email, phone, claim_code, password }
 //
 // Open self-registration: creates the student's profile row and the linked
-// account in one transaction. New students start with lab_group_id = NULL
-// and status = 'unassigned' (the schema default) until a lecturer assigns
-// them to a lab group.
+// account in one transaction. The claim_code is supplied by the student
+// (given to them out-of-band, e.g. by their lecturer) and is recorded on the
+// new profile row as already used, since it's consumed at the moment the
+// profile is created — see the claim_code / claim_code_used / claimed_at /
+// claimed_by columns on students in schema.sql. New students start with
+// lab_group_id = NULL and status = 'unassigned' (the schema default) until
+// a lecturer assigns them to a lab group.
 // ---------------------------------------------------------------------------
 async function register(req, res) {
-  const { name, student_number, programme_code, email, phone, password } = req.body;
+  const { name, student_number, programme_code, email, phone, claim_code, password } = req.body;
 
   // --- basic validation (server is the source of truth; app also validates) ---
   if (!name || name.trim().length < 2 || name.trim().length > 100) {
@@ -49,6 +54,11 @@ async function register(req, res) {
     return res.status(400).json({ error: 'phone must be 7-15 digits, optionally starting with +' });
   }
 
+  const trimmedClaimCode = (claim_code || '').trim();
+  if (!CLAIM_CODE_RE.test(trimmedClaimCode)) {
+    return res.status(400).json({ error: 'claim_code must be 3-20 letters, digits or hyphens' });
+  }
+
   if (!password || password.length < 8) {
     return res.status(400).json({ error: 'password must be at least 8 characters' });
   }
@@ -58,21 +68,30 @@ async function register(req, res) {
     await conn.beginTransaction();
 
     // Create the student's profile row. UNIQUE(student_number),
-    // UNIQUE(email), and the programme_code FK enforce validity without a
-    // separate lookup here.
+    // UNIQUE(email), UNIQUE(claim_code), and the programme_code FK enforce
+    // validity without a separate lookup here. The code is claimed
+    // immediately, since this row (and its account) is what claims it.
     const [insertResult] = await conn.query(
-      `INSERT INTO students (student_number, name, programme_code, email, phone)
-       VALUES (?, ?, ?, ?, ?)`,
-      [trimmedNumber, name.trim(), programme_code, trimmedEmail, trimmedPhone]
+      `INSERT INTO students
+         (student_number, name, programme_code, email, phone,
+          claim_code, claim_code_used, claimed_at)
+       VALUES (?, ?, ?, ?, ?, ?, 1, NOW())`,
+      [trimmedNumber, name.trim(), programme_code, trimmedEmail, trimmedPhone, trimmedClaimCode]
     );
 
     const studentId = insertResult.insertId;
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    await conn.query(
+    const [accountResult] = await conn.query(
       `INSERT INTO accounts (username, student_id, role, password_hash)
        VALUES (?, ?, 'student', ?)`,
       [trimmedNumber, studentId, passwordHash]
+    );
+
+    // Record which account claimed the code, now that it exists.
+    await conn.query(
+      `UPDATE students SET claimed_by = ? WHERE student_id = ?`,
+      [accountResult.insertId, studentId]
     );
 
     await conn.commit();
@@ -83,6 +102,9 @@ async function register(req, res) {
       const msg = err.sqlMessage || '';
       if (msg.includes('uq_student_email')) {
         return res.status(409).json({ error: 'email already registered' });
+      }
+      if (msg.includes('uq_claim_code')) {
+        return res.status(409).json({ error: 'claim_code already used' });
       }
       return res.status(409).json({ error: 'student_number already registered' });
     }
