@@ -2,71 +2,136 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_splash_gradient">
+    android:background="#B4D0FE"
+    tools:context=".SplashActivity">
+
+    <!-- Percentage guidelines, based on proportions from the 412x917 Figma frame -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineIconTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.134" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineTitleTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.279" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineTaglineTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.330" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineIllustrationTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.500" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineDotsTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.863" />
+
+    <!-- App icon: sized relative to screen width, capped so it doesn't grow too large on tablets -->
 
     <ImageView
         android:id="@+id/ivAppIcon"
-        android:layout_width="142dp"
-        android:layout_height="142dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="72dp"
         android:contentDescription="@string/app_icon_desc"
-        android:src="@mipmap/ic_launcher"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/ic_app_logo"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.35" />
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="136dp"
+        app:layout_constraintWidth_percent="0.33" />
 
     <TextView
         android:id="@+id/tvAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name_full"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:text="@string/app_name"
+        android:textColor="#1F35AB"
+        android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/ivAppIcon"
+        android:fontFamily="@font/poppins"
+        app:layout_constraintTop_toTopOf="@id/guidelineTitleTop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tvTagline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins"
         android:text="@string/splash_tagline"
-        android:textColor="#FFFFFF"
+        android:textColor="#022F77"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tvAppName"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineTaglineTop" />
 
-    <Button
-        android:id="@+id/btnGetStarted"
+    <ImageView
+        android:id="@+id/ivSchoolIllustration"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="@string/get_started"
-        android:textColor="#1B55AB"
-        android:textSize="18sp"
-        android:textStyle="normal"
-        android:background="@drawable/bg_button_rounded"
-        android:elevation="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.80"
+        app:layout_constraintDimensionRatio="331:209"
+        android:contentDescription="@string/illustration_description"
+        android:src="@drawable/ic_school_illustration"
+        app:layout_constraintTop_toTopOf="@id/guidelineIllustrationTop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <View
-        android:id="@+id/bottomBar"
-        android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="#05345F"
+    <!-- Animated loading dots -->
+    <LinearLayout
+        android:id="@+id/loadingDotsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="@id/guidelineDotsTop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:id="@+id/dot1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/shape_loading_dot" />
+
+        <View
+            android:id="@+id/dot2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/shape_loading_dot" />
+
+        <View
+            android:id="@+id/dot3"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/shape_loading_dot" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

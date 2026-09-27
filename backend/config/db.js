@@ -46,10 +46,11 @@ const pool = mysql.createPool({
 /**
  * Run a parameterised SQL statement.
  * Always pass user input through `params` — never string-concatenate SQL.
+ * Returns the standard mysql2/promise [rows, fields] tuple — destructure
+ * with `const [rows] = await query(...)` at call sites.
  */
 async function query(sql, params = []) {
-  const [rows] = await pool.execute(sql, params);
-  return rows;
+  return pool.execute(sql, params);
 }
 
 // ---- 4. Transaction helper ----
