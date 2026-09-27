@@ -1,4 +1,4 @@
-package com.yourpackage.campuscompanion; // TODO: replace with your actual package name
+package com.mulungushi.campuscompanionapp;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -22,7 +22,6 @@ public class SplashActivity extends AppCompatActivity {
     // How long the splash screen stays visible before we decide where to go next
     private static final long SPLASH_DELAY_MS = 1800;
 
-    // TODO: replace with your actual SharedPreferences file name / keys used at login time
     private static final String PREFS_NAME = "campus_companion_prefs";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
 
@@ -38,11 +37,6 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(this::decideNextScreen, SPLASH_DELAY_MS);
     }
 
-    /**
-     * Staggers a gentle up-down bounce across the three dots, looping forever.
-     * Because all three share the same duration, the stagger holds indefinitely
-     * even though repeatCount is INFINITE (no manual re-triggering needed).
-     */
     private void animateLoadingDots() {
         View dot1 = findViewById(R.id.dot1);
         View dot2 = findViewById(R.id.dot2);
@@ -71,7 +65,6 @@ public class SplashActivity extends AppCompatActivity {
             return;
         }
 
-        // User has a saved session — confirm it's really them before letting them into the app
         promptBiometricUnlock();
     }
 
@@ -83,8 +76,6 @@ public class SplashActivity extends AppCompatActivity {
         );
 
         if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
-            // Device has no biometric/PIN/pattern/password set up at all — can't gate on it,
-            // so just let the saved session through.
             goToMain();
             return;
         }
@@ -108,8 +99,6 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticationFailed() {
                         super.onAuthenticationFailed();
-                        // A single wrong attempt — let the system prompt keep retrying;
-                        // don't navigate away here.
                     }
                 });
 
@@ -131,7 +120,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goToMain() {
-        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        startActivity(new Intent(SplashActivity.this, StudentDashboardActivity.class));
         finish();
     }
 

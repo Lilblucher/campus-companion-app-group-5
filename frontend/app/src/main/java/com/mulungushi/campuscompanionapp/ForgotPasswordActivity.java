@@ -1,4 +1,4 @@
-package com.yourpackage.campuscompanion; // TODO: replace with your actual package name
+package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
 import android.os.CountDownTimer;
@@ -200,7 +200,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Password reset (stub — no backend yet)", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
-        finish();
     }
 
     // ---- Password strength / match (mirrors RegisterActivity's logic) ----

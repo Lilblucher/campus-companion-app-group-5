@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="etStudentNumber" type="id" />
+    <item name="etPhoneNumber" type="id" />
+    <item name="etConfirmPassword" type="id" />
+    <item name="spProgramme" type="id" />
+</resources>

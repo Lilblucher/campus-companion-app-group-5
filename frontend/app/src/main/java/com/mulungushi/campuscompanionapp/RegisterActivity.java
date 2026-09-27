@@ -1,15 +1,15 @@
-package com.yourpackage.campuscompanion; // TODO: replace with your actual package name
+package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,14 +18,13 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.util.regex.Pattern;
-
 import com.google.gson.Gson;
 import com.mulungushi.campuscompanionapp.network.ApiClient;
 import com.mulungushi.campuscompanionapp.network.ApiService;
 import com.mulungushi.campuscompanionapp.network.RegisterRequest;
 import com.mulungushi.campuscompanionapp.network.RegisterResponse;
+
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,11 +32,24 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etStudentName, etStudentNumber, etPhoneNumber, etEmail, etPassword, etConfirmPassword;
-    private Spinner spProgramme;
+    private SharedPreferences draftPrefs;
+    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilLabGroup, tilPassword, tilConfirmPassword;
+    private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword;
+    private AutoCompleteTextView actProgramme, actLabGroup;
+    private TextView tvPasswordStrength, tvPasswordMatch;
+    private View strengthDot1, strengthDot2, strengthDot3;
 
-    // Codes must match what authController.js's register() accepts exactly.
-    private static final String[] PROGRAMME_CODES = {"CS", "IT", "DS"};
+    private static final String DRAFT_PREFS_NAME = "register_draft";
+    private static final String KEY_DRAFT_NAME = "draft_name";
+    private static final String KEY_DRAFT_ID = "draft_id";
+    private static final String KEY_DRAFT_CLAIM_CODE = "draft_claim_code";
+    private static final String KEY_DRAFT_PROGRAMME = "draft_programme";
+    private static final String KEY_DRAFT_LAB_GROUP = "draft_lab_group";
+
+    private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
+    private static final Pattern LOWERCASE = Pattern.compile(".*[a-z].*");
+    private static final Pattern DIGIT = Pattern.compile(".*\\d.*");
+    private static final Pattern SYMBOL = Pattern.compile(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +82,6 @@ public class RegisterActivity extends AppCompatActivity {
         etClaimCode = findViewById(R.id.etClaimCode);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
-        spProgramme = findViewById(R.id.spProgramme);
-
-        ArrayAdapter<String> programmeAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, PROGRAMME_CODES);
-        programmeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spProgramme.setAdapter(programmeAdapter);
 
         actProgramme = findViewById(R.id.actProgramme);
         actLabGroup = findViewById(R.id.actLabGroup);
@@ -101,34 +107,44 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupValidationWatchers() {
-        etStudentName.addTextChangedListener(simpleWatcher(() -> {
-            tilStudentName.setError(null);
-            saveDraft();
-        }));
+        if (etStudentName != null) {
+            etStudentName.addTextChangedListener(simpleWatcher(() -> {
+                tilStudentName.setError(null);
+                saveDraft();
+            }));
+        }
 
-        etStudentId.addTextChangedListener(simpleWatcher(() -> {
-            String id = getText(etStudentId);
-            if (id.length() == 9) {
-                tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_valid_green));
-                tilStudentId.setError(null);
-            } else {
-                tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_border_blue));
-            }
-            saveDraft();
-        }));
+        if (etStudentId != null) {
+            etStudentId.addTextChangedListener(simpleWatcher(() -> {
+                String id = getText(etStudentId);
+                if (id.length() == 9) {
+                    tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_valid_green));
+                    tilStudentId.setError(null);
+                } else {
+                    tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_border_blue));
+                }
+                saveDraft();
+            }));
+        }
 
-        etClaimCode.addTextChangedListener(simpleWatcher(this::saveDraft));
+        if (etClaimCode != null) {
+            etClaimCode.addTextChangedListener(simpleWatcher(this::saveDraft));
+        }
 
-        etPassword.addTextChangedListener(simpleWatcher(() -> {
-            tilPassword.setError(null);
-            updatePasswordStrength(getText(etPassword));
-            updatePasswordMatch();
-        }));
+        if (etPassword != null) {
+            etPassword.addTextChangedListener(simpleWatcher(() -> {
+                tilPassword.setError(null);
+                updatePasswordStrength(getText(etPassword));
+                updatePasswordMatch();
+            }));
+        }
 
-        etConfirmPassword.addTextChangedListener(simpleWatcher(() -> {
-            tilConfirmPassword.setError(null);
-            updatePasswordMatch();
-        }));
+        if (etConfirmPassword != null) {
+            etConfirmPassword.addTextChangedListener(simpleWatcher(() -> {
+                tilConfirmPassword.setError(null);
+                updatePasswordMatch();
+            }));
+        }
     }
 
     /**
@@ -137,7 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
      */
     private void updatePasswordStrength(String password) {
         if (password.isEmpty()) {
-            tvPasswordStrength.setVisibility(android.view.View.INVISIBLE);
+            tvPasswordStrength.setVisibility(View.INVISIBLE);
             setDotFilled(strengthDot1, false);
             setDotFilled(strengthDot2, false);
             setDotFilled(strengthDot3, false);
@@ -150,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (DIGIT.matcher(password).matches()) score++;
         if (SYMBOL.matcher(password).matches()) score++;
 
-        tvPasswordStrength.setVisibility(android.view.View.VISIBLE);
+        tvPasswordStrength.setVisibility(View.VISIBLE);
 
         if (score <= 1) {
             tvPasswordStrength.setText(R.string.password_strength_weak);
@@ -170,9 +186,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void setDotFilled(android.view.View dot, boolean filled) {
-        dot.setBackgroundResource(R.drawable.shape_loading_dot);
-        dot.setAlpha(filled ? 1f : 0.3f);
+    private void setDotFilled(View dot, boolean filled) {
+        if (dot != null) {
+            dot.setBackgroundResource(R.drawable.shape_loading_dot);
+            dot.setAlpha(filled ? 1f : 0.3f);
+        }
     }
 
     private void updatePasswordMatch() {
@@ -180,11 +198,11 @@ public class RegisterActivity extends AppCompatActivity {
         String confirm = getText(etConfirmPassword);
 
         if (confirm.isEmpty()) {
-            tvPasswordMatch.setVisibility(android.view.View.INVISIBLE);
+            tvPasswordMatch.setVisibility(View.INVISIBLE);
             return;
         }
 
-        tvPasswordMatch.setVisibility(android.view.View.VISIBLE);
+        tvPasswordMatch.setVisibility(View.VISIBLE);
         if (password.equals(confirm)) {
             tvPasswordMatch.setText(R.string.password_matched);
             tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.color_success_text));
@@ -197,13 +215,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void attemptRegister() {
-        String name = etStudentName.getText().toString().trim();
-        String studentNumber = etStudentNumber.getText().toString().trim();
-        String phone = etPhoneNumber.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString();
-        String confirmPassword = etConfirmPassword.getText().toString();
-        String programmeCode = (String) spProgramme.getSelectedItem();
+        String name = getText(etStudentName);
+        String studentId = getText(etStudentId);
+        String password = getText(etPassword);
+        String confirmPassword = getText(etConfirmPassword);
+        String programme = actProgramme.getText().toString().trim();
+        String labGroup = actLabGroup.getText().toString().trim();
 
         boolean isValid = true;
 
@@ -230,6 +247,9 @@ public class RegisterActivity extends AppCompatActivity {
         if (password.isEmpty()) {
             tilPassword.setError(getString(R.string.error_password_required));
             isValid = false;
+        } else if (password.length() < 8) {
+            tilPassword.setError("Password must be at least 8 characters");
+            isValid = false;
         }
 
         if (confirmPassword.isEmpty()) {
@@ -244,35 +264,22 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        if (studentNumber.length() != 9) {
-            Toast.makeText(this, "Student number must be 9 digits", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!phone.matches("\\+?\\d{7,15}")) {
-            Toast.makeText(this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (password.length() < 8) {
-            Toast.makeText(this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         btnRegisterSetEnabled(false);
 
+        String programmeCode = "CS";
+        if (programme.equalsIgnoreCase("Information Technology") || programme.equalsIgnoreCase("IT")) {
+            programmeCode = "IT";
+        } else if (programme.equalsIgnoreCase("Data Science") || programme.equalsIgnoreCase("DS")) {
+            programmeCode = "DS";
+        } else if (programme.equalsIgnoreCase("Computer Science") || programme.equalsIgnoreCase("CS")) {
+            programmeCode = "CS";
+        }
+
+        String email = studentId + "@student.mulungushi.ac.zm";
+        String phone = "0000000000";
+
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        RegisterRequest request = new RegisterRequest(name, studentNumber, programmeCode, email, phone, password);
+        RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phone, password);
 
         apiService.register(request).enqueue(new Callback<RegisterResponse>() {
             @Override
@@ -314,41 +321,38 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void btnRegisterSetEnabled(boolean enabled) {
-        Button btnRegister = findViewById(R.id.btnRegister);
+        Button btnRegister = findViewById(R.id.btnRegisterSubmit);
         if (btnRegister != null) {
             btnRegister.setEnabled(enabled);
         }
     }
-    }
 
-    // ---- Draft persistence (temporary SharedPreferences stand-in for Room) ----
+    // ---- Draft persistence ----
 
     private void saveDraft() {
+        if (draftPrefs == null) return;
         draftPrefs.edit()
                 .putString(KEY_DRAFT_NAME, getText(etStudentName))
                 .putString(KEY_DRAFT_ID, getText(etStudentId))
                 .putString(KEY_DRAFT_CLAIM_CODE, getText(etClaimCode))
-                .putString(KEY_DRAFT_PROGRAMME, actProgramme.getText().toString())
-                .putString(KEY_DRAFT_LAB_GROUP, actLabGroup.getText().toString())
+                .putString(KEY_DRAFT_PROGRAMME, actProgramme != null ? actProgramme.getText().toString() : "")
+                .putString(KEY_DRAFT_LAB_GROUP, actLabGroup != null ? actLabGroup.getText().toString() : "")
                 .apply();
     }
 
     private void restoreDraft() {
-        etStudentName.setText(draftPrefs.getString(KEY_DRAFT_NAME, ""));
-        etStudentId.setText(draftPrefs.getString(KEY_DRAFT_ID, ""));
-        etClaimCode.setText(draftPrefs.getString(KEY_DRAFT_CLAIM_CODE, ""));
-        actProgramme.setText(draftPrefs.getString(KEY_DRAFT_PROGRAMME, ""), false);
-        actLabGroup.setText(draftPrefs.getString(KEY_DRAFT_LAB_GROUP, ""), false);
-    }
-
-    private void clearDraft() {
-        draftPrefs.edit().clear().apply();
+        if (draftPrefs == null) return;
+        if (etStudentName != null) etStudentName.setText(draftPrefs.getString(KEY_DRAFT_NAME, ""));
+        if (etStudentId != null) etStudentId.setText(draftPrefs.getString(KEY_DRAFT_ID, ""));
+        if (etClaimCode != null) etClaimCode.setText(draftPrefs.getString(KEY_DRAFT_CLAIM_CODE, ""));
+        if (actProgramme != null) actProgramme.setText(draftPrefs.getString(KEY_DRAFT_PROGRAMME, ""), false);
+        if (actLabGroup != null) actLabGroup.setText(draftPrefs.getString(KEY_DRAFT_LAB_GROUP, ""), false);
     }
 
     // ---- Helpers ----
 
-    private String getText(TextInputEditText editText) {
-        return editText.getText() == null ? "" : editText.getText().toString().trim();
+    private String getText(EditText editText) {
+        return (editText == null || editText.getText() == null) ? "" : editText.getText().toString().trim();
     }
 
     private TextWatcher simpleWatcher(Runnable onChanged) {
