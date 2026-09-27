@@ -15,6 +15,8 @@
 --     row and account together); a lecturer subsequently assigns
 --     them to a lab group. One account per profile is still
 --     enforced by uq_student_account.
+--   * Claim codes link a self-registering student to a profile
+--     the lecturer already created for them.
 -- =============================================================
 
 DROP DATABASE IF EXISTS campus_companion;
@@ -43,7 +45,7 @@ INSERT INTO programmes (programme_code, programme_name) VALUES
 -- -------------------------------------------------------------
 CREATE TABLE lab_groups (
   group_id      INT          NOT NULL AUTO_INCREMENT,
-  group_name    VARCHAR(10)  NOT NULL,                -- G01, G02, G03, G04
+  group_name    VARCHAR(10)  NOT NULL,
   max_members   TINYINT      NOT NULL DEFAULT 15,
   created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (group_id),
@@ -73,24 +75,33 @@ CREATE TABLE lecturers (
 -- 4. students  (profile — separate from auth)
 -- -------------------------------------------------------------
 CREATE TABLE students (
-  student_id      BIGINT       NOT NULL AUTO_INCREMENT,   -- immutable
-  student_number  CHAR(9)      NOT NULL,                  -- 9 digits, leading zeros kept
-  name            VARCHAR(100) NOT NULL,
-  programme_code  VARCHAR(10)  NOT NULL,
-  email           VARCHAR(100) NOT NULL,
-  phone           VARCHAR(20)  NOT NULL,
-  lab_group_id    INT          NULL,                      -- NULL = Unassigned
-  status          ENUM('active','unassigned','pending','deleted')
-                               NOT NULL DEFAULT 'unassigned',
-  is_deleted      TINYINT(1)   NOT NULL DEFAULT 0,
-  deleted_at      TIMESTAMP    NULL,
-  record_version  INT          NOT NULL DEFAULT 1,        -- optimistic locking / sync
-  created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
-                               ON UPDATE CURRENT_TIMESTAMP,
+  student_id        BIGINT       NOT NULL AUTO_INCREMENT,   -- immutable
+  student_number    CHAR(9)      NOT NULL,                  -- 9 digits, leading zeros kept
+  name              VARCHAR(100) NOT NULL,
+  programme_code    VARCHAR(10)  NOT NULL,
+  email             VARCHAR(100) NOT NULL,
+  phone             VARCHAR(20)  NOT NULL,
+  lab_group_id      INT          NULL,                      -- NULL = Unassigned
+  status            ENUM('active','unassigned','pending','deleted')
+                                 NOT NULL DEFAULT 'unassigned',
+
+  -- Claim code fields
+  claim_code        VARCHAR(20)  NULL,      -- e.g. MEM-001
+  claim_code_used   TINYINT(1)   NOT NULL DEFAULT 0,
+  claimed_at        TIMESTAMP    NULL,
+  claimed_by        BIGINT       NULL,      -- account_id that claimed it
+
+  is_deleted        TINYINT(1)   NOT NULL DEFAULT 0,
+  deleted_at        TIMESTAMP    NULL,
+  record_version    INT          NOT NULL DEFAULT 1,        -- optimistic locking / sync
+  created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                 ON UPDATE CURRENT_TIMESTAMP,
+
   PRIMARY KEY (student_id),
   UNIQUE KEY uq_student_number (student_number),
   UNIQUE KEY uq_student_email (email),
+  UNIQUE KEY uq_claim_code (claim_code),
   KEY idx_students_group (lab_group_id),
   KEY idx_students_programme (programme_code),
   KEY idx_students_name (name),
@@ -158,8 +169,6 @@ CREATE TABLE group_members (
 
 -- -------------------------------------------------------------
 -- 7. sync_operations  (offline queue — WorkManager + Retrofit)
---    Stored on the phone in Room; mirrored here for receipts so
---    a lost response can never cause a duplicate effect.
 -- -------------------------------------------------------------
 CREATE TABLE sync_operations (
   operation_id    CHAR(36)     NOT NULL,              -- client-generated UUID
@@ -171,7 +180,7 @@ CREATE TABLE sync_operations (
   base_version    INT          NOT NULL DEFAULT 0,
   status          ENUM('pending','synced','failed','conflict')
                                NOT NULL DEFAULT 'pending',
-  response_body   JSON         NULL,                  -- stored server result
+  response_body   JSON         NULL,
   error_code      VARCHAR(40)  NULL,
   created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   processed_at    TIMESTAMP    NULL,
@@ -210,12 +219,10 @@ CREATE TABLE group_change_requests (
 ) ENGINE=InnoDB;
 
 -- =============================================================
--- TRIGGERS — enforce the 15-member cap and single active group
+-- TRIGGERS
 -- =============================================================
-
 DELIMITER //
 
--- Guard: one active membership per student
 CREATE TRIGGER trg_gm_one_active_membership
 BEFORE INSERT ON group_members
 FOR EACH ROW
@@ -231,7 +238,6 @@ BEGIN
   END IF;
 END//
 
--- Guard: 15-member cap per group (also covered transactionally with FOR UPDATE)
 CREATE TRIGGER trg_gm_group_capacity
 BEFORE INSERT ON group_members
 FOR EACH ROW
@@ -257,7 +263,7 @@ END//
 DELIMITER ;
 
 -- =============================================================
--- VIEW — handy for lecturer dashboards and group summary shares
+-- VIEW
 -- =============================================================
 CREATE OR REPLACE VIEW v_group_summary AS
 SELECT
@@ -273,4 +279,4 @@ GROUP BY g.group_id, g.group_name, g.max_members;
 
 -- =============================================================
 -- End of schema.sql
--- =============================================================
+-- ==============================================================================================
