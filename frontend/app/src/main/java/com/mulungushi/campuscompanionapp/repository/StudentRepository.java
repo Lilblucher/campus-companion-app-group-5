@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 
 import com.mulungushi.campuscompanionapp.data.local.AppDatabase;
+import com.mulungushi.campuscompanionapp.data.local.PendingOperation;
 import com.mulungushi.campuscompanionapp.data.local.Student;
 import com.mulungushi.campuscompanionapp.data.local.StudentDao;
 
@@ -14,11 +15,12 @@ import java.util.concurrent.Executors;
 
 public class StudentRepository {
 
+    private final AppDatabase db;
     private final StudentDao studentDao;
     private final ExecutorService executor;
 
     public StudentRepository(Context context) {
-        AppDatabase db = AppDatabase.getInstance(context);
+        this.db = AppDatabase.getInstance(context);
         this.studentDao = db.studentDao();
         this.executor = Executors.newSingleThreadExecutor();
     }
@@ -44,6 +46,13 @@ public class StudentRepository {
             long now = System.currentTimeMillis();
             String marker = "del_" + studentId + "_" + now;
             studentDao.softDelete(studentId, now, marker);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    public void saveOfflineEdit(Student student, PendingOperation op, Runnable onComplete) {
+        executor.execute(() -> {
+            db.saveOfflineEdit(student, op);
             if (onComplete != null) onComplete.run();
         });
     }

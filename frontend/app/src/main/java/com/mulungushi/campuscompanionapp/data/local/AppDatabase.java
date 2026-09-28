@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.Transaction;
 
 @Database(
         entities = { Student.class, PendingOperation.class },
@@ -15,6 +16,12 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract StudentDao studentDao();
     public abstract PendingOperationDao pendingOperationDao();
+
+    @Transaction
+    public void saveOfflineEdit(Student student, PendingOperation op) {
+        studentDao().insert(student);
+        pendingOperationDao().insert(op);
+    }
 
     private static volatile AppDatabase INSTANCE;
 
@@ -34,5 +41,4 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
 }
