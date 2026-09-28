@@ -41,13 +41,12 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-<<<<<<< HEAD
+
     implementation("androidx.biometric:biometric:1.1.0")
-=======
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime:2.7.0")
->>>>>>> a529443 (local storage phase 1)
+
 }
