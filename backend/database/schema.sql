@@ -277,6 +277,19 @@ LEFT JOIN group_members gm
   ON gm.group_id = g.group_id AND gm.is_active = 1
 GROUP BY g.group_id, g.group_name, g.max_members;
 
+
+
+
+CREATE TABLE IF NOT EXISTS password_resets (
+  reset_id     INT AUTO_INCREMENT PRIMARY KEY,
+  email        VARCHAR(100) NOT NULL,
+  code_hash    VARCHAR(255) NOT NULL,
+  expires_at   DATETIME NOT NULL,
+  attempts     TINYINT NOT NULL DEFAULT 0,
+  used         TINYINT(1) NOT NULL DEFAULT 0,
+  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_email (email)
+);
 -- =============================================================
 -- End of schema.sql
 -- ==============================================================================================

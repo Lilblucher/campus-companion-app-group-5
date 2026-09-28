@@ -62,6 +62,7 @@ app.get("/health", (_req, res) => {
 //  /api/sync      → offline sync endpoint (protected)
 
 app.use("/api/auth", authRoutes);
+app.set('trust proxy', 1);
 /*
 app.use("/api/students", studentRoutes);
 app.use("/api/groups", groupRoutes);
