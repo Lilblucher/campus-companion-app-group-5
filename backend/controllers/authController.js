@@ -100,10 +100,10 @@ async function register(req, res) {
     await conn.rollback();
     if (err.code === 'ER_DUP_ENTRY') {
       const msg = err.sqlMessage || '';
-      if (msg.includes('uq_student_email')) {
+      if (msg.includes('email')) {
         return res.status(409).json({ error: 'email already registered' });
       }
-      if (msg.includes('uq_claim_code')) {
+      if (msg.includes('claim_code')) {
         return res.status(409).json({ error: 'claim_code already used' });
       }
       return res.status(409).json({ error: 'student_number already registered' });
@@ -132,6 +132,7 @@ async function login(req, res) {
 
   try {
     let account;
+    console.log('LOGIN ATTEMPT:', { student_number, username, password });
 
     if (student_number) {
       const [rows] = await db.query(
@@ -143,20 +144,21 @@ async function login(req, res) {
       );
       account = rows[0];
     } else {
-      const [rows] = await db.query(
-        `SELECT account_id, password_hash, role, username
-         FROM accounts
-         WHERE username = ? AND role = 'lecturer' AND is_locked = 0`,
-        [username.trim()]
-      );
-      account = rows[0];
-    }
-
+  const [rows] = await db.query(
+    `SELECT account_id, password_hash, role, username
+     FROM accounts
+     WHERE username = ? AND role = 'lecturer' AND is_locked = 0`,
+    [username.trim()]
+  );
+  account = rows[0];
+  console.log('LECTURER QUERY RESULT:', rows);
+}
     if (!account) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const match = await bcrypt.compare(password, account.password_hash);
+    console.log('PASSWORD MATCH RESULT:', match);
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
