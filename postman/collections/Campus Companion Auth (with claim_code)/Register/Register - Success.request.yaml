@@ -1,0 +1,40 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "Test Student",
+      "student_number": "{{student_number}}",
+      "programme_code": "IT",
+      "email": "{{email}}",
+      "phone": "{{phone}}",
+      "claim_code": "{{claim_code}}",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const rand9 = () => Array.from({length: 9}, () => Math.floor(Math.random() * 10)).join('');
+      const studentNumber = rand9();
+      const email = `student${Date.now()}@mulungushi.edu.zm`;
+      const phone = '+2609' + Array.from({length: 8}, () => Math.floor(Math.random() * 10)).join('');
+      const claimCode = 'CLM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      pm.collectionVariables.set('student_number', studentNumber);
+      pm.collectionVariables.set('email', email);
+      pm.collectionVariables.set('phone', phone);
+      pm.collectionVariables.set('claim_code', claimCode);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 201', function () {
+          pm.response.to.have.status(201);
+      });
+      pm.test('Success message returned', function () {
+          pm.expect(pm.response.json().message).to.include('Registered');
+      });
+    language: text/javascript
+order: 1000

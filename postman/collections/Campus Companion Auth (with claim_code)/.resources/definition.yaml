@@ -1,0 +1,21 @@
+$kind: collection
+description: Covers /health, /api/auth/register (claim_code re-added), /api/auth/login, /api/auth/logout.
+variables:
+  base_url: http://localhost:3000
+  student_number: ""
+  email: ""
+  phone: ""
+  claim_code: ""
+  password: test1234
+  lecturer_username: lecturer@campus.ac.zm
+  lecturer_password: lecturer123
+  jwt_token: ""
+  dup_num_email: ""
+  dup_num_claim: ""
+  dup_email_num: ""
+  dup_email_claim: ""
+  dup_claim_num: ""
+  dup_claim_email: ""
+  tmp_num: ""
+  tmp_email: ""
+  tmp_claim: ""

@@ -1,0 +1,33 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "No Claim Code",
+      "student_number": "{{tmp_num}}",
+      "programme_code": "IT",
+      "email": "{{tmp_email}}",
+      "phone": "{{phone}}",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const rand9 = () => Array.from({length: 9}, () => Math.floor(Math.random() * 10)).join('');
+      pm.collectionVariables.set('tmp_num', rand9());
+      pm.collectionVariables.set('tmp_email', `noclaim${Date.now()}@mulungushi.edu.zm`);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 400', function () {
+          pm.response.to.have.status(400);
+      });
+      pm.test('Error mentions claim_code', function () {
+          pm.expect(pm.response.json().error).to.include('claim_code');
+      });
+    language: text/javascript
+order: 9000

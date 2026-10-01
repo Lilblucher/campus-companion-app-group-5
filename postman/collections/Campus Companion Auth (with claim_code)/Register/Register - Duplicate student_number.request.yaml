@@ -1,0 +1,36 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "Duplicate Number",
+      "student_number": "{{student_number}}",
+      "programme_code": "IT",
+      "email": "{{dup_num_email}}",
+      "phone": "{{phone}}",
+      "claim_code": "{{dup_num_claim}}",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      // keep student_number from the Success run, vary email + claim_code
+      const email = `dupnum${Date.now()}@mulungushi.edu.zm`;
+      const claimCode = 'CLM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      pm.collectionVariables.set('dup_num_email', email);
+      pm.collectionVariables.set('dup_num_claim', claimCode);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 409', function () {
+          pm.response.to.have.status(409);
+      });
+      pm.test('Error mentions student_number', function () {
+          pm.expect(pm.response.json().error).to.include('student_number');
+      });
+    language: text/javascript
+order: 2000
