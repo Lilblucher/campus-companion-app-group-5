@@ -9,7 +9,7 @@ import androidx.room.Transaction;
 
 @Database(
         entities = { Student.class, PendingOperation.class },
-        version = 1,
+        version = 2,
         exportSchema = true
 )
 public abstract class AppDatabase extends RoomDatabase {

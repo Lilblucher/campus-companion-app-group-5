@@ -18,11 +18,11 @@ public class Student {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "student_id")
-    public String studentId;                 // immutable UUID
+    public String studentId;
 
     @NonNull
     @ColumnInfo(name = "student_number")
-    public String studentNumber;             // 9 digits, String preserves leading zeros
+    public String studentNumber;
 
     @NonNull
     @ColumnInfo(name = "student_name")
@@ -30,23 +30,27 @@ public class Student {
 
     @NonNull
     @ColumnInfo(name = "programme")
-    public String programme;                 // "CS" | "IT" | "DS"
+    public String programme;
 
     @ColumnInfo(name = "lab_group")
-    public String labGroup;                  // "G01".."G04" or null = Unassigned
+    public String labGroup;
 
     @ColumnInfo(name = "base_version")
-    public int baseVersion;                  // for Challenge 3 conflict detection
+    public int baseVersion;
 
     @ColumnInfo(name = "deleted_at")
-    public Long deletedAt;                   // null = active; timestamp = soft-deleted
+    public Long deletedAt;
 
     @ColumnInfo(name = "deletion_marker")
-    public String deletionMarker;            // sync marker for pull/push
+    public String deletionMarker;
 
     @ColumnInfo(name = "number_reserved")
-    public boolean numberReserved;           // true after soft delete — blocks re-registration
+    public boolean numberReserved;
 
     @ColumnInfo(name = "updated_at")
-    public long updatedAt;                   // for sync ordering
+    public long updatedAt;
+
+    @NonNull
+    @ColumnInfo(name = "sync_status", defaultValue = "SYNCED")
+    public String syncStatus = "SYNCED";
 }

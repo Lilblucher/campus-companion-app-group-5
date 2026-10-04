@@ -51,8 +51,16 @@ public class StudentRepository {
     }
 
     public void saveOfflineEdit(Student student, PendingOperation op, Runnable onComplete) {
+        student.syncStatus = "PENDING";
         executor.execute(() -> {
             db.saveOfflineEdit(student, op);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    public void updateSyncStatus(String studentId, String status, Runnable onComplete) {
+        executor.execute(() -> {
+            studentDao.updateSyncStatus(studentId, status);
             if (onComplete != null) onComplete.run();
         });
     }
@@ -65,6 +73,10 @@ public class StudentRepository {
 
     public LiveData<List<Student>> observeByGroup(String group) {
         return studentDao.observeByGroup(group);
+    }
+
+    public LiveData<List<Student>> observeByStatus(String status) {
+        return studentDao.observeByStatus(status);
     }
 
     // ---------- one-shot reads (background) ----------

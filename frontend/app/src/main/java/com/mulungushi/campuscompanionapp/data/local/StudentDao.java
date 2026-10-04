@@ -37,4 +37,10 @@ public interface StudentDao {
             "number_reserved = 1, lab_group = NULL, base_version = base_version + 1 " +
             "WHERE student_id = :id")
     int softDelete(String id, long now, String marker);
+
+    @Query("UPDATE students SET sync_status = :status WHERE student_id = :id")
+    int updateSyncStatus(String id, String status);
+
+    @Query("SELECT * FROM students WHERE sync_status = :status AND deleted_at IS NULL")
+    LiveData<List<Student>> observeByStatus(String status);
 }
