@@ -2,11 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-<<<<<<< HEAD
       <SelectionState runConfigName="app">
-=======
-      <SelectionState runConfigName="androidTest">
->>>>>>> c9a4623 (error display message on register page)
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
