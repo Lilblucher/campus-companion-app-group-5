@@ -315,7 +315,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 btnRegisterSetEnabled(true);
                 Toast.makeText(RegisterActivity.this,
-                        "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        "Network error: " + "unable to reach server", Toast.LENGTH_SHORT).show();
             }
         });
     }
