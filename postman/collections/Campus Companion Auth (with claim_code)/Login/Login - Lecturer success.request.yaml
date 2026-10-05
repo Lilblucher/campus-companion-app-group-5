@@ -18,6 +18,7 @@ scripts:
       });
       pm.test('Role is lecturer', function () {
           pm.expect(pm.response.json().role).to.eql('lecturer');
+          pm.collectionVariables.set('lecturer_token', json.token);
       });
     language: text/javascript
 order: 2000

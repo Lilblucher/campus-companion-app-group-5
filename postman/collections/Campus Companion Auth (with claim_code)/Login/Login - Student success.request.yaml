@@ -20,6 +20,7 @@ scripts:
           const json = pm.response.json();
           pm.expect(json.token).to.be.a('string');
           pm.collectionVariables.set('jwt_token', json.token);
+          pm.collectionVariables.set('student_token', json.token);
       });
     language: text/javascript
 order: 1000

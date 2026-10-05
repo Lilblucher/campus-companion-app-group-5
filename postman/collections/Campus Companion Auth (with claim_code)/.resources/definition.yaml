@@ -1,21 +1,63 @@
 $kind: collection
 description: Covers /health, /api/auth/register (claim_code re-added), /api/auth/login, /api/auth/logout.
 variables:
-  base_url: http://localhost:3000
-  student_number: ""
-  email: ""
-  phone: ""
-  claim_code: ""
-  password: test1234
-  lecturer_username: lecturer@campus.ac.zm
-  lecturer_password: lecturer123
-  jwt_token: ""
-  dup_num_email: ""
-  dup_num_claim: ""
-  dup_email_num: ""
-  dup_email_claim: ""
-  dup_claim_num: ""
-  dup_claim_email: ""
-  tmp_num: ""
-  tmp_email: ""
-  tmp_claim: ""
+  - key: base_url
+    value: http://localhost:3000
+    disabled: false
+  - key: student_number
+    value: ""
+    disabled: false
+  - key: email
+    value: ""
+    disabled: false
+  - key: phone
+    value: ""
+    disabled: false
+  - key: claim_code
+    value: ""
+    disabled: false
+  - key: password
+    value: test1234
+    disabled: false
+  - key: lecturer_username
+    value: lecturer@campus.ac.zm
+    disabled: false
+  - key: lecturer_password
+    value: lecturer123
+    disabled: false
+  - key: jwt_token
+    secret: true
+    disabled: false
+  - key: dup_num_email
+    value: ""
+    disabled: false
+  - key: dup_num_claim
+    value: ""
+    disabled: false
+  - key: dup_email_num
+    value: ""
+    disabled: false
+  - key: dup_email_claim
+    value: ""
+    disabled: false
+  - key: dup_claim_num
+    value: ""
+    disabled: false
+  - key: dup_claim_email
+    value: ""
+    disabled: false
+  - key: tmp_num
+    value: ""
+    disabled: false
+  - key: tmp_email
+    value: ""
+    disabled: false
+  - key: tmp_claim
+    value: ""
+    disabled: false
+  - key: student_token
+    value: ""
+    disabled: false
+  - key: lecturer_token
+    value: ""
+    disabled: false
