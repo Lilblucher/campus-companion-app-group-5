@@ -28,7 +28,7 @@ INSERT INTO lecturers (name, email, role) VALUES
 INSERT INTO accounts (username, password_hash, role, lecturer_id)
 VALUES (
   'mwansa.chanda@mulungushi.ac.zm',
-  '< $2b$10$d.qEqdpJMwA1bX8Q0sc6J.lVxXVqXHz97XdNdPotpIRxtv.sKFDEm>',
+  '$2a$10$e8u8Y1XAORZzG0EnM8tusuNAvCLt0tX7tmxNDy8s94wS9U0ndKYQC',
   'lecturer',
   (SELECT lecturer_id FROM lecturers
     WHERE email = 'mwansa.chanda@mulungushi.ac.zm')
@@ -63,7 +63,7 @@ VALUES
 INSERT INTO accounts (username, password_hash, role, student_id)
 SELECT
   s.student_number,
-  '<$2b$10$PKJPsRvPttbDv9SubJ98SOaNnOwSGYESjPjQBwtLvoC3q/RYO8Coq>',
+  '$2a$10$/fpDXKQlHdAlHOFA42Mque82zeN0YGy1tlb0t5ulrUVMUBzeh9axe',
   'student',
   s.student_id
 FROM students s
