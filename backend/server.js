@@ -10,9 +10,10 @@ const db = require("./config/db"); // MySQL connection pool
 const authRoutes = require("./routes/auth");
 
 const studentRoutes = require("./routes/students");
+const syncRoutes = require("./routes/sync");
 /*
 const groupRoutes = require("./routes/groups");
-const syncRoutes = require("./routes/sync");
+
 */
 // ── App setup ──────────────────────────────────────────────────
 const app = express();
@@ -66,9 +67,10 @@ app.use("/api/auth", authRoutes);
 app.set('trust proxy', 1);
 
 app.use("/api/students", studentRoutes);
+app.use("/api/sync", syncRoutes);
 /*
 app.use("/api/groups", groupRoutes);
-app.use("/api/sync", syncRoutes);
+
 */
 
 // Catches any request that didn't match a route above.
