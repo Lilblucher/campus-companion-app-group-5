@@ -8,8 +8,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const db = require("./config/db"); // MySQL connection pool
 const authRoutes = require("./routes/auth");
-/*
+
 const studentRoutes = require("./routes/students");
+/*
 const groupRoutes = require("./routes/groups");
 const syncRoutes = require("./routes/sync");
 */
@@ -63,8 +64,9 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.set('trust proxy', 1);
-/*
+
 app.use("/api/students", studentRoutes);
+/*
 app.use("/api/groups", groupRoutes);
 app.use("/api/sync", syncRoutes);
 */

@@ -1,4 +1,4 @@
-package zm.ac.mulungushi.ict361;
+package com.mulungushi.campuscompanionapp;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;

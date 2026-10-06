@@ -16,7 +16,9 @@ const CLAIM_CODE_RE = /^[A-Za-z0-9-]{3,20}$/;
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/register  (students only — lecturer account is seeded)
-// Body: { name, student_number, programme_code, email, phone, claim_code, password }
+// Body: { name, student_number, programme_code, email, phone, claim_code?, password }
+// claim_code is OPTIONAL: if omitted or blank the student registers normally and
+// the claim columns stay NULL / claim_code_used = 0.
 //
 // Open self-registration: creates the student's profile row and the linked
 // account in one transaction. The claim_code is supplied by the student
@@ -54,10 +56,14 @@ async function register(req, res) {
     return res.status(400).json({ error: 'phone must be 7-15 digits, optionally starting with +' });
   }
 
-  const trimmedClaimCode = (claim_code || '').trim();
-  if (!CLAIM_CODE_RE.test(trimmedClaimCode)) {
+  // claim_code is OPTIONAL. Omitted/blank → stored as NULL (never '' —
+  // UNIQUE(claim_code) would make a second blank value collide).
+  const rawClaimCode = claim_code == null ? '' : String(claim_code).trim();
+  const trimmedClaimCode = rawClaimCode === '' ? null : rawClaimCode;
+  if (trimmedClaimCode !== null && !CLAIM_CODE_RE.test(trimmedClaimCode)) {
     return res.status(400).json({ error: 'claim_code must be 3-20 letters, digits or hyphens' });
   }
+  const hasClaimCode = trimmedClaimCode !== null;
 
   if (!password || password.length < 8) {
     return res.status(400).json({ error: 'password must be at least 8 characters' });
@@ -75,8 +81,9 @@ async function register(req, res) {
       `INSERT INTO students
          (student_number, name, programme_code, email, phone,
           claim_code, claim_code_used, claimed_at)
-       VALUES (?, ?, ?, ?, ?, ?, 1, NOW())`,
-      [trimmedNumber, name.trim(), programme_code, trimmedEmail, trimmedPhone, trimmedClaimCode]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ${hasClaimCode ? 'NOW()' : 'NULL'})`,
+      [trimmedNumber, name.trim(), programme_code, trimmedEmail, trimmedPhone,
+       trimmedClaimCode, hasClaimCode ? 1 : 0]
     );
 
     const studentId = insertResult.insertId;
@@ -89,10 +96,12 @@ async function register(req, res) {
     );
 
     // Record which account claimed the code, now that it exists.
-    await conn.query(
-      `UPDATE students SET claimed_by = ? WHERE student_id = ?`,
-      [accountResult.insertId, studentId]
-    );
+    if (hasClaimCode) {
+      await conn.query(
+        `UPDATE students SET claimed_by = ? WHERE student_id = ?`,
+        [accountResult.insertId, studentId]
+      );
+    }
 
     await conn.commit();
     return res.status(201).json({ message: 'Registered successfully. Please sign in.' });
