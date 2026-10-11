@@ -1,16 +1,5 @@
 package com.mulungushi.campuscompanionapp;
 
-<<<<<<< Updated upstream
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-public class ProfileActivity extends AppCompatActivity {
-
-=======
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,22 +18,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
 
->>>>>>> Stashed changes
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-<<<<<<< Updated upstream
-        TextView btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
-
-        Button btnLogout = findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(v -> {
-            Toast.makeText(this, "Logged Out Successfully", Toast.LENGTH_SHORT).show();
-            finish();
-        });
-=======
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             finish();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -108,6 +86,5 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         }
->>>>>>> Stashed changes
     }
 }

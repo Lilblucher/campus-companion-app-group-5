@@ -2,14 +2,6 @@ package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-<<<<<<< Updated upstream
-import android.widget.Button;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-public class MainActivity extends AppCompatActivity {
-
-=======
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,22 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
     private SwipeRefreshLayout swipeRefreshLayout;
 
->>>>>>> Stashed changes
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-<<<<<<< Updated upstream
-        Button btnGetStarted = findViewById(R.id.btnGetStarted);
-        if (btnGetStarted != null) {
-            btnGetStarted.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            });
-        }
-    }
-=======
         bindViews();
         populateContent();
         setupPullToRefresh();
@@ -167,5 +148,4 @@ public class MainActivity extends AppCompatActivity {
             item.setSelected(isSelected);
         }
     }
->>>>>>> Stashed changes
 }

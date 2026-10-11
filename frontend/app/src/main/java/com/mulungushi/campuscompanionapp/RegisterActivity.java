@@ -327,10 +327,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 btnRegisterSetEnabled(true);
-<<<<<<< Updated upstream
-                Toast.makeText(RegisterActivity.this,
-                        "Network error: " + "unable to reach server", Toast.LENGTH_SHORT).show();
-=======
 
                 // Fallback for offline/demo registration
                 SessionManager.getInstance(RegisterActivity.this)
@@ -339,7 +335,6 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Registered successfully (Demo Mode)", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 finish();
->>>>>>> Stashed changes
             }
         });
     }

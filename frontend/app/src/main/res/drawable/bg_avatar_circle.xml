@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< Updated upstream
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="#1B55AB" />
-</shape>
-=======
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
     <gradient android:type="linear" android:angle="135" android:startColor="#B5D4F4" android:endColor="#85B7EB" />
 </shape>
->>>>>>> Stashed changes
