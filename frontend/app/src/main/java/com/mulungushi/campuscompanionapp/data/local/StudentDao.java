@@ -12,35 +12,42 @@ import java.util.List;
 @Dao
 public interface StudentDao {
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    long insert(Student student);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Student student);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void upsert(Student student);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void upsertAll(List<Student> students);
 
     @Update
-    int update(Student student);
+    void update(Student student);
 
-    @Query("SELECT * FROM students WHERE deleted_at IS NULL ORDER BY student_name ASC")
+    @Query("SELECT * FROM students WHERE studentId = :studentId LIMIT 1")
+    LiveData<Student> observeById(String studentId);
+
+    @Query("SELECT * FROM students WHERE studentId = :studentId LIMIT 1")
+    Student getByIdSync(String studentId);
+
+    @Query("UPDATE students SET active = 0, deletedAt = :now, studentNumber = :marker WHERE studentId = :studentId")
+    void softDelete(String studentId, long now, String marker);
+
+    @Query("UPDATE students SET syncStatus = :status WHERE studentId = :studentId")
+    void updateSyncStatus(String studentId, SyncStatus status);
+
+    @Query("SELECT * FROM students WHERE active = 1 ORDER BY studentName ASC")
     LiveData<List<Student>> observeAllActive();
 
-    @Query("SELECT * FROM students WHERE student_id = :id LIMIT 1")
-    Student findById(String id);
-
-    @Query("SELECT * FROM students WHERE student_number = :number LIMIT 1")
-    Student findByNumber(String number);
-
-    @Query("SELECT * FROM students WHERE lab_group = :group AND deleted_at IS NULL")
+    @Query("SELECT * FROM students WHERE active = 1 AND labGroup = :group ORDER BY studentName ASC")
     LiveData<List<Student>> observeByGroup(String group);
 
-    @Query("SELECT COUNT(*) FROM students WHERE lab_group = :group AND deleted_at IS NULL")
+    @Query("SELECT * FROM students WHERE active = 1 AND syncStatus = :status ORDER BY studentName ASC")
+    LiveData<List<Student>> observeByStatus(SyncStatus status);
+
+    @Query("SELECT * FROM students WHERE studentNumber = :number LIMIT 1")
+    Student findByNumber(String number);
+
+    @Query("SELECT COUNT(*) FROM students WHERE active = 1 AND labGroup = :group")
     int countActiveInGroup(String group);
-
-    @Query("UPDATE students SET deleted_at = :now, deletion_marker = :marker, " +
-            "number_reserved = 1, lab_group = NULL, base_version = base_version + 1 " +
-            "WHERE student_id = :id")
-    int softDelete(String id, long now, String marker);
-
-    @Query("UPDATE students SET sync_status = :status WHERE student_id = :id")
-    int updateSyncStatus(String id, String status);
-
-    @Query("SELECT * FROM students WHERE sync_status = :status AND deleted_at IS NULL")
-    LiveData<List<Student>> observeByStatus(String status);
 }
