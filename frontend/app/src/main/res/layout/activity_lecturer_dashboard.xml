@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F7FA">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/headerProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1B55AB"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Lecturer Dashboard"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Stat Cards / Quick Links -->
+            <Button
+                android:id="@+id/cardTotalStudents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Students"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/cardMyCourses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Courses"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/cardPendingRequests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pending Requests"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/cardTodaysClasses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Today's Classes"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnStudents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Students List"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnManageGroups"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Manage Groups"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnSearchStudent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search Student"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnMore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notifications"
+                android:layout_marginBottom="12dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Home"
+            android:textColor="#1B55AB"/>
+
+        <TextView
+            android:id="@+id/navStudents"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Students"
+            android:textColor="#666666"/>
+
+        <TextView
+            android:id="@+id/navCourses"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Courses"
+            android:textColor="#666666"/>
+
+        <TextView
+            android:id="@+id/navNotifications"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Alerts"
+            android:textColor="#666666"/>
+
+        <TextView
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Profile"
+            android:textColor="#666666"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,4 +1,4 @@
-package zm.ac.mulungushi.ict361;
+package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +23,6 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         setupWindowInsets();
         setupClickListeners();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
