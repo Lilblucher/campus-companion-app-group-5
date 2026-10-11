@@ -23,6 +23,7 @@ import com.mulungushi.campuscompanionapp.network.ApiClient;
 import com.mulungushi.campuscompanionapp.network.ApiService;
 import com.mulungushi.campuscompanionapp.network.RegisterRequest;
 import com.mulungushi.campuscompanionapp.network.RegisterResponse;
+import com.mulungushi.campuscompanionapp.network.SessionManager;
 
 import java.util.regex.Pattern;
 
@@ -33,9 +34,9 @@ import retrofit2.Response;
 public class RegisterActivity extends AppCompatActivity {
 
     private SharedPreferences draftPrefs;
-    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilLabGroup, tilPassword, tilConfirmPassword;
+    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilPassword, tilConfirmPassword;
     private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword;
-    private AutoCompleteTextView actProgramme, actLabGroup;
+    private AutoCompleteTextView actProgramme;
     private TextView tvPasswordStrength, tvPasswordMatch;
     private View strengthDot1, strengthDot2, strengthDot3;
 
@@ -44,7 +45,6 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String KEY_DRAFT_ID = "draft_id";
     private static final String KEY_DRAFT_CLAIM_CODE = "draft_claim_code";
     private static final String KEY_DRAFT_PROGRAMME = "draft_programme";
-    private static final String KEY_DRAFT_LAB_GROUP = "draft_lab_group";
 
     private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
     private static final Pattern LOWERCASE = Pattern.compile(".*[a-z].*");
@@ -63,17 +63,32 @@ public class RegisterActivity extends AppCompatActivity {
         setupValidationWatchers();
         restoreDraft();
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-        findViewById(R.id.btnGoToLogin).setOnClickListener(v ->
-                startActivity(new Intent(RegisterActivity.this, LoginActivity.class)));
-        findViewById(R.id.btnRegisterSubmit).setOnClickListener(v -> attemptRegister());
+        View btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            });
+        }
+
+        View btnGoToLogin = findViewById(R.id.btnGoToLogin);
+        if (btnGoToLogin != null) {
+            btnGoToLogin.setOnClickListener(v -> {
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                finish();
+            });
+        }
+
+        View btnRegisterSubmit = findViewById(R.id.btnRegisterSubmit);
+        if (btnRegisterSubmit != null) {
+            btnRegisterSubmit.setOnClickListener(v -> attemptRegister());
+        }
     }
 
     private void bindViews() {
         tilStudentName = findViewById(R.id.tilStudentName);
         tilStudentId = findViewById(R.id.tilStudentId);
         tilProgramme = findViewById(R.id.tilProgramme);
-        tilLabGroup = findViewById(R.id.tilLabGroup);
         tilPassword = findViewById(R.id.tilPassword);
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword);
 
@@ -84,7 +99,6 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
 
         actProgramme = findViewById(R.id.actProgramme);
-        actLabGroup = findViewById(R.id.actLabGroup);
 
         tvPasswordStrength = findViewById(R.id.tvPasswordStrength);
         tvPasswordMatch = findViewById(R.id.tvPasswordMatch);
@@ -95,21 +109,20 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupDropdowns() {
-        ArrayAdapter<CharSequence> programmeAdapter = ArrayAdapter.createFromResource(
-                this, R.array.programme_options, android.R.layout.simple_list_item_1);
-        actProgramme.setAdapter(programmeAdapter);
-        actProgramme.setOnItemClickListener((parent, view, position, id) -> tilProgramme.setError(null));
-
-        ArrayAdapter<CharSequence> labGroupAdapter = ArrayAdapter.createFromResource(
-                this, R.array.lab_group_options, android.R.layout.simple_list_item_1);
-        actLabGroup.setAdapter(labGroupAdapter);
-        actLabGroup.setOnItemClickListener((parent, view, position, id) -> tilLabGroup.setError(null));
+        if (actProgramme != null) {
+            ArrayAdapter<CharSequence> programmeAdapter = ArrayAdapter.createFromResource(
+                    this, R.array.programme_options, android.R.layout.simple_list_item_1);
+            actProgramme.setAdapter(programmeAdapter);
+            actProgramme.setOnItemClickListener((parent, view, position, id) -> {
+                if (tilProgramme != null) tilProgramme.setError(null);
+            });
+        }
     }
 
     private void setupValidationWatchers() {
         if (etStudentName != null) {
             etStudentName.addTextChangedListener(simpleWatcher(() -> {
-                tilStudentName.setError(null);
+                if (tilStudentName != null) tilStudentName.setError(null);
                 saveDraft();
             }));
         }
@@ -117,11 +130,13 @@ public class RegisterActivity extends AppCompatActivity {
         if (etStudentId != null) {
             etStudentId.addTextChangedListener(simpleWatcher(() -> {
                 String id = getText(etStudentId);
-                if (id.length() == 9) {
-                    tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_valid_green));
-                    tilStudentId.setError(null);
-                } else {
-                    tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_border_blue));
+                if (tilStudentId != null) {
+                    if (id.length() == 9) {
+                        tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_valid_green));
+                        tilStudentId.setError(null);
+                    } else {
+                        tilStudentId.setBoxStrokeColor(ContextCompat.getColor(this, R.color.color_border_blue));
+                    }
                 }
                 saveDraft();
             }));
@@ -133,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (etPassword != null) {
             etPassword.addTextChangedListener(simpleWatcher(() -> {
-                tilPassword.setError(null);
+                if (tilPassword != null) tilPassword.setError(null);
                 updatePasswordStrength(getText(etPassword));
                 updatePasswordMatch();
             }));
@@ -141,17 +156,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (etConfirmPassword != null) {
             etConfirmPassword.addTextChangedListener(simpleWatcher(() -> {
-                tilConfirmPassword.setError(null);
+                if (tilConfirmPassword != null) tilConfirmPassword.setError(null);
                 updatePasswordMatch();
             }));
         }
     }
 
-    /**
-     * Scores password strength from 0-4 based on length + mixed case + digits + symbols,
-     * then maps that to a Weak / Fair / Strong tier (1 / 2 / 3 dots filled).
-     */
     private void updatePasswordStrength(String password) {
+        if (tvPasswordStrength == null) return;
+
         if (password.isEmpty()) {
             tvPasswordStrength.setVisibility(View.INVISIBLE);
             setDotFilled(strengthDot1, false);
@@ -194,6 +207,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void updatePasswordMatch() {
+        if (tvPasswordMatch == null) return;
         String password = getText(etPassword);
         String confirm = getText(etConfirmPassword);
 
@@ -219,44 +233,38 @@ public class RegisterActivity extends AppCompatActivity {
         String studentId = getText(etStudentId);
         String password = getText(etPassword);
         String confirmPassword = getText(etConfirmPassword);
-        String programme = actProgramme.getText().toString().trim();
-        String labGroup = actLabGroup.getText().toString().trim();
+        String programme = actProgramme != null ? actProgramme.getText().toString().trim() : "";
 
         boolean isValid = true;
 
         if (name.length() < 2 || name.length() > 100) {
-            tilStudentName.setError(getString(R.string.error_name_length));
+            if (tilStudentName != null) tilStudentName.setError(getString(R.string.error_name_length));
             isValid = false;
         }
 
         if (studentId.length() != 9) {
-            tilStudentId.setError(getString(R.string.error_student_id_length));
+            if (tilStudentId != null) tilStudentId.setError(getString(R.string.error_student_id_length));
             isValid = false;
         }
 
         if (programme.isEmpty()) {
-            tilProgramme.setError(getString(R.string.error_programme_required));
-            isValid = false;
-        }
-
-        if (labGroup.isEmpty()) {
-            tilLabGroup.setError(getString(R.string.error_lab_group_required));
+            if (tilProgramme != null) tilProgramme.setError(getString(R.string.error_programme_required));
             isValid = false;
         }
 
         if (password.isEmpty()) {
-            tilPassword.setError(getString(R.string.error_password_required));
+            if (tilPassword != null) tilPassword.setError(getString(R.string.error_password_required));
             isValid = false;
         } else if (password.length() < 8) {
-            tilPassword.setError("Password must be at least 8 characters");
+            if (tilPassword != null) tilPassword.setError("Password must be at least 8 characters");
             isValid = false;
         }
 
         if (confirmPassword.isEmpty()) {
-            tilConfirmPassword.setError(getString(R.string.error_confirm_password_required));
+            if (tilConfirmPassword != null) tilConfirmPassword.setError(getString(R.string.error_confirm_password_required));
             isValid = false;
         } else if (!password.equals(confirmPassword)) {
-            tilConfirmPassword.setError(getString(R.string.password_not_matched));
+            if (tilConfirmPassword != null) tilConfirmPassword.setError(getString(R.string.password_not_matched));
             isValid = false;
         }
 
@@ -267,18 +275,19 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegisterSetEnabled(false);
 
         String programmeCode = "CS";
-        if (programme.equalsIgnoreCase("Information Technology") || programme.equalsIgnoreCase("IT")) {
+        String progLower = programme.toLowerCase();
+        if (progLower.contains("it") || progLower.contains("information")) {
             programmeCode = "IT";
-        } else if (programme.equalsIgnoreCase("Data Science") || programme.equalsIgnoreCase("DS")) {
+        } else if (progLower.contains("ds") || progLower.contains("data")) {
             programmeCode = "DS";
-        } else if (programme.equalsIgnoreCase("Computer Science") || programme.equalsIgnoreCase("CS")) {
+        } else {
             programmeCode = "CS";
         }
 
         String email = studentId + "@student.mulungushi.ac.zm";
         String phone = "0000000000";
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        ApiService apiService = ApiClient.getClient(this).create(ApiService.class);
         RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phone, password);
 
         apiService.register(request).enqueue(new Callback<RegisterResponse>() {
@@ -291,7 +300,11 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this,
                             msg != null ? msg : "Registered successfully",
                             Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+                    SessionManager.getInstance(RegisterActivity.this)
+                            .saveUserSession("student", name, studentId, "stub-token");
+
+                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                     finish();
                     return;
                 }
@@ -314,8 +327,19 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 btnRegisterSetEnabled(true);
+<<<<<<< Updated upstream
                 Toast.makeText(RegisterActivity.this,
                         "Network error: " + "unable to reach server", Toast.LENGTH_SHORT).show();
+=======
+
+                // Fallback for offline/demo registration
+                SessionManager.getInstance(RegisterActivity.this)
+                        .saveUserSession("student", name, studentId, "stub-token");
+
+                Toast.makeText(RegisterActivity.this, "Registered successfully (Demo Mode)", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                finish();
+>>>>>>> Stashed changes
             }
         });
     }
@@ -336,7 +360,6 @@ public class RegisterActivity extends AppCompatActivity {
                 .putString(KEY_DRAFT_ID, getText(etStudentId))
                 .putString(KEY_DRAFT_CLAIM_CODE, getText(etClaimCode))
                 .putString(KEY_DRAFT_PROGRAMME, actProgramme != null ? actProgramme.getText().toString() : "")
-                .putString(KEY_DRAFT_LAB_GROUP, actLabGroup != null ? actLabGroup.getText().toString() : "")
                 .apply();
     }
 
@@ -346,7 +369,6 @@ public class RegisterActivity extends AppCompatActivity {
         if (etStudentId != null) etStudentId.setText(draftPrefs.getString(KEY_DRAFT_ID, ""));
         if (etClaimCode != null) etClaimCode.setText(draftPrefs.getString(KEY_DRAFT_CLAIM_CODE, ""));
         if (actProgramme != null) actProgramme.setText(draftPrefs.getString(KEY_DRAFT_PROGRAMME, ""), false);
-        if (actLabGroup != null) actLabGroup.setText(draftPrefs.getString(KEY_DRAFT_LAB_GROUP, ""), false);
     }
 
     // ---- Helpers ----

@@ -50,7 +50,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         bindViews();
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
         btnGetCode.setOnClickListener(v -> attemptSendCode());
         btnResendCode.setOnClickListener(v -> attemptSendCode());
         btnResetPassword.setOnClickListener(v -> attemptResetPassword());

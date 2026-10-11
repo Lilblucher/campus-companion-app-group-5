@@ -1,8 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CampusCompanionApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Official Brand Colors (Navy Blue, Crimson Red) -->
+        <item name="colorPrimary">@color/color_primary_navy</item>
+        <item name="colorPrimaryVariant">@color/color_navy_sheet</item>
+        <item name="colorSecondary">@color/color_crimson_red</item>
+        <item name="colorSecondaryVariant">@color/color_crimson_dark</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.CampusCompanionApp" parent="Base.Theme.CampusCompanionApp" />

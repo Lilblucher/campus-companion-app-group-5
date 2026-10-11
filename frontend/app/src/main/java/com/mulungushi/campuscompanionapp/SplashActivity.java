@@ -15,15 +15,16 @@ import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
+import com.mulungushi.campuscompanionapp.network.SessionManager;
+
 import java.util.concurrent.Executor;
 
 public class SplashActivity extends AppCompatActivity {
 
-    // How long the splash screen stays visible before we decide where to go next
     private static final long SPLASH_DELAY_MS = 1800;
-
     private static final String PREFS_NAME = "campus_companion_prefs";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
+    private static final String KEY_USER_ROLE = "user_role";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -33,6 +34,22 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         animateLoadingDots();
+
+        View btnSignUp = findViewById(R.id.btnSignUp);
+        if (btnSignUp != null) {
+            btnSignUp.setOnClickListener(v -> {
+                handler.removeCallbacksAndMessages(null);
+                startActivity(new Intent(SplashActivity.this, RegisterActivity.class));
+            });
+        }
+
+        View btnSignIn = findViewById(R.id.btnSignIn);
+        if (btnSignIn != null) {
+            btnSignIn.setOnClickListener(v -> {
+                handler.removeCallbacksAndMessages(null);
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            });
+        }
 
         handler.postDelayed(this::decideNextScreen, SPLASH_DELAY_MS);
     }
@@ -48,6 +65,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void bounce(View dot, long startDelay) {
+        if (dot == null) return;
         ObjectAnimator animator = ObjectAnimator.ofFloat(dot, "translationY", 0f, -16f);
         animator.setDuration(300);
         animator.setStartDelay(startDelay);
@@ -57,11 +75,10 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void decideNextScreen() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false);
+        boolean isLoggedIn = SessionManager.getInstance(this).isLoggedIn();
 
         if (!isLoggedIn) {
-            goToLogin();
+            // Stay on splash screen with interactive SIGN UP / SIGN IN buttons
             return;
         }
 
@@ -76,7 +93,7 @@ public class SplashActivity extends AppCompatActivity {
         );
 
         if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
-            goToMain();
+            goToDashboard();
             return;
         }
 
@@ -86,7 +103,7 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
-                        goToMain();
+                        goToDashboard();
                     }
 
                     @Override
@@ -119,8 +136,16 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void goToMain() {
-        startActivity(new Intent(SplashActivity.this, StudentDashboardActivity.class));
+    private void goToDashboard() {
+        String role = SessionManager.getInstance(this).getUserRole();
+
+        Intent intent;
+        if ("lecturer".equalsIgnoreCase(role)) {
+            intent = new Intent(SplashActivity.this, LecturerDashboardActivity.class);
+        } else {
+            intent = new Intent(SplashActivity.this, MainActivity.class);
+        }
+        startActivity(intent);
         finish();
     }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_card_orange_announcement" />
+    <item android:width="3dp" android:gravity="left">
+        <shape android:shape="rectangle">
+            <solid android:color="#D85A30" />
+        </shape>
+    </item>
+</layer-list>

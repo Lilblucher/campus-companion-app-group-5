@@ -68,4 +68,74 @@
     <string name="error_code_invalid">Incorrect or expired code</string>
     <string name="error_new_password_required">Enter a new password</string>
     <string name="resend_code_toast">A new code has been sent (stub \u2014 no backend yet)</string>
+    <string name="search_hint">Search anything...</string>
+    <string name="welcome_back">Welcome back, %1$s</string>
+    <string name="quick_access">Quick access</string>
+    <string name="next_class">Next class</string>
+    <string name="announcements">Announcements</string>
+    <string name="sync_status">Sync status</string>
+    <string name="group_occupancy">Group occupancy</string>
+    <string name="programme_label_tile">Programme</string>
+    <string name="timetable_label_tile">Timetable</string>
+    <string name="synced_label">Synced</string>
+    <string name="todays_classes">Today\'s classes</string>
+    <string name="registration_label">Registration</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_group">My group</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Lecturer Dashboard Strings -->
+    <string name="lecturer_title">Lecturer Dashboard</string>
+    <string name="lecturer_role">Lecturer · Dept. of Computer Science</string>
+    <string name="generate_claim_code">Generate Claim Code</string>
+    <string name="generate_claim_code_desc">Create student claim code</string>
+    <string name="my_courses">My Courses</string>
+    <string name="my_courses_desc">3 Active courses</string>
+    <string name="lab_groups_tile">Lab Groups</string>
+    <string name="lab_groups_desc">Groups G01–G04</string>
+    <string name="post_announcement">Post Announcement</string>
+    <string name="post_announcement_desc">Broadcast to students</string>
+    <string name="upcoming_lecture">Upcoming Lecture</string>
+    <string name="lecturer_search_hint">Search courses, students, codes...</string>
+    <string name="claim_code_generated_title">Claim Code Generated</string>
+    <string name="copy_code">Copy Code</string>
+    <string name="code_copied_toast">Claim code copied to clipboard</string>
+
+    <!-- My Group Strings -->
+    <string name="my_group_title">My Lab Group</string>
+    <string name="group_details">Group Details</string>
+    <string name="lab_schedule">Lab Schedule</string>
+    <string name="assigned_workstation">Assigned Workstation</string>
+    <string name="group_members">Group Members</string>
+    <string name="lecturer_in_charge">Lecturer in Charge</string>
+
+    <!-- Profile Strings -->
+    <string name="profile_title">Profile</string>
+    <string name="personal_info">Personal Information</string>
+    <string name="year_of_study">Year of Study</string>
+    <string name="biometric_login">Biometric Sign-In</string>
+    <string name="dark_mode">Dark Theme</string>
+    <string name="notifications_pref">Push Notifications</string>
+    <string name="logout">Sign Out</string>
+    <string name="logout_confirmation">Are you sure you want to sign out?</string>
+
+    <!-- Notifications Strings -->
+    <string name="notifications_title">Alerts &amp; Notifications</string>
+    <string name="filter_all">All</string>
+    <string name="filter_announcements">Announcements</string>
+    <string name="filter_timetable">Timetable</string>
+
+    <!-- Settings Strings -->
+    <string name="settings_title">Settings</string>
+    <string name="account_settings">Account &amp; Security</string>
+    <string name="offline_sync">Offline Data Sync</string>
+    <string name="about_app">About Campus Companion</string>
+    <string name="app_version">Version 1.0.0 (Build 37)</string>
+
+    <!-- Registration Progress & Course Details -->
+    <string name="registration_progress_title">Registration Progress</string>
+    <string name="class_details_title">Class Details</string>
+    <string name="courses_title">My Courses</string>
 </resources>

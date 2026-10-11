@@ -35,7 +35,43 @@
             android:exported="false" />
 
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".StudentDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LecturerDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrationProgressActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ClassDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyGroupActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyCoursesActivity"
             android:exported="false" />
 
         <activity
