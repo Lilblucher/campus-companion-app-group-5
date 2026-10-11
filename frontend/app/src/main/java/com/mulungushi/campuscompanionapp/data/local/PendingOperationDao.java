@@ -12,24 +12,24 @@ import java.util.List;
 @Dao
 public interface PendingOperationDao {
 
+    // Fails on a genuine PK collision with different content instead of
+    // silently overwriting it — enforces "reject reuse of that id with
+    // different content" at the local layer too.
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    long insert(PendingOperation op);
+    void insert(PendingOperation operation);
 
     @Update
-    int update(PendingOperation op);
+    void update(PendingOperation operation);
 
-    @Query("SELECT * FROM pending_operations " +
-            "WHERE account_id = :accountId AND status = 'PENDING' " +
-            "ORDER BY created_at ASC")
+    @Query("SELECT * FROM pending_operations WHERE operationId = :operationId LIMIT 1")
+    PendingOperation findByOperationId(String operationId);
+
+    @Query("DELETE FROM pending_operations WHERE operationId = :operationId")
+    void deleteById(String operationId);
+
+    @Query("SELECT * FROM pending_operations WHERE accountId = :accountId AND status = 'PENDING' ORDER BY sequence ASC")
     List<PendingOperation> pendingForAccount(String accountId);
 
-    @Query("SELECT COUNT(*) FROM pending_operations " +
-            "WHERE account_id = :accountId AND status = 'PENDING'")
+    @Query("SELECT COUNT(*) FROM pending_operations WHERE accountId = :accountId AND status = 'PENDING'")
     LiveData<Integer> observePendingCount(String accountId);
-
-    @Query("SELECT * FROM pending_operations WHERE operation_id = :opId LIMIT 1")
-    PendingOperation findByOperationId(String opId);
-
-    @Query("DELETE FROM pending_operations WHERE operation_id = :opId")
-    int deleteById(String opId);
 }

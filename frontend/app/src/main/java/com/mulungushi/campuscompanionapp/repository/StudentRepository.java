@@ -8,6 +8,7 @@ import com.mulungushi.campuscompanionapp.data.local.AppDatabase;
 import com.mulungushi.campuscompanionapp.data.local.PendingOperation;
 import com.mulungushi.campuscompanionapp.data.local.Student;
 import com.mulungushi.campuscompanionapp.data.local.StudentDao;
+import com.mulungushi.campuscompanionapp.data.local.SyncStatus;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -51,14 +52,14 @@ public class StudentRepository {
     }
 
     public void saveOfflineEdit(Student student, PendingOperation op, Runnable onComplete) {
-        student.syncStatus = "PENDING";
+        student.syncStatus = SyncStatus.PENDING;
         executor.execute(() -> {
             db.saveOfflineEdit(student, op);
             if (onComplete != null) onComplete.run();
         });
     }
 
-    public void updateSyncStatus(String studentId, String status, Runnable onComplete) {
+    public void updateSyncStatus(String studentId, SyncStatus status, Runnable onComplete) {
         executor.execute(() -> {
             studentDao.updateSyncStatus(studentId, status);
             if (onComplete != null) onComplete.run();
@@ -75,7 +76,7 @@ public class StudentRepository {
         return studentDao.observeByGroup(group);
     }
 
-    public LiveData<List<Student>> observeByStatus(String status) {
+    public LiveData<List<Student>> observeByStatus(SyncStatus status) {
         return studentDao.observeByStatus(status);
     }
 
