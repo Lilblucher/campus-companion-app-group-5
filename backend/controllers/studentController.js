@@ -4,6 +4,7 @@
 // destructure with: const [rows] = await db.query(...)
 
 const db = require('../config/db');
+const { notifyAllLecturers } = require('../utils/notify');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?\d{7,15}$/; // same rule as register
@@ -177,7 +178,7 @@ async function requestGroupChange(req, res) {
     await conn.beginTransaction();
 
     const [studentRows] = await conn.query(
-      'SELECT lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
+      'SELECT lab_group_id, name, student_number FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
       [req.user.student_id]
     );
     if (studentRows.length === 0) {
@@ -194,7 +195,7 @@ async function requestGroupChange(req, res) {
 
     // 3 + 4. group exists, and has a free place
     const [groupRows] = await conn.query(
-      'SELECT group_id, places_left FROM v_group_summary WHERE group_id = ?',
+      'SELECT group_id, group_name, places_left FROM v_group_summary WHERE group_id = ?',
       [requestedId]
     );
     if (groupRows.length === 0) {
@@ -225,9 +226,13 @@ async function requestGroupChange(req, res) {
       [req.user.student_id, currentGroup, requestedId, reason]
     );
 
-    await conn.commit();
+    // Phase 3: notify lecturers in the SAME transaction, so a rolled-back
+    // request never leaves a stray notification behind.
+    await notifyAllLecturers(conn, 'CHANGE_REQUEST_RECEIVED',
+      'New group change request',
+      `${studentRows[0].name} (${studentRows[0].student_number}) requested to join ${groupRows[0].group_name}.`);
 
-    // TODO(Phase 3): notify lecturer CHANGE_REQUEST_RECEIVED
+    await conn.commit();
 
     return res.status(201).json({
       request_id: result.insertId,

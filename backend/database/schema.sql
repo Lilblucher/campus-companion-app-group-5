@@ -290,6 +290,25 @@ CREATE TABLE IF NOT EXISTS password_resets (
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_email (email)
 );
+-- -------------------------------------------------------------
+-- 9. notifications  (Phase 3 — in-app notifications)
+--    Recipient is an account_id (BIGINT, matching accounts.account_id).
+-- -------------------------------------------------------------
+CREATE TABLE notifications (
+  notification_id  BIGINT        NOT NULL AUTO_INCREMENT,
+  account_id       BIGINT        NOT NULL,
+  type             VARCHAR(50)   NOT NULL,
+  title            VARCHAR(100)  NOT NULL,
+  body             VARCHAR(255)  NOT NULL,
+  is_read          TINYINT(1)    NOT NULL DEFAULT 0,
+  created_at       TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (notification_id),
+  KEY idx_notif_account (account_id, is_read),
+  CONSTRAINT fk_notif_account
+    FOREIGN KEY (account_id) REFERENCES accounts (account_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- =============================================================
 -- End of schema.sql
 -- ==============================================================================================

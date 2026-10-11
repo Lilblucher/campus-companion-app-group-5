@@ -16,6 +16,7 @@
 // db.getConnection() gives a mysql2 promise connection; conn.query resolves to [rows, fields].
 
 const db = require('../config/db');
+const { notifyAllLecturers } = require('../utils/notify');
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const OP_TYPES = ['create', 'update', 'delete', 'assign_group', 'transfer_group'];
@@ -135,7 +136,7 @@ async function handleTransferGroup(conn, user, payload) {
 
   // Lock the student row so two syncs can't both pass the "no pending request" check
   const [studentRows] = await conn.query(
-    'SELECT lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
+    'SELECT lab_group_id, name, student_number FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
     [user.student_id]
   );
   if (studentRows.length === 0) return failed('STUDENT_NOT_FOUND', 'Student not found');
@@ -146,7 +147,7 @@ async function handleTransferGroup(conn, user, payload) {
   }
 
   const [groupRows] = await conn.query(
-    'SELECT group_id, places_left FROM v_group_summary WHERE group_id = ?',
+    'SELECT group_id, group_name, places_left FROM v_group_summary WHERE group_id = ?',
     [requestedId]
   );
   if (groupRows.length === 0) return failed('GROUP_NOT_FOUND', 'requested group does not exist');
@@ -168,7 +169,11 @@ async function handleTransferGroup(conn, user, payload) {
     [user.student_id, currentGroup, requestedId, reason]
   );
 
-  // TODO(Phase 3): notify lecturer CHANGE_REQUEST_RECEIVED
+  // Phase 3: notify lecturers inside push()'s transaction (conn), so a
+  // rolled-back sync op never leaves a stray notification.
+  await notifyAllLecturers(conn, 'CHANGE_REQUEST_RECEIVED',
+    'New group change request',
+    `${studentRows[0].name} (${studentRows[0].student_number}) requested to join ${groupRows[0].group_name}.`);
 
   return synced({ request_id: result.insertId, requested_group_id: requestedId, status: 'pending' });
 }

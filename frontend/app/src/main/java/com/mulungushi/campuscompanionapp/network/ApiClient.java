@@ -10,12 +10,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-<<<<<<< Updated upstream
-    private static final String BASE_URL = "http://169.58.92.104:3001/";
-=======
 
-    private static final String BASE_URL = "http://169.58.92.104:3000/";
->>>>>>> Stashed changes
+    private static final String BASE_URL = "http://169.58.92.104:3001/";
+
+    private static final String BASE_URL = "http://169.58.92.104:3001/";
+
     private static Retrofit retrofit;
 
     public static synchronized Retrofit getClient(Context context) {

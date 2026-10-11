@@ -4,10 +4,11 @@ const router = express.Router();
 
 const  {login, register, logout} = require("../controllers/authController");
 
-const { forgotPassword, resetPassword } = require('../controllers/passwordController');
+const { forgotPassword, verifyResetCode, resetPassword } = require('../controllers/passwordController');
 const { forgotLimiter, resetLimiter } = require('../middleware/rateLimit');
 
 router.post('/forgot-password', forgotLimiter, forgotPassword);
+router.post('/verify-reset-code', resetLimiter, verifyResetCode);
 router.post('/reset-password', resetLimiter, resetPassword);
 
 
