@@ -17,6 +17,7 @@ const groupRoutes = require("./routes/groups");
 */
 // ── App setup ──────────────────────────────────────────────────
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // ── Global middleware ──────────────────────────────────────────
@@ -64,8 +65,6 @@ app.get("/health", (_req, res) => {
 //  /api/sync      → offline sync endpoint (protected)
 
 app.use("/api/auth", authRoutes);
-app.set('trust proxy', 1);
-
 app.use("/api/students", studentRoutes);
 app.use("/api/sync", syncRoutes);
 /*
@@ -107,7 +106,6 @@ db.getConnection()
       logger.info(`Health check  -> http://localhost:${PORT}/health`);
       logger.info(`Auth          -> http://localhost:${PORT}/api/auth`);
       logger.info(`Students      -> http://localhost:${PORT}/api/students`);
-      logger.info(`Groups        -> http://localhost:${PORT}/api/groups`);
       logger.info(`Sync          -> http://localhost:${PORT}/api/sync`);
     });
   })

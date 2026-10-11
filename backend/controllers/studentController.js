@@ -168,50 +168,64 @@ async function requestGroupChange(req, res) {
     reason = body.reason.trim() || null;
   }
 
+  // Run in a transaction and lock the student row up front. Without the lock,
+  // two simultaneous requests can both pass the "no pending request" check
+  // below and each insert a row (TOCTOU race). Mirrors syncController's
+  // handleTransferGroup, which already does this.
+  const conn = await db.getConnection();
   try {
-    const [studentRows] = await db.query(
-      'SELECT lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0',
+    await conn.beginTransaction();
+
+    const [studentRows] = await conn.query(
+      'SELECT lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
       [req.user.student_id]
     );
     if (studentRows.length === 0) {
+      await conn.rollback();
       return res.status(404).json({ error: 'Student not found' });
     }
     const currentGroup = studentRows[0].lab_group_id; // may be null
 
     // 2. not the group they are already in
     if (currentGroup !== null && currentGroup === requestedId) {
+      await conn.rollback();
       return res.status(400).json({ error: 'You are already in that group' });
     }
 
     // 3 + 4. group exists, and has a free place
-    const [groupRows] = await db.query(
+    const [groupRows] = await conn.query(
       'SELECT group_id, places_left FROM v_group_summary WHERE group_id = ?',
       [requestedId]
     );
     if (groupRows.length === 0) {
+      await conn.rollback();
       return res.status(400).json({ error: 'requested group does not exist' });
     }
     if (groupRows[0].places_left <= 0) {
+      await conn.rollback();
       return res.status(409).json({ error: 'requested group is full' });
     }
 
     // 5. no other pending request
-    const [pending] = await db.query(
+    const [pending] = await conn.query(
       `SELECT request_id FROM group_change_requests
         WHERE student_id = ? AND status = 'pending' LIMIT 1`,
       [req.user.student_id]
     );
     if (pending.length > 0) {
+      await conn.rollback();
       return res.status(409).json({ error: 'You already have a pending group change request' });
     }
 
     // Real column names in schema.sql: current_group, requested_group
-    const [result] = await db.query(
+    const [result] = await conn.query(
       `INSERT INTO group_change_requests
          (student_id, current_group, requested_group, reason, status)
        VALUES (?, ?, ?, ?, 'pending')`,
       [req.user.student_id, currentGroup, requestedId, reason]
     );
+
+    await conn.commit();
 
     // TODO(Phase 3): notify lecturer CHANGE_REQUEST_RECEIVED
 
@@ -221,8 +235,11 @@ async function requestGroupChange(req, res) {
       status: 'pending',
     });
   } catch (err) {
+    try { await conn.rollback(); } catch (_) { /* ignore */ }
     console.error('requestGroupChange error:', err);
     return res.status(500).json({ error: 'Failed to submit request' });
+  } finally {
+    conn.release();
   }
 }
 

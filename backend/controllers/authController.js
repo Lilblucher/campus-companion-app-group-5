@@ -33,11 +33,15 @@ async function register(req, res) {
   const { name, student_number, programme_code, email, phone, claim_code, password } = req.body;
 
   // --- basic validation (server is the source of truth; app also validates) ---
-  if (!name || name.trim().length < 2 || name.trim().length > 100) {
+  // Type-guard every field: a JSON number (e.g. "name": 123) would make
+  // `.trim()` throw, and an unguarded throw here crashes the whole process
+  // (Node exits on the unhandled rejection), not just this request.
+  if (typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 100) {
     return res.status(400).json({ error: 'name must be 2-100 characters' });
   }
 
-  const trimmedNumber = (student_number || '').trim();
+  // Must be a string: a JSON number can't preserve leading zeros (schema is CHAR(9)).
+  const trimmedNumber = typeof student_number === 'string' ? student_number.trim() : '';
   if (!/^\d{9}$/.test(trimmedNumber)) {
     return res.status(400).json({ error: 'student_number must be exactly 9 digits' });
   }
@@ -46,12 +50,12 @@ async function register(req, res) {
     return res.status(400).json({ error: 'programme_code must be CS, IT or DS' });
   }
 
-  const trimmedEmail = (email || '').trim().toLowerCase();
+  const trimmedEmail = (typeof email === 'string' ? email : '').trim().toLowerCase();
   if (!EMAIL_RE.test(trimmedEmail)) {
     return res.status(400).json({ error: 'email must be a valid email address' });
   }
 
-  const trimmedPhone = (phone || '').trim();
+  const trimmedPhone = (typeof phone === 'string' ? phone : '').trim();
   if (!PHONE_RE.test(trimmedPhone)) {
     return res.status(400).json({ error: 'phone must be 7-15 digits, optionally starting with +' });
   }
@@ -65,7 +69,7 @@ async function register(req, res) {
   }
   const hasClaimCode = trimmedClaimCode !== null;
 
-  if (!password || password.length < 8) {
+  if (typeof password !== 'string' || password.length < 8) {
     return res.status(400).json({ error: 'password must be at least 8 characters' });
   }
 
@@ -134,40 +138,41 @@ async function register(req, res) {
 // ---------------------------------------------------------------------------
 async function login(req, res) {
   const { student_number, username, password } = req.body;
+  // Normalise to strings up front so a numeric field can't crash `.trim()`.
+  const sn = typeof student_number === 'string' ? student_number.trim() : '';
+  const un = typeof username === 'string' ? username.trim() : '';
 
-  if (!password || (!student_number && !username)) {
+  if (typeof password !== 'string' || !password || (!sn && !un)) {
     return res.status(400).json({ error: 'Missing credentials' });
   }
 
   try {
     let account;
-    console.log('LOGIN ATTEMPT:', { student_number, username, password });
 
-    if (student_number) {
+    if (sn) {
       const [rows] = await db.query(
         `SELECT a.account_id, a.password_hash, a.role, s.student_id, s.name
          FROM accounts a
          JOIN students s ON s.student_id = a.student_id
          WHERE s.student_number = ? AND s.is_deleted = 0 AND a.is_locked = 0`,
-        [student_number.trim()]
+        [sn]
       );
       account = rows[0];
     } else {
-  const [rows] = await db.query(
-    `SELECT account_id, password_hash, role, username
-     FROM accounts
-     WHERE username = ? AND role = 'lecturer' AND is_locked = 0`,
-    [username.trim()]
-  );
-  account = rows[0];
-  console.log('LECTURER QUERY RESULT:', rows);
-}
+      const [rows] = await db.query(
+        `SELECT account_id, password_hash, role, username
+         FROM accounts
+         WHERE username = ? AND role = 'lecturer' AND is_locked = 0`,
+        [un]
+      );
+      account = rows[0];
+    }
+
     if (!account) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const match = await bcrypt.compare(password, account.password_hash);
-    console.log('PASSWORD MATCH RESULT:', match);
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
