@@ -5,173 +5,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#022F77"
+    android:background="@color/cc_page_bg"
     tools:context=".MyCoursesActivity">
 
-    <!-- Top Dark Navy Header Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/topHeaderSection"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="36dp"
-        android:paddingBottom="24dp"
-        android:background="#022F77"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
 
         <TextView
             android:id="@+id/tvHeaderTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/courses_title"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintEnd_toEndOf="parent" />
+            style="@style/CcAppBarTitle"
+            android:layout_marginStart="4dp"
+            android:text="@string/courses_title" />
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/appBarDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection" />
 
-    <!-- Curved Light Content Sheet Container -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_curved_light_sheet"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/appBarDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:id="@+id/containerCourses"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="24dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/containerCourses"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <!-- Course 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ICT 361 · Software Engineering"
-                        android:textColor="#022F77"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Lecturer: Dr. Mulenga · 3 Credits · Lab Group G01"
-                        android:textColor="#64748B"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/poppins" />
-
+            <LinearLayout android:id="@+id/cardCourse1" style="@style/CcCourseCard">
+                <ImageView style="@style/CcCourseIcon" android:background="@drawable/cc_iconchip_blue" android:src="@drawable/ic_ms_code" app:tint="@color/cc_accent_blue" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcCourseText">
+                    <TextView style="@style/CcCourseTitle" android:text="ICT 361 · Software Engineering" />
+                    <TextView style="@style/CcCourseMeta" android:text="Dr. Mulenga · 3 Credits · Computer Lab 2" />
                 </LinearLayout>
-
-                <!-- Course 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CSC 311 · Algorithms &amp; Data Structures"
-                        android:textColor="#022F77"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Lecturer: Prof. Banda · 4 Credits · Lecture Hall 1"
-                        android:textColor="#64748B"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/poppins" />
-
-                </LinearLayout>
-
-                <!-- Course 3 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="DS 201 · Introduction to Data Science"
-                        android:textColor="#022F77"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Lecturer: Dr. Phiri · 3 Credits · Lab 3"
-                        android:textColor="#64748B"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/poppins" />
-
-                </LinearLayout>
-
+                <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout android:id="@+id/cardCourse2" style="@style/CcCourseCard">
+                <ImageView style="@style/CcCourseIcon" android:background="@drawable/cc_iconchip_amber" android:src="@drawable/ic_ms_account_tree" app:tint="@color/cc_warning_strong" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcCourseText">
+                    <TextView style="@style/CcCourseTitle" android:text="CSC 311 · Algorithms &amp; Data Structures" />
+                    <TextView style="@style/CcCourseMeta" android:text="Prof. Banda · 4 Credits · Lecture Hall 1" />
+                </LinearLayout>
+                <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
+            </LinearLayout>
 
+            <LinearLayout android:id="@+id/cardCourse3" style="@style/CcCourseCard">
+                <ImageView style="@style/CcCourseIcon" android:background="@drawable/cc_iconchip_green" android:src="@drawable/ic_ms_query_stats" app:tint="@color/cc_success" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcCourseText">
+                    <TextView style="@style/CcCourseTitle" android:text="DS 201 · Introduction to Data Science" />
+                    <TextView style="@style/CcCourseMeta" android:text="Dr. Phiri · 3 Credits · Lab 3" />
+                </LinearLayout>
+                <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
+            </LinearLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

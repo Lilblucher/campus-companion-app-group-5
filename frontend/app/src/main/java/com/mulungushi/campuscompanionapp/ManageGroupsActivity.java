@@ -1,108 +1,93 @@
 package com.mulungushi.campuscompanionapp;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.GroupsResponse;
+import com.mulungushi.campuscompanionapp.network.RequestsResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ManageGroupsActivity extends AppCompatActivity {
 
-    public static class GroupItem {
-        public String groupCode;
-        public String department;
-        public int currentMembers;
-        public int maxMembers;
-
-        public GroupItem(String groupCode, String department, int currentMembers, int maxMembers) {
-            this.groupCode = groupCode;
-            this.department = department;
-            this.currentMembers = currentMembers;
-            this.maxMembers = maxMembers;
-        }
-
-        public String getCapacityText() {
-            return currentMembers + "/" + maxMembers;
-        }
-    }
-
-    private final List<GroupItem> allGroups = new ArrayList<>();
-    private final List<GroupItem> filteredGroups = new ArrayList<>();
+    private final List<GroupsResponse.Group> groups = new ArrayList<>();
     private GroupCardAdapter adapter;
+    private ApiService api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_groups);
 
-        initSampleData();
+        api = ApiClient.getClient(this).create(ApiService.class);
 
-        TextView btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        EditText etSearchGroups = findViewById(R.id.etSearchGroups);
+        View btnInbox = findViewById(R.id.btnInbox);
+        if (btnInbox != null) btnInbox.setOnClickListener(v -> startActivity(new Intent(this, PendingRequestsActivity.class)));
+
+        View btnAssign = findViewById(R.id.btnCreateGroup);
+        if (btnAssign != null) btnAssign.setOnClickListener(v -> startActivity(new Intent(this, LecturerStudentsActivity.class)));
+
         ListView listView = findViewById(R.id.listViewGroups);
-        Button btnCreateGroup = findViewById(R.id.btnCreateGroup);
-
         adapter = new GroupCardAdapter();
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener((parent, view, position, id) ->
+                startActivity(new Intent(this, LecturerStudentsActivity.class)));
 
-        applyFilter("");
+        loadGroups();
+        loadPendingBadge();
+    }
 
-        etSearchGroups.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                applyFilter(s.toString().trim());
+    private void loadGroups() {
+        api.getGroups().enqueue(new Callback<GroupsResponse>() {
+            @Override public void onResponse(Call<GroupsResponse> c, Response<GroupsResponse> r) {
+                groups.clear();
+                if (r.isSuccessful() && r.body() != null && r.body().groups != null) groups.addAll(r.body().groups);
+                adapter.notifyDataSetChanged();
             }
-            @Override public void afterTextChanged(Editable s) {}
-        });
-
-        btnCreateGroup.setOnClickListener(v ->
-            Toast.makeText(this, "Create Group dialog opened", Toast.LENGTH_SHORT).show()
-        );
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            GroupItem selected = filteredGroups.get(position);
-            Toast.makeText(this, "Managing Group: " + selected.groupCode, Toast.LENGTH_SHORT).show();
+            @Override public void onFailure(Call<GroupsResponse> c, Throwable t) {
+                Toast.makeText(ManageGroupsActivity.this, "Couldn't load groups right now", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    private void initSampleData() {
-        allGroups.add(new GroupItem("CS-2024-1", "Computer Science", 24, 30));
-        allGroups.add(new GroupItem("CS-2024-2", "Computer Science", 18, 30));
-        allGroups.add(new GroupItem("IT-2024-1", "Information Technology", 20, 30));
-        allGroups.add(new GroupItem("SE-2024-1", "Software Engineering", 28, 30));
-        allGroups.add(new GroupItem("IS-2024-1", "Information Systems", 15, 25));
-    }
-
-    private void applyFilter(String query) {
-        filteredGroups.clear();
-        String lowerQuery = query.toLowerCase();
-        for (GroupItem item : allGroups) {
-            if (lowerQuery.isEmpty()
-                    || item.groupCode.toLowerCase().contains(lowerQuery)
-                    || item.department.toLowerCase().contains(lowerQuery)) {
-                filteredGroups.add(item);
+    private void loadPendingBadge() {
+        api.getRequests("pending").enqueue(new Callback<RequestsResponse>() {
+            @Override public void onResponse(Call<RequestsResponse> c, Response<RequestsResponse> r) {
+                int n = (r.isSuccessful() && r.body() != null && r.body().requests != null) ? r.body().requests.size() : 0;
+                TextView badge = findViewById(R.id.tvInboxBadge);
+                if (badge != null) {
+                    badge.setText(String.valueOf(n));
+                    badge.setVisibility(n > 0 ? View.VISIBLE : View.GONE);
+                }
             }
-        }
-        adapter.notifyDataSetChanged();
+            @Override public void onFailure(Call<RequestsResponse> c, Throwable t) {}
+        });
     }
 
     private class GroupCardAdapter extends BaseAdapter {
-        @Override public int getCount() { return filteredGroups.size(); }
-        @Override public Object getItem(int position) { return filteredGroups.get(position); }
+        @Override public int getCount() { return groups.size(); }
+        @Override public Object getItem(int position) { return groups.get(position); }
         @Override public long getItemId(int position) { return position; }
 
         @Override
@@ -112,15 +97,28 @@ public class ManageGroupsActivity extends AppCompatActivity {
                         .inflate(R.layout.item_group_card, parent, false);
             }
 
-            GroupItem item = filteredGroups.get(position);
+            GroupsResponse.Group g = groups.get(position);
 
-            TextView tvGroupCodeBadge = convertView.findViewById(R.id.tvGroupCodeBadge);
-            TextView tvGroupDepartment = convertView.findViewById(R.id.tvGroupDepartment);
-            TextView tvMemberCapacity = convertView.findViewById(R.id.tvMemberCapacity);
+            TextView name = convertView.findViewById(R.id.tvGroupCodeBadge);
+            TextView cap = convertView.findViewById(R.id.tvMemberCapacity);
+            TextView seats = convertView.findViewById(R.id.tvGroupDepartment);
+            LinearProgressIndicator bar = convertView.findViewById(R.id.progressGroup);
 
-            tvGroupCodeBadge.setText(item.groupCode);
-            tvGroupDepartment.setText(item.department);
-            tvMemberCapacity.setText(item.getCapacityText());
+            name.setText(g.group_name);
+            cap.setText(g.active_members + "/" + g.max_members);
+            bar.setMax(g.max_members);
+            bar.setProgressCompat(g.active_members, false);
+
+            int left = g.places_left;
+            int colorRes;
+            if (left <= 0) {
+                seats.setText("Full");
+                colorRes = R.color.cc_crimson;
+            } else {
+                seats.setText(left + (left == 1 ? " seat left" : " seats left"));
+                colorRes = g.active_members >= 12 ? R.color.cc_warning_strong : R.color.cc_accent_blue;
+            }
+            bar.setIndicatorColor(ContextCompat.getColor(ManageGroupsActivity.this, colorRes));
 
             return convertView;
         }

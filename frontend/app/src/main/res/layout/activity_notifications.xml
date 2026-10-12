@@ -5,489 +5,105 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#022F77"
+    android:background="@color/cc_page_bg"
     tools:context=".NotificationsActivity">
 
-    <!-- Top Dark Navy Header Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Top app bar -->
+    <LinearLayout
         android:id="@+id/topHeaderSection"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="36dp"
-        android:paddingBottom="24dp"
-        android:background="#022F77"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
 
         <TextView
-            android:id="@+id/tvHeaderTitle"
-            android:layout_width="0dp"
+            style="@style/CcAppBarTitle"
+            android:layout_marginStart="4dp"
+            android:text="@string/notifications_title" />
+    </LinearLayout>
+
+    <!-- Filter chips -->
+    <HorizontalScrollView
+        android:id="@+id/chipRow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/cc_surface"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="12dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/notifications_title"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:orientation="horizontal">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView android:id="@+id/chipAll" style="@style/CcFilterChip" android:text="All Alerts" />
+            <TextView android:id="@+id/chipAnnouncements" style="@style/CcFilterChip" android:layout_marginStart="8dp" android:text="Announcements" />
+            <TextView android:id="@+id/chipTimetable" style="@style/CcFilterChip" android:layout_marginStart="8dp" android:text="Timetable Updates" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
-    <!-- Curved Light Content Sheet Container -->
+    <View
+        android:id="@+id/appBarDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong"
+        app:layout_constraintTop_toBottomOf="@id/chipRow" />
+
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_curved_light_sheet"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/appBarDivider"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="24dp">
+            android:layout_height="wrap_content">
 
-            <!-- Filter Chips Row -->
-            <HorizontalScrollView
-                android:id="@+id/chipScrollView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+            <include
+                android:id="@+id/skeletonList"
+                layout="@layout/skeleton_list" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:background="@drawable/bg_chip_selected"
-                        android:text="All Alerts"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:background="@drawable/bg_chip_unselected"
-                        android:text="Announcements"
-                        android:textColor="#022F77"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/poppins" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:background="@drawable/bg_chip_unselected"
-                        android:text="Timetable Updates"
-                        android:textColor="#022F77"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/poppins" />
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            <!-- Notifications Container -->
             <LinearLayout
                 android:id="@+id/containerAlerts"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/chipScrollView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <!-- Alert 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_chip_purple"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_nav_bell"
-                        app:tint="#FFFFFF"
-                        android:contentDescription="@null" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="ICT 361 Lab Group Instructions"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Dr. Mulenga posted the Software Engineering lab assignment details for Group G01."
-                            android:textColor="#64748B"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Today, 09:15 AM"
-                            android:textColor="#E51937"
-                            android:textSize="10sp"
-                            android:fontFamily="@font/poppins" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Alert 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_chip_amber"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_calendar_event"
-                        app:tint="#FFFFFF"
-                        android:contentDescription="@null" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Venue Change: CSC 311"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Today's 14:00 PM Algorithms class moved from Block A to Computer Lab 1."
-                            android:textColor="#64748B"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Yesterday, 16:30 PM"
-                            android:textColor="#E51937"
-                            android:textSize="10sp"
-                            android:fontFamily="@font/poppins" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Alert 3 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:background="@drawable/bg_button_rounded"
-                    android:elevation="3dp">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_icon_chip_green"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_notebook"
-                        app:tint="#FFFFFF"
-                        android:contentDescription="@null" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Registration Verification Open"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Please verify your course registration and lab group allocations before September 25."
-                            android:textColor="#64748B"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Sep 18, 2026"
-                            android:textColor="#E51937"
-                            android:textSize="10sp"
-                            android:fontFamily="@font/poppins" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                android:padding="16dp"
+                android:visibility="invisible" />
+        </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Fixed Bottom Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/bottomNav"
+    <include
+        layout="@layout/cc_bottom_nav_student"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="72dp"
-        android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:elevation="12dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="28dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:id="@+id/navDashboard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_home"
-                android:contentDescription="@string/nav_dashboard" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_dashboard"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_group"
-                android:contentDescription="@string/nav_group" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_group"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navAlerts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_bell"
-                android:contentDescription="@string/nav_alerts" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_alerts"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navProfile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_profile"
-                android:contentDescription="@string/nav_profile" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_profile"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navSettings"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_settings"
-                android:contentDescription="@string/nav_settings" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_settings"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

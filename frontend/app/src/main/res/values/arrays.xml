@@ -30,4 +30,13 @@
         <item>Lab Group 14</item>
         <item>Lab Group 15</item>
     </string-array>
+
+    <!-- Lab-group scheme from the ICT361 brief / redesign handoff (G01–G04 + Unassigned). -->
+    <string-array name="lab_group_codes">
+        <item>G01</item>
+        <item>G02</item>
+        <item>G03</item>
+        <item>G04</item>
+        <item>Unassigned</item>
+    </string-array>
 </resources>

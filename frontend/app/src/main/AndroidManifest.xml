@@ -77,6 +77,36 @@
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".RemindersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TimetableActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LecturerStudentsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PendingRequestsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageGroupsActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

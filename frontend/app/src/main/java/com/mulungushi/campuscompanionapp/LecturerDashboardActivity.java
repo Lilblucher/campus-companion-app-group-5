@@ -15,10 +15,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.RequestsResponse;
+import com.mulungushi.campuscompanionapp.network.RosterResponse;
+import com.mulungushi.campuscompanionapp.network.SessionManager;
+
 import java.util.Calendar;
 
 import java.util.Locale;
 import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LecturerDashboardActivity extends AppCompatActivity {
 
@@ -36,6 +46,36 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         setupPullToRefresh();
         setupQuickAccess();
         setupBottomNav();
+        loadStats();
+    }
+
+    /** Populate the 3-up stats row from the lecturer endpoints. */
+    private void loadStats() {
+        ApiService api = ApiClient.getClient(this).create(ApiService.class);
+        api.getRoster(null, null, null, null, 1, 0).enqueue(new Callback<RosterResponse>() {
+            @Override public void onResponse(Call<RosterResponse> c, Response<RosterResponse> r) {
+                if (r.isSuccessful() && r.body() != null) setStat(R.id.tvStatStudents, r.body().total);
+            }
+            @Override public void onFailure(Call<RosterResponse> c, Throwable t) {}
+        });
+        api.getRoster(null, null, null, true, 1, 0).enqueue(new Callback<RosterResponse>() {
+            @Override public void onResponse(Call<RosterResponse> c, Response<RosterResponse> r) {
+                if (r.isSuccessful() && r.body() != null) setStat(R.id.tvStatUnassigned, r.body().total);
+            }
+            @Override public void onFailure(Call<RosterResponse> c, Throwable t) {}
+        });
+        api.getRequests("pending").enqueue(new Callback<RequestsResponse>() {
+            @Override public void onResponse(Call<RequestsResponse> c, Response<RequestsResponse> r) {
+                if (r.isSuccessful() && r.body() != null && r.body().requests != null)
+                    setStat(R.id.tvStatRequests, r.body().requests.size());
+            }
+            @Override public void onFailure(Call<RequestsResponse> c, Throwable t) {}
+        });
+    }
+
+    private void setStat(int id, int value) {
+        View v = findViewById(id);
+        if (v instanceof TextView) ((TextView) v).setText(String.valueOf(value));
     }
 
     private void initViews() {
@@ -54,11 +94,18 @@ public class LecturerDashboardActivity extends AppCompatActivity {
     }
 
     private void setupHeader() {
-        View tvWelcome = findViewById(R.id.tvWelcome);
+        String name = SessionManager.getInstance(this).getUserName();
+        if (name == null || name.trim().isEmpty()) name = "Dr. Mulenga";
 
-        if (tvWelcome instanceof TextView) {
-            String timeGreeting = getTimeOfDayGreeting();
-            ((TextView) tvWelcome).setText(timeGreeting + ", Dr. Mulenga");
+        View tvWelcome = findViewById(R.id.tvWelcome);
+        if (tvWelcome instanceof TextView) ((TextView) tvWelcome).setText(name);
+
+        View tvInitials = findViewById(R.id.tvAvatarInitials);
+        if (tvInitials instanceof TextView) {
+            String[] parts = name.trim().split("\\s+");
+            String s = parts[0].substring(0, 1);
+            if (parts.length > 1) s += parts[parts.length - 1].substring(0, 1);
+            ((TextView) tvInitials).setText(s.toUpperCase());
         }
     }
 
@@ -80,6 +127,7 @@ public class LecturerDashboardActivity extends AppCompatActivity {
             swipeRefreshLayout.setColorSchemeColors(0xFFE51937, 0xFF022F77);
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 setupHeader();
+                loadStats();
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(this, "Lecturer Dashboard updated", Toast.LENGTH_SHORT).show();
             });
@@ -92,16 +140,28 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         }
 
         if (tileMyCourses != null) {
-            tileMyCourses.setOnClickListener(v -> navigateInternal(MyCoursesActivity.class));
+            tileMyCourses.setOnClickListener(v -> navigateInternal(TimetableActivity.class));
         }
 
         if (tileLabGroups != null) {
-            tileLabGroups.setOnClickListener(v -> navigateInternal(MyGroupActivity.class));
+            tileLabGroups.setOnClickListener(v -> navigateInternal(ManageGroupsActivity.class));
         }
 
         if (tilePostAnnouncement != null) {
             tilePostAnnouncement.setOnClickListener(v -> showPostAnnouncementDialog());
         }
+
+        View btnBell = findViewById(R.id.btnBell);
+        if (btnBell != null) btnBell.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
+
+        View statRequests = findViewById(R.id.statRequestsCard);
+        if (statRequests != null) statRequests.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
+
+        View statUnassigned = findViewById(R.id.statUnassignedCard);
+        if (statUnassigned != null) statUnassigned.setOnClickListener(v -> navigateInternal(LecturerStudentsActivity.class));
+
+        View btnViewRecords = findViewById(R.id.btnViewRecords);
+        if (btnViewRecords != null) btnViewRecords.setOnClickListener(v -> navigateInternal(LecturerStudentsActivity.class));
     }
 
     private void showGenerateClaimCodeDialog() {
@@ -148,9 +208,9 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         }
 
         if (navDashboard != null) navDashboard.setOnClickListener(v -> selectNav(navDashboard));
-        if (navGroup != null) navGroup.setOnClickListener(v -> navigatePage(MyGroupActivity.class));
+        if (navGroup != null) navGroup.setOnClickListener(v -> navigatePage(LecturerStudentsActivity.class));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigatePage(ProfileActivity.class));
-        if (navAlerts != null) navAlerts.setOnClickListener(v -> navigatePage(NotificationsActivity.class));
+        if (navAlerts != null) navAlerts.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
         if (navSettings != null) navSettings.setOnClickListener(v -> navigatePage(SettingsActivity.class));
 
         selectNav(navDashboard);

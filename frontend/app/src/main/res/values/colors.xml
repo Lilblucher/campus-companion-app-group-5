@@ -20,4 +20,32 @@
     <color name="color_text_primary">#0F172A</color>
     <color name="color_text_secondary">#64748B</color>
     <color name="color_input_underline">#334155</color>
+
+    <!-- ===== Redesign design tokens (handoff) ===== -->
+    <color name="cc_navy">#022F77</color>
+    <color name="cc_crimson">#E51937</color>
+    <color name="cc_crimson_dark">#B30D25</color>
+    <color name="cc_accent_blue">#0457DD</color>
+    <color name="cc_light_blue">#E2ECF8</color>
+    <color name="cc_page_bg">#F4F7FC</color>
+    <color name="cc_surface">#FFFFFF</color>
+    <color name="cc_text_primary">#0F172A</color>
+    <color name="cc_text_secondary">#475569</color>
+    <color name="cc_text_muted">#64748B</color>
+    <color name="cc_border">#CBD5E1</color>
+    <color name="cc_divider">#F1F5F9</color>
+    <color name="cc_divider_strong">#E2E8F0</color>
+    <color name="cc_on_navy_muted">#C7D6F2</color>
+    <color name="cc_success">#15803D</color>
+    <color name="cc_success_bg">#DCFCE7</color>
+    <color name="cc_warning">#B45309</color>
+    <color name="cc_warning_strong">#D97706</color>
+    <color name="cc_warning_bg">#FEF3C7</color>
+    <color name="cc_unassigned_text">#92400E</color>
+    <color name="cc_error_tint">#FDE2E6</color>
+    <color name="cc_scrim">#800F172A</color>
+    <!-- skeleton blocks -->
+    <color name="cc_skeleton_block">#E2E8F0</color>
+    <color name="cc_skeleton_line">#EEF2F7</color>
+    <color name="cc_skeleton_hero">#DCE3EE</color>
 </resources>

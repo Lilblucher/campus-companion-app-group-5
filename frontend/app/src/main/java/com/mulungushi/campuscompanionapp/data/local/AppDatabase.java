@@ -11,8 +11,9 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
-        entities = {Student.class, PendingOperation.class, RegistrationDraft.class},
-        version = 2,
+        entities = {Student.class, PendingOperation.class, RegistrationDraft.class,
+                CachedReminder.class, CachedTimetable.class, CachedNotification.class},
+        version = 3,
         exportSchema = true
 )
 @TypeConverters(Converters.class)
@@ -21,6 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract StudentDao studentDao();
     public abstract PendingOperationDao pendingOperationDao();
     public abstract RegistrationDraftDao registrationDraftDao();
+    public abstract CacheDao cacheDao();
 
     private static volatile AppDatabase INSTANCE;
 
@@ -34,6 +36,17 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // v2 -> v3: add the offline read-caches. Non-destructive: only CREATEs new
+    // tables, so saved students / drafts / pending operations are untouched.
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS cached_reminders (reminder_id INTEGER NOT NULL, title TEXT, body TEXT, scope TEXT, creator_role TEXT, remind_at TEXT, created_at TEXT, cached_at INTEGER NOT NULL, PRIMARY KEY(reminder_id))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS cached_timetable (session_id INTEGER NOT NULL, course_code TEXT, title TEXT, group_name TEXT, day_of_week INTEGER NOT NULL, start_time TEXT, end_time TEXT, venue TEXT, room TEXT, cached_at INTEGER NOT NULL, PRIMARY KEY(session_id))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS cached_notifications (notification_id INTEGER NOT NULL, type TEXT, title TEXT, body TEXT, is_read INTEGER NOT NULL, created_at TEXT, cached_at INTEGER NOT NULL, PRIMARY KEY(notification_id))");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -42,7 +55,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     AppDatabase.class,
                                     "labgroup.db")
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             // Never use fallbackToDestructiveMigration() here: it would
                             // wipe saved offline work and pending operations, which the
                             // lab explicitly requires to survive a migration.

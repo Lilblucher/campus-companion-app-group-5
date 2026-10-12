@@ -5,258 +5,167 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#022F77"
+    android:background="@color/cc_page_bg"
     tools:context=".SettingsActivity">
 
-    <!-- Top Dark Navy Header Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/topHeaderSection"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="36dp"
-        android:paddingBottom="24dp"
-        android:background="#022F77"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/content_desc_back"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
 
         <TextView
-            android:id="@+id/tvHeaderTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/settings_title"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            app:layout_constraintTop_toTopOf="@id/btnBack"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintEnd_toEndOf="parent" />
+            style="@style/CcAppBarTitle"
+            android:layout_marginStart="4dp"
+            android:text="@string/settings_title" />
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/appBarDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection" />
 
-    <!-- Curved Light Content Sheet Container -->
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_curved_light_sheet"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/appBarDivider"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="24dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- Settings Options Card -->
+            <!-- Account & Security -->
+            <TextView style="@style/CcSectionTitle" android:text="@string/account_settings" />
+
             <LinearLayout
-                android:id="@+id/cardSettingsGroup"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:background="@drawable/bg_button_rounded"
-                android:elevation="3dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                android:background="@drawable/cc_card_bordered"
+                android:padding="6dp">
 
-                <!-- Biometric Switch Item -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@id/switchBiometrics"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/biometric_login"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Use fingerprint or face unlock to sign in"
-                            android:textColor="#64748B"
-                            android:textSize="11sp"
-                            android:fontFamily="@font/poppins" />
-
+                <!-- Biometric -->
+                <LinearLayout style="@style/CcSwitchRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_fingerprint" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcSwitchTitle" android:text="@string/biometric_login" />
+                        <TextView style="@style/CcSwitchSub" android:text="Use fingerprint or face unlock to sign in" />
                     </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchBiometrics" style="@style/CcSwitch" />
+                </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchBiometrics"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="#E51937"
-                        android:checked="true" />
+                <View style="@style/CcRowDivider" />
 
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="#E2ECF8" />
-
-                <!-- Notifications Switch Item -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@id/switchNotifications"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/notifications_pref"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Receive class updates and lecturer alerts"
-                            android:textColor="#64748B"
-                            android:textSize="11sp"
-                            android:fontFamily="@font/poppins" />
-
+                <!-- Push notifications -->
+                <LinearLayout style="@style/CcSwitchRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_notifications_active" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcSwitchTitle" android:text="@string/notifications_pref" />
+                        <TextView style="@style/CcSwitchSub" android:text="Receive class updates and lecturer alerts" />
                     </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchNotifications" style="@style/CcSwitch" />
+                </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchNotifications"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="#E51937"
-                        android:checked="true" />
+                <View style="@style/CcRowDivider" />
 
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="#E2ECF8" />
-
-                <!-- Offline Sync Switch Item -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@id/switchOfflineSync"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/offline_sync"
-                            android:textColor="#022F77"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Cache timetables and lab details for offline view"
-                            android:textColor="#64748B"
-                            android:textSize="11sp"
-                            android:fontFamily="@font/poppins" />
-
+                <!-- Dark theme -->
+                <LinearLayout style="@style/CcSwitchRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_dark_mode" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcSwitchTitle" android:text="@string/dark_mode" />
+                        <TextView style="@style/CcSwitchSub" android:text="Follow a darker colour scheme" />
                     </LinearLayout>
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchOfflineSync"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="#E51937"
-                        android:checked="true" />
-
-                </RelativeLayout>
-
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchDarkTheme" style="@style/CcSwitch" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- App Info Card -->
+            <!-- Offline Data Sync -->
+            <TextView style="@style/CcSectionTitle" android:layout_marginTop="20dp" android:text="@string/offline_sync" />
+
             <LinearLayout
-                android:id="@+id/cardAboutApp"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="6dp">
+
+                <LinearLayout style="@style/CcSwitchRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_cloud_sync" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcSwitchTitle" android:text="@string/offline_sync" />
+                        <TextView style="@style/CcSwitchSub" android:text="Cache timetables and lab details for offline view" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchOfflineSync" style="@style/CcSwitch" />
+                </LinearLayout>
+
+                <View style="@style/CcRowDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowSyncNow"
+                    style="@style/CcSwitchRow"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_sync" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcSwitchTitle" android:text="Sync now" />
+                        <TextView android:id="@+id/tvLastSync" style="@style/CcSwitchSub" android:text="Pull the latest data from the server" />
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_ms_chevron_right"
+                        app:tint="@color/cc_text_muted"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- About -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="20dp"
-                android:background="@drawable/bg_button_rounded"
-                android:elevation="3dp"
-                app:layout_constraintTop_toBottomOf="@id/cardSettingsGroup"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                android:background="@drawable/cc_card_bordered"
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_app"
-                    android:textColor="#022F77"
+                    android:textColor="@color/cc_text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:fontFamily="@font/poppins" />
@@ -266,186 +175,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="@string/app_version"
-                    android:textColor="#64748B"
+                    android:textColor="@color/cc_text_muted"
                     android:textSize="12sp"
                     android:fontFamily="@font/poppins" />
-
             </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Fixed Bottom Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/bottomNav"
+    <include
+        layout="@layout/cc_bottom_nav_student"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="72dp"
-        android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:elevation="12dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="28dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:id="@+id/navDashboard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_home"
-                android:contentDescription="@string/nav_dashboard" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_dashboard"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_group"
-                android:contentDescription="@string/nav_group" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_group"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navAlerts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_bell"
-                android:contentDescription="@string/nav_alerts" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_alerts"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navProfile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_profile"
-                android:contentDescription="@string/nav_profile" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_profile"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navSettings"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:tint="@color/nav_icon_tint"
-                android:src="@drawable/ic_nav_settings"
-                android:contentDescription="@string/nav_settings" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@string/nav_settings"
-                android:textColor="@color/nav_icon_tint"
-                android:textSize="10sp"
-                android:fontFamily="@font/poppins" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

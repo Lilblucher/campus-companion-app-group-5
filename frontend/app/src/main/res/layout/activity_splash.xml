@@ -6,40 +6,46 @@
     android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/cc_navy"
     tools:context=".SplashActivity">
 
-    <!-- Top White Section -->
+    <!-- Centred brand block -->
     <LinearLayout
-        android:id="@+id/topSplashSection"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/brandBlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="36dp"
-        android:paddingBottom="24dp"
-        android:background="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomSheet"
+        app:layout_constraintBottom_toTopOf="@id/bottomBlock"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:id="@+id/ivAppIcon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:contentDescription="@string/app_icon_desc"
-            android:src="@drawable/ic_app_logo" />
+        <FrameLayout
+            android:id="@+id/logoTile"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:background="@drawable/cc_logo_tile"
+            android:elevation="6dp">
+
+            <ImageView
+                android:id="@+id/ivAppIcon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_icon_desc"
+                android:src="@drawable/ic_app_logo" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:text="@string/app_name"
-            android:textColor="#022F77"
+            android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppins" />
@@ -48,106 +54,90 @@
             android:id="@+id/tvTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:fontFamily="@font/poppins"
-            android:text="Get Started · Sign up or sign in"
-            android:textColor="#64748B"
-            android:textSize="14sp" />
+            android:text="@string/splash_tagline"
+            android:textColor="@color/cc_on_navy_muted"
+            android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/ivSchoolIllustration"
-            android:layout_width="220dp"
-            android:layout_height="140dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxWidth="300dp"
+            android:maxHeight="220dp"
+            android:layout_marginTop="28dp"
             android:contentDescription="@string/illustration_description"
             android:src="@drawable/ic_school_illustration" />
 
     </LinearLayout>
 
-    <!-- Deep Navy Curved Sheet Container -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomSheet"
-        android:layout_width="0dp"
+    <!-- Bottom caption + actions -->
+    <LinearLayout
+        android:id="@+id/bottomBlock"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_curved_navy_sheet"
+        android:orientation="vertical"
+        android:gravity="center"
         android:paddingStart="28dp"
         android:paddingEnd="28dp"
-        android:paddingTop="32dp"
-        android:paddingBottom="36dp"
+        android:paddingBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- SIGN UP Pill Button -->
-        <Button
-            android:id="@+id/btnSignUp"
-            android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:background="@drawable/bg_pill_button_red"
-            app:backgroundTint="@null"
-            android:text="SIGN UP"
-            android:textAllCaps="true"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            android:elevation="4dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- SIGN IN Pill Button -->
-        <Button
-            android:id="@+id/btnSignIn"
-            android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_pill_button_outline"
-            app:backgroundTint="@null"
-            android:text="SIGN IN"
-            android:textAllCaps="true"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            app:layout_constraintTop_toBottomOf="@id/btnSignUp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Animated loading dots -->
         <LinearLayout
             android:id="@+id/loadingDotsContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/btnSignIn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:gravity="center_vertical">
 
-            <View
-                android:id="@+id/dot1"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/shape_loading_dot" />
-
-            <View
-                android:id="@+id/dot2"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/shape_loading_dot" />
-
-            <View
-                android:id="@+id/dot3"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/shape_loading_dot" />
-
+            <View android:id="@+id/dot1" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
+            <View android:id="@+id/dot2" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
+            <View android:id="@+id/dot3" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/shape_loading_dot" />
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:text="Get Started · Sign up or sign in"
+            android:textColor="@color/cc_on_navy_muted"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins" />
+
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/cc_btn_crimson"
+            app:backgroundTint="@null"
+            android:text="Sign up"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:elevation="4dp" />
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/cc_btn_outline_white"
+            app:backgroundTint="@null"
+            android:text="Sign in"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

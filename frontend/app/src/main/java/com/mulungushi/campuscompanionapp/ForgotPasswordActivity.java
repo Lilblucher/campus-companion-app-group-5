@@ -132,6 +132,17 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         tilEmail.setEnabled(false);
         btnGetCode.setVisibility(View.GONE);
 
+        // Advance the 2-step indicator
+        TextView stepEmail = findViewById(R.id.stepEmail);
+        TextView stepCode = findViewById(R.id.stepCode);
+        if (stepEmail != null) {
+            stepEmail.setBackgroundResource(R.drawable.cc_dot_navy);
+        }
+        if (stepCode != null) {
+            stepCode.setBackgroundResource(R.drawable.cc_dot_navy);
+            stepCode.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
+
         tvCodeSentMessage.setText(getString(R.string.code_sent_message, email));
         tvCodeSentMessage.setVisibility(View.VISIBLE);
         tilResetCode.setVisibility(View.VISIBLE);
@@ -208,11 +219,12 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     // ---- Password strength / match (mirrors RegisterActivity's logic) ----
 
     private void updatePasswordStrength(String password) {
+        int empty = ContextCompat.getColor(this, R.color.cc_skeleton_block);
         if (password.isEmpty()) {
             tvPasswordStrength.setVisibility(View.INVISIBLE);
-            setDotFilled(strengthDot1, false);
-            setDotFilled(strengthDot2, false);
-            setDotFilled(strengthDot3, false);
+            fillSegment(strengthDot1, empty);
+            fillSegment(strengthDot2, empty);
+            fillSegment(strengthDot3, empty);
             return;
         }
 
@@ -224,26 +236,35 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         tvPasswordStrength.setVisibility(View.VISIBLE);
 
+        int red = ContextCompat.getColor(this, R.color.cc_crimson);
+        int amber = ContextCompat.getColor(this, R.color.cc_warning_strong);
+        int green = ContextCompat.getColor(this, R.color.cc_success);
+
         if (score <= 1) {
-            tvPasswordStrength.setText(R.string.password_strength_weak);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, false);
-            setDotFilled(strengthDot3, false);
+            tvPasswordStrength.setText("Weak");
+            tvPasswordStrength.setTextColor(red);
+            fillSegment(strengthDot1, red);
+            fillSegment(strengthDot2, empty);
+            fillSegment(strengthDot3, empty);
         } else if (score <= 3) {
-            tvPasswordStrength.setText(R.string.password_strength_fair);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, true);
-            setDotFilled(strengthDot3, false);
+            tvPasswordStrength.setText("Fair");
+            tvPasswordStrength.setTextColor(amber);
+            fillSegment(strengthDot1, amber);
+            fillSegment(strengthDot2, amber);
+            fillSegment(strengthDot3, empty);
         } else {
-            tvPasswordStrength.setText(R.string.password_strength_strong);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, true);
-            setDotFilled(strengthDot3, true);
+            tvPasswordStrength.setText("Strong");
+            tvPasswordStrength.setTextColor(green);
+            fillSegment(strengthDot1, green);
+            fillSegment(strengthDot2, green);
+            fillSegment(strengthDot3, green);
         }
     }
 
-    private void setDotFilled(View dot, boolean filled) {
-        dot.setAlpha(filled ? 1f : 0.3f);
+    private void fillSegment(View segment, int color) {
+        if (segment == null) return;
+        segment.setBackgroundResource(R.drawable.cc_skel_line);
+        segment.getBackground().mutate().setTint(color);
     }
 
     private void updatePasswordMatch() {
@@ -258,12 +279,16 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         tvPasswordMatch.setVisibility(View.VISIBLE);
         if (password.equals(confirm)) {
             tvPasswordMatch.setText(R.string.password_matched);
-            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.color_success_text));
-            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
+            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.cc_success));
+            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ms_check_circle, 0, 0, 0);
+            if (tvPasswordMatch.getCompoundDrawables()[0] != null)
+                tvPasswordMatch.getCompoundDrawables()[0].mutate().setTint(ContextCompat.getColor(this, R.color.cc_success));
         } else {
             tvPasswordMatch.setText(R.string.password_not_matched);
-            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.color_error_red));
-            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.cc_crimson_dark));
+            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ms_cancel, 0, 0, 0);
+            if (tvPasswordMatch.getCompoundDrawables()[0] != null)
+                tvPasswordMatch.getCompoundDrawables()[0].mutate().setTint(ContextCompat.getColor(this, R.color.cc_crimson_dark));
         }
     }
 

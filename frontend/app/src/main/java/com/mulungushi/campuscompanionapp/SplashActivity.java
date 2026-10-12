@@ -31,6 +31,14 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Apply the saved dark-theme preference app-wide before drawing.
+        boolean dark = getSharedPreferences(SettingsActivity.PREFS, MODE_PRIVATE)
+                .getBoolean(SettingsActivity.KEY_DARK, false);
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+                dark ? androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                     : androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+
         setContentView(R.layout.activity_splash);
 
         animateLoadingDots();

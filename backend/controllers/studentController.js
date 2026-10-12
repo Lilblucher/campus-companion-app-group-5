@@ -21,7 +21,7 @@ async function fetchProfile(studentId) {
   const [rows] = await db.query(
     `SELECT s.student_id, s.student_number, s.name, s.programme_code,
             s.email, s.phone, g.group_name AS lab_group,
-            s.status, s.record_version
+            s.status, s.record_version, s.is_group_leader
        FROM students s
        LEFT JOIN lab_groups g ON g.group_id = s.lab_group_id
       WHERE s.student_id = ? AND s.is_deleted = 0`,

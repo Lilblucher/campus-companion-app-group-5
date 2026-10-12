@@ -1,52 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:background="@drawable/bg_card_border"
-    android:padding="14dp"
-    android:layout_marginBottom="10dp">
-
-    <TextView
-        android:id="@+id/tvGroupCodeBadge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_tab_unselected"
-        android:paddingLeft="10dp"
-        android:paddingTop="6dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="6dp"
-        android:text="CS-2024-1"
-        android:textColor="#1B55AB"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+    android:orientation="vertical"
+    android:background="@drawable/cc_card_bordered"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="8dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivGroupIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/cc_iconchip_blue"
+            android:padding="9dp"
+            android:src="@drawable/ic_ms_workspaces"
+            app:tint="@color/cc_accent_blue"
+            android:contentDescription="@null" />
 
         <TextView
-            android:id="@+id/tvGroupDepartment"
+            android:id="@+id/tvGroupCodeBadge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="G01"
+            android:textColor="@color/cc_text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <TextView
+            android:id="@+id/tvMemberCapacity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Computer Science"
-            android:textColor="#111827"
+            android:text="14/15"
+            android:textColor="@color/cc_text_primary"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
     </LinearLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:trackThickness="6dp"
+        app:trackCornerRadius="3dp"
+        app:indicatorColor="@color/cc_accent_blue"
+        app:trackColor="@color/cc_light_blue"
+        android:max="15"
+        android:progress="14" />
+
     <TextView
-        android:id="@+id/tvMemberCapacity"
+        android:id="@+id/tvGroupDepartment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="24/30"
-        android:textColor="#1B55AB"
-        android:textSize="13sp"
-        android:textStyle="bold" />
-
+        android:layout_marginTop="8dp"
+        android:text="1 seat left"
+        android:textColor="@color/cc_text_muted"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins" />
 </LinearLayout>

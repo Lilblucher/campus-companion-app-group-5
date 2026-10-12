@@ -13,6 +13,8 @@ public class ApiClient {
 
     private static final String BASE_URL = "http://169.58.92.104:3001/";
 
+    public static String baseUrl() { return BASE_URL; }
+
     private static Retrofit retrofit;
 
     public static synchronized Retrofit getClient(Context context) {

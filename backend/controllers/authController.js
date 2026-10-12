@@ -151,7 +151,7 @@ async function login(req, res) {
 
     if (sn) {
       const [rows] = await db.query(
-        `SELECT a.account_id, a.password_hash, a.role, s.student_id, s.name
+        `SELECT a.account_id, a.password_hash, a.role, s.student_id, s.name, s.is_group_leader
          FROM accounts a
          JOIN students s ON s.student_id = a.student_id
          WHERE s.student_number = ? AND s.is_deleted = 0 AND a.is_locked = 0`,
@@ -190,6 +190,7 @@ async function login(req, res) {
       role: account.role,
       student_id: account.student_id || null,
       name: account.name || account.username,
+      is_group_leader: account.is_group_leader ? 1 : 0,
     });
   } catch (err) {
     console.error('login error:', err);

@@ -11,6 +11,7 @@ public class SessionManager {
     private static final String KEY_USER_ROLE = "user_role";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_STUDENT_ID = "student_id";
+    private static final String KEY_IS_GROUP_LEADER = "is_group_leader";
 
     private static SessionManager instance;
     private final SharedPreferences sharedPreferences;
@@ -27,6 +28,10 @@ public class SessionManager {
     }
 
     public void saveUserSession(String role, String userName, String studentId, String token) {
+        saveUserSession(role, userName, studentId, token, false);
+    }
+
+    public void saveUserSession(String role, String userName, String studentId, String token, boolean isGroupLeader) {
         if (sharedPreferences == null) return;
         sharedPreferences.edit()
                 .putBoolean(KEY_IS_LOGGED_IN, true)
@@ -34,7 +39,16 @@ public class SessionManager {
                 .putString(KEY_USER_NAME, userName)
                 .putString(KEY_STUDENT_ID, studentId)
                 .putString(KEY_AUTH_TOKEN, token)
+                .putBoolean(KEY_IS_GROUP_LEADER, isGroupLeader)
                 .apply();
+    }
+
+    public boolean isGroupLeader() {
+        return sharedPreferences != null && sharedPreferences.getBoolean(KEY_IS_GROUP_LEADER, false);
+    }
+
+    public boolean isLecturer() {
+        return "lecturer".equals(getUserRole());
     }
 
     public boolean isLoggedIn() {

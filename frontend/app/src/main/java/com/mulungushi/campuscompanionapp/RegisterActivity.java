@@ -34,8 +34,10 @@ import retrofit2.Response;
 public class RegisterActivity extends AppCompatActivity {
 
     private SharedPreferences draftPrefs;
-    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilPassword, tilConfirmPassword;
-    private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword;
+    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilPassword, tilConfirmPassword,
+            tilPhone, tilEmail;
+    private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword,
+            etPhone, etEmail;
     private AutoCompleteTextView actProgramme;
     private TextView tvPasswordStrength, tvPasswordMatch;
     private View strengthDot1, strengthDot2, strengthDot3;
@@ -45,6 +47,8 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String KEY_DRAFT_ID = "draft_id";
     private static final String KEY_DRAFT_CLAIM_CODE = "draft_claim_code";
     private static final String KEY_DRAFT_PROGRAMME = "draft_programme";
+    private static final String KEY_DRAFT_PHONE = "draft_phone";
+    private static final String KEY_DRAFT_EMAIL = "draft_email";
 
     private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
     private static final Pattern LOWERCASE = Pattern.compile(".*[a-z].*");
@@ -83,6 +87,14 @@ public class RegisterActivity extends AppCompatActivity {
         if (btnRegisterSubmit != null) {
             btnRegisterSubmit.setOnClickListener(v -> attemptRegister());
         }
+
+        View btnSaveDraft = findViewById(R.id.btnSaveDraft);
+        if (btnSaveDraft != null) {
+            btnSaveDraft.setOnClickListener(v -> {
+                saveDraft();
+                Toast.makeText(this, "Registration draft saved on this device", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void bindViews() {
@@ -91,12 +103,16 @@ public class RegisterActivity extends AppCompatActivity {
         tilProgramme = findViewById(R.id.tilProgramme);
         tilPassword = findViewById(R.id.tilPassword);
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword);
+        tilPhone = findViewById(R.id.tilPhone);
+        tilEmail = findViewById(R.id.tilEmail);
 
         etStudentName = findViewById(R.id.etStudentName);
         etStudentId = findViewById(R.id.etStudentId);
         etClaimCode = findViewById(R.id.etClaimCode);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
+        etPhone = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
 
         actProgramme = findViewById(R.id.actProgramme);
 
@@ -160,16 +176,31 @@ public class RegisterActivity extends AppCompatActivity {
                 updatePasswordMatch();
             }));
         }
+
+        if (etPhone != null) {
+            etPhone.addTextChangedListener(simpleWatcher(() -> {
+                if (tilPhone != null) tilPhone.setError(null);
+                saveDraft();
+            }));
+        }
+
+        if (etEmail != null) {
+            etEmail.addTextChangedListener(simpleWatcher(() -> {
+                if (tilEmail != null) tilEmail.setError(null);
+                saveDraft();
+            }));
+        }
     }
 
     private void updatePasswordStrength(String password) {
         if (tvPasswordStrength == null) return;
 
+        int empty = ContextCompat.getColor(this, R.color.cc_skeleton_block);
         if (password.isEmpty()) {
             tvPasswordStrength.setVisibility(View.INVISIBLE);
-            setDotFilled(strengthDot1, false);
-            setDotFilled(strengthDot2, false);
-            setDotFilled(strengthDot3, false);
+            fillSegment(strengthDot1, empty);
+            fillSegment(strengthDot2, empty);
+            fillSegment(strengthDot3, empty);
             return;
         }
 
@@ -181,29 +212,35 @@ public class RegisterActivity extends AppCompatActivity {
 
         tvPasswordStrength.setVisibility(View.VISIBLE);
 
+        int red = ContextCompat.getColor(this, R.color.cc_crimson);
+        int amber = ContextCompat.getColor(this, R.color.cc_warning_strong);
+        int green = ContextCompat.getColor(this, R.color.cc_success);
+
         if (score <= 1) {
-            tvPasswordStrength.setText(R.string.password_strength_weak);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, false);
-            setDotFilled(strengthDot3, false);
+            tvPasswordStrength.setText("Weak");
+            tvPasswordStrength.setTextColor(red);
+            fillSegment(strengthDot1, red);
+            fillSegment(strengthDot2, empty);
+            fillSegment(strengthDot3, empty);
         } else if (score <= 3) {
-            tvPasswordStrength.setText(R.string.password_strength_fair);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, true);
-            setDotFilled(strengthDot3, false);
+            tvPasswordStrength.setText("Fair");
+            tvPasswordStrength.setTextColor(amber);
+            fillSegment(strengthDot1, amber);
+            fillSegment(strengthDot2, amber);
+            fillSegment(strengthDot3, empty);
         } else {
-            tvPasswordStrength.setText(R.string.password_strength_strong);
-            setDotFilled(strengthDot1, true);
-            setDotFilled(strengthDot2, true);
-            setDotFilled(strengthDot3, true);
+            tvPasswordStrength.setText("Strong");
+            tvPasswordStrength.setTextColor(green);
+            fillSegment(strengthDot1, green);
+            fillSegment(strengthDot2, green);
+            fillSegment(strengthDot3, green);
         }
     }
 
-    private void setDotFilled(View dot, boolean filled) {
-        if (dot != null) {
-            dot.setBackgroundResource(R.drawable.shape_loading_dot);
-            dot.setAlpha(filled ? 1f : 0.3f);
-        }
+    private void fillSegment(View segment, int color) {
+        if (segment == null) return;
+        segment.setBackgroundResource(R.drawable.cc_skel_line);
+        segment.getBackground().mutate().setTint(color);
     }
 
     private void updatePasswordMatch() {
@@ -219,12 +256,22 @@ public class RegisterActivity extends AppCompatActivity {
         tvPasswordMatch.setVisibility(View.VISIBLE);
         if (password.equals(confirm)) {
             tvPasswordMatch.setText(R.string.password_matched);
-            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.color_success_text));
-            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
+            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.cc_success));
+            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ms_check_circle, 0, 0, 0);
+            tintMatchIcon(R.color.cc_success);
         } else {
             tvPasswordMatch.setText(R.string.password_not_matched);
-            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.color_error_red));
-            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            tvPasswordMatch.setTextColor(ContextCompat.getColor(this, R.color.cc_crimson_dark));
+            tvPasswordMatch.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ms_cancel, 0, 0, 0);
+            tintMatchIcon(R.color.cc_crimson_dark);
+        }
+    }
+
+    private void tintMatchIcon(int colorRes) {
+        if (tvPasswordMatch == null) return;
+        android.graphics.drawable.Drawable[] d = tvPasswordMatch.getCompoundDrawables();
+        if (d.length > 0 && d[0] != null) {
+            d[0].mutate().setTint(ContextCompat.getColor(this, colorRes));
         }
     }
 
@@ -234,6 +281,9 @@ public class RegisterActivity extends AppCompatActivity {
         String password = getText(etPassword);
         String confirmPassword = getText(etConfirmPassword);
         String programme = actProgramme != null ? actProgramme.getText().toString().trim() : "";
+        String phone = getText(etPhone);
+        String email = getText(etEmail);
+        String claimCode = getText(etClaimCode);
 
         boolean isValid = true;
 
@@ -249,6 +299,17 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (programme.isEmpty()) {
             if (tilProgramme != null) tilProgramme.setError(getString(R.string.error_programme_required));
+            isValid = false;
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            if (tilEmail != null) tilEmail.setError(getString(R.string.error_email_invalid));
+            isValid = false;
+        }
+
+        // Server requires a 7–15 digit phone (optionally +); match that here.
+        if (!phone.replaceAll("[^0-9+]", "").matches("\\+?\\d{7,15}")) {
+            if (tilPhone != null) tilPhone.setError("Enter a valid phone number");
             isValid = false;
         }
 
@@ -284,11 +345,10 @@ public class RegisterActivity extends AppCompatActivity {
             programmeCode = "CS";
         }
 
-        String email = studentId + "@student.mulungushi.ac.zm";
-        String phone = "0000000000";
+        String phoneNormalized = phone.replaceAll("[^0-9+]", "");
 
         ApiService apiService = ApiClient.getClient(this).create(ApiService.class);
-        RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phone, password);
+        RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phoneNormalized, password, claimCode);
 
         apiService.register(request).enqueue(new Callback<RegisterResponse>() {
             @Override
@@ -355,6 +415,8 @@ public class RegisterActivity extends AppCompatActivity {
                 .putString(KEY_DRAFT_ID, getText(etStudentId))
                 .putString(KEY_DRAFT_CLAIM_CODE, getText(etClaimCode))
                 .putString(KEY_DRAFT_PROGRAMME, actProgramme != null ? actProgramme.getText().toString() : "")
+                .putString(KEY_DRAFT_PHONE, getText(etPhone))
+                .putString(KEY_DRAFT_EMAIL, getText(etEmail))
                 .apply();
     }
 
@@ -364,6 +426,8 @@ public class RegisterActivity extends AppCompatActivity {
         if (etStudentId != null) etStudentId.setText(draftPrefs.getString(KEY_DRAFT_ID, ""));
         if (etClaimCode != null) etClaimCode.setText(draftPrefs.getString(KEY_DRAFT_CLAIM_CODE, ""));
         if (actProgramme != null) actProgramme.setText(draftPrefs.getString(KEY_DRAFT_PROGRAMME, ""), false);
+        if (etPhone != null) etPhone.setText(draftPrefs.getString(KEY_DRAFT_PHONE, ""));
+        if (etEmail != null) etEmail.setText(draftPrefs.getString(KEY_DRAFT_EMAIL, ""));
     }
 
     // ---- Helpers ----

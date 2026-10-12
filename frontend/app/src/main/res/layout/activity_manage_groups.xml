@@ -1,51 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F8FAFC"
-    android:padding="16dp">
+    android:background="@color/cc_page_bg">
 
-    <!-- Header -->
+    <!-- Top app bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="Manage Groups"
+            android:textColor="@color/cc_text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <ImageButton
+                android:id="@+id/btnInbox"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_ms_inbox"
+                app:tint="@color/cc_navy"
+                android:contentDescription="Pending requests" />
+
+            <TextView
+                android:id="@+id/tvInboxBadge"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_notification_badge"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:fontFamily="@font/poppins" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong" />
+
+    <!-- Info line -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_ms_info"
+            app:tint="@color/cc_text_muted"
+            android:contentDescription="@null" />
 
         <TextView
-            android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="←"
-            android:textSize="22sp"
-            android:textColor="#1B55AB"
-            android:padding="4dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Manage Groups"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#111827"
-            android:layout_marginStart="12dp" />
+            android:text="Each group holds a maximum of 15 active students."
+            android:textColor="@color/cc_text_muted"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins" />
     </LinearLayout>
 
-    <!-- Search Input -->
+    <!-- Hidden search field (kept for the activity's text watcher) -->
     <EditText
         android:id="@+id/etSearchGroups"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search groups..."
-        android:background="@drawable/bg_card_border"
-        android:padding="12dp"
-        android:textSize="14sp"
-        android:textColor="#111827"
-        android:layout_marginBottom="16dp" />
+        android:visibility="gone" />
 
-    <!-- Groups List -->
     <ListView
         android:id="@+id/listViewGroups"
         android:layout_width="match_parent"
@@ -53,18 +111,29 @@
         android:layout_weight="1"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:layout_marginBottom="12dp" />
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp" />
 
-    <!-- Bottom Create Group Button -->
+    <!-- Assign a student -->
     <Button
         android:id="@+id/btnCreateGroup"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_tab_selected"
-        android:text="+ Create Group"
-        android:textColor="#FFFFFF"
+        android:layout_height="52dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/cc_btn_navy"
+        app:backgroundTint="@null"
+        android:drawableStart="@drawable/ic_ms_person_add"
+        android:drawablePadding="8dp"
+        android:drawableTint="@color/white"
+        android:gravity="center"
+        android:text="Assign a student"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:textAllCaps="false" />
+        android:fontFamily="@font/poppins" />
 
 </LinearLayout>
