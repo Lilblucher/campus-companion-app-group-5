@@ -16,16 +16,19 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mulungushi.campuscompanionapp.network.ApiBodies;
+import com.mulungushi.campuscompanionapp.network.ApiClient;
+import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.MessageResponse;
 
 import java.util.regex.Pattern;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ForgotPasswordActivity extends AppCompatActivity {
 
-    // TODO: remove once the real /forgot-password and /verify-reset-code endpoints exist.
-    // For now, any well-formed email "succeeds" except this one, which demonstrates the
-    // account-not-found error path; the only code that verifies successfully is 123456.
-    private static final String STUB_EMAIL_NOT_FOUND = "notfound@test.com";
-    private static final String STUB_VALID_CODE = "123456";
     private static final int RESEND_COOLDOWN_SECONDS = 30;
 
     private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
@@ -113,18 +116,31 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: replace with a real Retrofit call to POST /forgot-password { email }.
-        // Regardless of whether the email exists, many real systems return a generic
-        // success response to avoid leaking which emails are registered — decide with
-        // your backend team whether to follow that pattern or show a direct error as below.
-        if (email.equalsIgnoreCase(STUB_EMAIL_NOT_FOUND)) {
-            tilEmail.setError(getString(R.string.error_email_not_found));
-            return;
-        }
-
-        verifiedEmail = email;
-        showStep2(email);
-        startResendCooldown();
+        btnGetCode.setEnabled(false);
+        btnResendCode.setEnabled(false);
+        ApiService api = ApiClient.getClient(this).create(ApiService.class);
+        api.forgotPassword(new ApiBodies.ForgotPassword(email)).enqueue(new Callback<MessageResponse>() {
+            @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                btnGetCode.setEnabled(true);
+                // The server always returns a generic success (it never reveals whether
+                // the email is registered), so advance to step 2 on any 2xx.
+                if (r.isSuccessful()) {
+                    verifiedEmail = email;
+                    if (findViewById(R.id.tvCodeSentMessage).getVisibility() != android.view.View.VISIBLE) {
+                        showStep2(email);
+                    }
+                    startResendCooldown();
+                } else {
+                    btnResendCode.setEnabled(true);
+                    tilEmail.setError("Couldn't send a code right now. Try again.");
+                }
+            }
+            @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                btnGetCode.setEnabled(true);
+                btnResendCode.setEnabled(true);
+                tilEmail.setError("Network error. Check your connection.");
+            }
+        });
     }
 
     private void showStep2(String email) {
@@ -205,15 +221,42 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: replace with a real Retrofit call to POST /reset-password
-        // { email: verifiedEmail, code, newPassword }.
-        if (!code.equals(STUB_VALID_CODE)) {
-            tilResetCode.setError(getString(R.string.error_code_invalid));
-            return;
-        }
+        final String email = verifiedEmail != null ? verifiedEmail : getText(etEmail);
+        btnResetPassword.setEnabled(false);
+        ApiService api = ApiClient.getClient(this).create(ApiService.class);
+        api.resetPassword(new ApiBodies.ResetPassword(email, code, newPassword)).enqueue(new Callback<MessageResponse>() {
+            @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                btnResetPassword.setEnabled(true);
+                if (r.isSuccessful()) {
+                    Toast.makeText(ForgotPasswordActivity.this, "Password updated. Please sign in.", Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    finish();
+                } else {
+                    String msg = parseError(r);
+                    if (msg == null) msg = getString(R.string.error_code_invalid);
+                    // The code is the most likely thing that's wrong/expired.
+                    tilResetCode.setError(msg);
+                }
+            }
+            @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                btnResetPassword.setEnabled(true);
+                Toast.makeText(ForgotPasswordActivity.this, "Network error. Check your connection.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-        Toast.makeText(this, "Password reset (stub — no backend yet)", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+    /** Pull the {"error": "..."} message out of a non-2xx response body. */
+    private String parseError(Response<MessageResponse> r) {
+        try {
+            if (r.errorBody() == null) return null;
+            MessageResponse m = new com.google.gson.Gson()
+                    .fromJson(r.errorBody().charStream(), MessageResponse.class);
+            return m != null ? m.error : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // ---- Password strength / match (mirrors RegisterActivity's logic) ----

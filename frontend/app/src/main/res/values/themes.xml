@@ -59,7 +59,13 @@
 
     <style name="CcInputEdit">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">52dp</item>
+        <!-- Height comes from padding, NOT a fixed value: a fixed height on a
+             TextInputEditText makes Material clip tall Poppins glyphs. -->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
         <item name="android:fontFamily">@font/poppins</item>
         <item name="android:textColor">@color/cc_text_primary</item>
         <item name="android:textColorHint">@color/cc_text_muted</item>

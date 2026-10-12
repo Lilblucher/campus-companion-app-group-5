@@ -20,6 +20,12 @@ public interface ApiService {
     @POST("api/auth/register")
     Call<RegisterResponse> register(@Body RegisterRequest request);
 
+    @POST("api/auth/forgot-password")
+    Call<MessageResponse> forgotPassword(@Body ApiBodies.ForgotPassword body);
+
+    @POST("api/auth/reset-password")
+    Call<MessageResponse> resetPassword(@Body ApiBodies.ResetPassword body);
+
     // ---- student self ----
     @GET("api/students/me")
     Call<StudentProfile> getMe();

@@ -47,6 +47,18 @@ public class ApiBodies {
         }
     }
 
+    public static class ForgotPassword {
+        public String email;
+        public ForgotPassword(String email) { this.email = email; }
+    }
+
+    public static class ResetPassword {
+        public String email, code, new_password;
+        public ResetPassword(String email, String code, String newPassword) {
+            this.email = email; this.code = code; this.new_password = newPassword;
+        }
+    }
+
     public static class CreateReminder {
         public String title, body, scope, target_programme, remind_at;
         public Integer target_group_id;
