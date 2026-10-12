@@ -154,6 +154,9 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         View btnBell = findViewById(R.id.btnBell);
         if (btnBell != null) btnBell.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
 
+        View searchBar = findViewById(R.id.searchBar);
+        if (searchBar != null) searchBar.setOnClickListener(v -> navigateInternal(SearchActivity.class));
+
         View statRequests = findViewById(R.id.statRequestsCard);
         if (statRequests != null) statRequests.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
 

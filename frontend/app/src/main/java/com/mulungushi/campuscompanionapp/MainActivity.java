@@ -247,6 +247,11 @@ public class MainActivity extends AppCompatActivity {
             btnBell.setOnClickListener(v -> navigatePage(NotificationsActivity.class));
         }
 
+        View searchPill = findViewById(R.id.searchPill);
+        if (searchPill != null) {
+            searchPill.setOnClickListener(v -> navigateInternal(SearchActivity.class));
+        }
+
         View cardAnnouncement = findViewById(R.id.cardAnnouncement);
         if (cardAnnouncement != null) {
             cardAnnouncement.setOnClickListener(v -> navigatePage(NotificationsActivity.class));
