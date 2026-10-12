@@ -218,6 +218,12 @@ public class ProfileActivity extends AppCompatActivity {
         selectNav(navProfile);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        com.mulungushi.campuscompanionapp.util.NavBadge.refresh(this);
+    }
+
     private void navigateTo(Class<?> targetActivity) {
         startActivity(new Intent(this, targetActivity));
         finish();

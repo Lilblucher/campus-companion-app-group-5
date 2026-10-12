@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
         Skeleton.finish(findViewById(R.id.skeletonDashboard), findViewById(R.id.dashboardContent));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        com.mulungushi.campuscompanionapp.util.NavBadge.refresh(this);
+    }
+
     /** Replace the placeholder next-class card with the real GET /api/timetable/next. */
     private void loadNextClass() {
         ApiService api = ApiClient.getClient(this).create(ApiService.class);
