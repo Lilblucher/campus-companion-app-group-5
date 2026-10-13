@@ -24,6 +24,16 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
 });
 
+// One-time startup check so a bad SMTP config is obvious in the logs instead of
+// failing silently the first time someone requests a reset code.
+if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  console.warn('[mail] SMTP is NOT fully configured (SMTP_HOST/SMTP_USER/SMTP_PASS) — reset codes will NOT be emailed.');
+} else {
+  transporter.verify()
+    .then(() => console.log(`[mail] SMTP ready as ${process.env.SMTP_USER} via ${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 587}`))
+    .catch((e) => console.error('[mail] SMTP verify FAILED:', e.message));
+}
+
 const CODE_TTL_MIN = 15;            // brief: 15-minute expiry
 const MAX_ATTEMPTS = 5;
 const RESEND_COOLDOWN_SEC = 60;
@@ -55,7 +65,12 @@ async function findActiveStudentAccount(email) {
 
 async function processForgot(email) {
   const acc = await findActiveStudentAccount(email);
-  if (!acc) return; // silently stop — caller already returned the generic 200
+  if (!acc) {
+    // Not an error path for the user (we never reveal this), but logging it means
+    // "I'm not getting a code" can be diagnosed instantly: wrong/unregistered email.
+    console.warn(`[forgot] no active student account for email "${email}" — no code sent`);
+    return;
+  }
 
   const [recent] = await db.query(
     `SELECT
@@ -65,7 +80,10 @@ async function processForgot(email) {
      WHERE email = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
     [email]
   );
-  if (Number(recent[0].in_cooldown) > 0 || Number(recent[0].last_hour) >= MAX_CODES_PER_HOUR) return;
+  if (Number(recent[0].in_cooldown) > 0 || Number(recent[0].last_hour) >= MAX_CODES_PER_HOUR) {
+    console.warn(`[forgot] rate-limited for "${email}" (wait up to ${RESEND_COOLDOWN_SEC}s between requests, max ${MAX_CODES_PER_HOUR}/hour)`);
+    return;
+  }
 
   const code = generateCode();
   const codeHash = await bcrypt.hash(code, 10);
@@ -78,12 +96,13 @@ async function processForgot(email) {
     [email, codeHash]
   );
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: process.env.MAIL_FROM,
     to: email,
     subject: 'Your Campus Companion reset code',
     text: `Your password reset code is ${code}\n\nIt expires in ${CODE_TTL_MIN} minutes. If you didn't request this, ignore this email.`,
   });
+  console.log(`[forgot] reset code emailed to "${email}" (messageId ${info.messageId})`);
 }
 
 // Validate a submitted code against the latest unused, unexpired row.
