@@ -174,14 +174,9 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etStudentId"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:fontFamily="@font/poppins"
+                    style="@style/CcInputEdit"
                     android:inputType="text"
-                    android:textColor="@color/cc_text_primary"
-                    android:textColorHint="@color/cc_text_muted"
-                    android:hint="e.g. 210482910"
-                    android:textSize="15sp" />
+                    android:hint="e.g. 210482910" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Password -->
@@ -214,14 +209,9 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:fontFamily="@font/poppins"
+                    style="@style/CcInputEdit"
                     android:inputType="textPassword"
-                    android:textColor="@color/cc_text_primary"
-                    android:textColorHint="@color/cc_text_muted"
-                    android:hint="Enter password"
-                    android:textSize="15sp" />
+                    android:hint="Enter password" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Error row -->
