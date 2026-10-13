@@ -1,0 +1,22 @@
+package com.mulungushi.campuscompanionapp.network;
+
+public class LoginRequest {
+    // Gson omits null fields, so only the relevant handle is sent:
+    //   student  → { student_number, password }
+    //   lecturer → { username, password }
+    private String student_number;
+    private String username;
+    private String password;
+
+    public LoginRequest(String student_number, String password) {
+        this.student_number = student_number;
+        this.password = password;
+    }
+
+    /** Lecturers authenticate by their email as the username. */
+    public static LoginRequest forLecturer(String username, String password) {
+        LoginRequest r = new LoginRequest(null, password);
+        r.username = username;
+        return r;
+    }
+}

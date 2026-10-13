@@ -132,7 +132,13 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // --- Live Retrofit API Call ---
-        LoginRequest req = new LoginRequest(studentNumber, password);
+        // Lecturers authenticate with their email as `username`; students with
+        // their `student_number`. Use the role toggle, and also treat an
+        // email-looking value as a lecturer login regardless.
+        boolean asLecturer = "lecturer".equals(selectedRole) || studentNumber.contains("@");
+        LoginRequest req = asLecturer
+                ? LoginRequest.forLecturer(studentNumber, password)
+                : LoginRequest.forStudent(studentNumber, password);
         ApiService apiService = ApiClient.getClient(this).create(ApiService.class);
 
         apiService.login(req).enqueue(new Callback<AuthResponse>() {
