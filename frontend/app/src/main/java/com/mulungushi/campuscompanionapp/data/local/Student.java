@@ -6,51 +6,64 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+/**
+ * Locally cached student record — mirrors the server row but also tracks
+ * sync state and soft-deletion so the UI can distinguish confirmed vs
+ * pending values (per the lab's "confirmed values separate from pending
+ * changes" rule).
+ *
+ * student_id is immutable and independent of student_number, so a
+ * lecturer correcting a student number never breaks ownership or FKs.
+ */
 @Entity(
         tableName = "students",
         indices = {
-                @Index(value = "student_number", unique = true),
-                @Index(value = "lab_group")
+                @Index(value = "studentNumber", unique = true),
+                @Index(value = "labGroup")
         }
 )
 public class Student {
 
     @PrimaryKey
     @NonNull
-    @ColumnInfo(name = "student_id")
-    public String studentId;
+    public String studentId; // server-issued UUID; generated client-side only for an unsynced CREATE
+
+    @ColumnInfo(name = "studentNumber")
+    @NonNull
+    public String studentNumber; // exactly 9 digits, leading zeroes preserved, no embedded spaces
 
     @NonNull
-    @ColumnInfo(name = "student_number")
-    public String studentNumber;
+    public String studentName; // 2-100 trimmed chars
 
     @NonNull
-    @ColumnInfo(name = "student_name")
-    public String studentName;
+    public Programme programOfStudy;
 
     @NonNull
-    @ColumnInfo(name = "programme")
-    public String programme;
+    public LabGroup labGroup; // confirmed group; UNASSIGNED if none
 
-    @ColumnInfo(name = "lab_group")
-    public String labGroup;
+    public String accountId; // nullable until the student verifies/links their account
 
-    @ColumnInfo(name = "base_version")
-    public int baseVersion;
+    // --- soft delete / integrity ---
+    public boolean active = true;     // false once soft-deleted; number stays reserved
+    public long deletedAt = 0L;       // 0 = not deleted; epoch millis otherwise
 
-    @ColumnInfo(name = "deleted_at")
-    public Long deletedAt;
+    // --- optimistic concurrency ---
+    public int baseVersion = 0;       // server row version this local copy is based on
 
-    @ColumnInfo(name = "deletion_marker")
-    public String deletionMarker;
-
-    @ColumnInfo(name = "number_reserved")
-    public boolean numberReserved;
-
-    @ColumnInfo(name = "updated_at")
-    public long updatedAt;
-
+    // --- local-only sync bookkeeping (not sent to server) ---
     @NonNull
-    @ColumnInfo(name = "sync_status", defaultValue = "SYNCED")
-    public String syncStatus = "SYNCED";
+    public SyncStatus syncStatus = SyncStatus.SYNCED;
+    public long lastSyncedAt = 0L;
+
+    public Student(@NonNull String studentId,
+                   @NonNull String studentNumber,
+                   @NonNull String studentName,
+                   @NonNull Programme programOfStudy,
+                   @NonNull LabGroup labGroup) {
+        this.studentId = studentId;
+        this.studentNumber = studentNumber;
+        this.studentName = studentName;
+        this.programOfStudy = programOfStudy;
+        this.labGroup = labGroup;
+    }
 }

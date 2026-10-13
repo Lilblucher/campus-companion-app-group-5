@@ -6,131 +6,137 @@
     android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B4D0FE"
+    android:background="@color/cc_navy"
     tools:context=".SplashActivity">
 
-    <!-- Percentage guidelines, based on proportions from the 412x917 Figma frame -->
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineIconTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.134" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTitleTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.279" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTaglineTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.330" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineIllustrationTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.500" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineDotsTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.88" />
-
-    <!-- App icon: sized relative to screen width, capped so it doesn't grow too large on tablets -->
-
-    <ImageView
-        android:id="@+id/ivAppIcon"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="72dp"
-        android:contentDescription="@string/app_icon_desc"
-        android:src="@drawable/ic_app_logo"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.52"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_max="136dp"
-        app:layout_constraintWidth_percent="0.33" />
-
-    <TextView
-        android:id="@+id/tvAppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="#1F35AB"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/poppins"
-        app:layout_constraintTop_toTopOf="@id/guidelineTitleTop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/tvTagline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins"
-        android:text="@string/splash_tagline"
-        android:textColor="#022F77"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guidelineTaglineTop" />
-
-    <ImageView
-        android:id="@+id/ivSchoolIllustration"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent="0.80"
-        app:layout_constraintDimensionRatio="331:209"
-        android:contentDescription="@string/illustration_description"
-        android:src="@drawable/ic_school_illustration"
-        app:layout_constraintTop_toTopOf="@id/guidelineIllustrationTop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Animated loading dots -->
+    <!-- Centred brand block -->
     <LinearLayout
-        android:id="@+id/loadingDotsContainer"
-        android:layout_width="wrap_content"
+        android:id="@+id/brandBlock"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="@id/guidelineDotsTop"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomBlock"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <View
-            android:id="@+id/dot1"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/shape_loading_dot" />
+        <FrameLayout
+            android:id="@+id/logoTile"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:background="@drawable/cc_logo_tile"
+            android:elevation="6dp">
 
-        <View
-            android:id="@+id/dot2"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/shape_loading_dot" />
+            <ImageView
+                android:id="@+id/ivAppIcon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_icon_desc"
+                android:src="@drawable/ic_app_logo" />
+        </FrameLayout>
 
-        <View
-            android:id="@+id/dot3"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="@drawable/shape_loading_dot" />
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <TextView
+            android:id="@+id/tvTagline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/poppins"
+            android:text="@string/splash_tagline"
+            android:textColor="@color/cc_on_navy_muted"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/ivSchoolIllustration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxWidth="300dp"
+            android:maxHeight="220dp"
+            android:layout_marginTop="28dp"
+            android:contentDescription="@string/illustration_description"
+            android:src="@drawable/ic_school_illustration" />
+
+    </LinearLayout>
+
+    <!-- Bottom caption + actions -->
+    <LinearLayout
+        android:id="@+id/bottomBlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Animated loading dots -->
+        <LinearLayout
+            android:id="@+id/loadingDotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View android:id="@+id/dot1" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
+            <View android:id="@+id/dot2" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
+            <View android:id="@+id/dot3" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/shape_loading_dot" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:text="Get Started · Sign up or sign in"
+            android:textColor="@color/cc_on_navy_muted"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins" />
+
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/cc_btn_crimson"
+            app:backgroundTint="@null"
+            android:text="Sign up"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:elevation="4dp" />
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/cc_btn_outline_white"
+            app:backgroundTint="@null"
+            android:text="Sign in"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
 
     </LinearLayout>
 

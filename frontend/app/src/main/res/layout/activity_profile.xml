@@ -1,34 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F5F7FA"
-    android:padding="16dp">
+    android:background="@color/cc_page_bg"
+    tools:context=".ProfileActivity">
 
-    <TextView
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="&lt; Back"
-        android:textSize="16sp"
-        android:textColor="#1B55AB"
-        android:padding="8dp"/>
+    <LinearLayout
+        android:id="@+id/topHeaderSection"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User Profile"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="24dp"/>
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
 
-    <Button
-        android:id="@+id/btnLogout"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="@string/profile_title"
+            android:textColor="@color/cc_text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <ImageButton
+            android:id="@+id/btnEditProfile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Edit profile"
+            android:src="@drawable/ic_ms_edit"
+            app:tint="@color/cc_accent_blue" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/appBarDivider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:textColor="#FFFFFF"/>
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection" />
 
-</LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/appBarDivider"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Identity card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tvAvatarInitials"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/cc_avatar_crimson"
+                    android:gravity="center"
+                    android:text="CM"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+
+                <TextView
+                    android:id="@+id/tvProfileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Chileshe Mulenga"
+                    android:textColor="@color/cc_text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+
+                <TextView
+                    android:id="@+id/tvProfileId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Student"
+                    android:textColor="@color/cc_text_muted"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins" />
+            </LinearLayout>
+
+            <!-- Personal information -->
+            <TextView style="@style/CcSectionTitle" android:layout_marginTop="20dp" android:text="@string/personal_info" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="6dp">
+
+                <LinearLayout style="@style/CcInfoRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_mail" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcInfoLabel" android:text="@string/email" />
+                        <TextView android:id="@+id/tvEmail" style="@style/CcInfoValue" tools:text="210482910@mu.ac.zm" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View style="@style/CcRowDivider" />
+
+                <LinearLayout style="@style/CcInfoRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_school" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcInfoLabel" android:text="Programme &amp; Year" />
+                        <TextView android:id="@+id/tvProgrammeYear" style="@style/CcInfoValue" tools:text="Computer Science" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View style="@style/CcRowDivider" />
+
+                <LinearLayout style="@style/CcInfoRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_groups" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcInfoLabel" android:text="Assigned Lab Group" />
+                        <TextView android:id="@+id/tvLabGroup" style="@style/CcInfoValue" tools:text="Group G01" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View style="@style/CcRowDivider" />
+
+                <LinearLayout style="@style/CcInfoRow">
+                    <ImageView style="@style/CcSwitchIcon" android:src="@drawable/ic_ms_pin" android:contentDescription="@null" />
+                    <LinearLayout style="@style/CcSwitchText">
+                        <TextView style="@style/CcInfoLabel" android:text="@string/student_number" />
+                        <TextView android:id="@+id/tvStudentNumber" style="@style/CcInfoValue" tools:text="210482910" />
+                        <TextView
+                            android:id="@+id/tvRequestCorrection"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:minHeight="36dp"
+                            android:gravity="center_vertical"
+                            android:text="Request lecturer correction"
+                            android:textColor="@color/cc_accent_blue"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackground" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Settings shortcut -->
+            <LinearLayout
+                android:id="@+id/rowSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="14dp"
+                    android:src="@drawable/ic_ms_settings"
+                    app:tint="@color/cc_navy"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/settings_title"
+                    android:textColor="@color/cc_text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_ms_chevron_right"
+                    app:tint="@color/cc_text_muted"
+                    android:contentDescription="@null" />
+            </LinearLayout>
+
+            <!-- Sign out -->
+            <Button
+                android:id="@+id/btnSignOut"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/cc_btn_outline_crimson"
+                app:backgroundTint="@null"
+                android:drawableStart="@drawable/ic_ms_logout"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/cc_crimson"
+                android:gravity="center"
+                android:text="@string/logout"
+                android:textAllCaps="false"
+                android:textColor="@color/cc_crimson"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        layout="@layout/cc_bottom_nav_student"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

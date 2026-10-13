@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Wider side margins on tablets / foldables -->
+    <dimen name="screen_padding">32dp</dimen>
+    <dimen name="auth_padding">48dp</dimen>
+</resources>

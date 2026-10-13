@@ -11,10 +11,11 @@ const authRoutes = require("./routes/auth");
 
 const studentRoutes = require("./routes/students");
 const syncRoutes = require("./routes/sync");
-/*
-const groupRoutes = require("./routes/groups");
-
-*/
+const notificationRoutes = require("./routes/notifications");
+const lecturerRoutes = require("./routes/lecturer");
+const groupLeaderRoutes = require("./routes/group");
+const reminderRoutes = require("./routes/reminders");
+const timetableRoutes = require("./routes/timetable");
 // ── App setup ──────────────────────────────────────────────────
 const app = express();
 app.set('trust proxy', 1);
@@ -67,10 +68,11 @@ app.get("/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/sync", syncRoutes);
-/*
-app.use("/api/groups", groupRoutes);
-
-*/
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/lecturer", lecturerRoutes);
+app.use("/api/group", groupLeaderRoutes);
+app.use("/api/reminders", reminderRoutes);
+app.use("/api/timetable", timetableRoutes);
 
 // Catches any request that didn't match a route above.
 app.use((_req, res) => {
@@ -107,6 +109,7 @@ db.getConnection()
       logger.info(`Auth          -> http://localhost:${PORT}/api/auth`);
       logger.info(`Students      -> http://localhost:${PORT}/api/students`);
       logger.info(`Sync          -> http://localhost:${PORT}/api/sync`);
+      logger.info(`Notifications -> http://localhost:${PORT}/api/notifications`);
     });
   })
   .catch((err) => {

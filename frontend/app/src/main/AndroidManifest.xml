@@ -35,12 +35,83 @@
             android:exported="false" />
 
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".StudentDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LecturerDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrationProgressActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ClassDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyGroupActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyCoursesActivity"
             android:exported="false" />
 
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".RemindersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TimetableActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LecturerStudentsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PendingRequestsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageGroupsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

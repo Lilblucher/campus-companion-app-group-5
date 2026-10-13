@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cc_page_bg"
+    tools:context=".RegistrationProgressActivity">
+
+    <LinearLayout
+        android:id="@+id/topHeaderSection"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/content_desc_back"
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/cc_text_primary" />
+
+        <TextView
+            style="@style/CcAppBarTitle"
+            android:layout_marginStart="4dp"
+            android:text="@string/registration_progress_title" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/appBarDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/appBarDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Status card with ring -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="20dp">
+
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp">
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        app:indicatorSize="72dp"
+                        app:trackThickness="7dp"
+                        app:trackCornerRadius="4dp"
+                        app:indicatorColor="@color/cc_navy"
+                        app:trackColor="@color/cc_light_blue"
+                        android:progress="85" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="85%"
+                        android:textColor="@color/cc_navy"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Registration Status"
+                        android:textColor="@color/cc_text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="3 of 4 Steps Completed"
+                        android:textColor="@color/cc_text_muted"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/poppins" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView style="@style/CcSectionTitle" android:layout_marginTop="20dp" android:text="Registration Steps" />
+
+            <!-- Step 1 (done) -->
+            <LinearLayout style="@style/CcStepCard">
+                <ImageView style="@style/CcStepIcon" android:src="@drawable/ic_ms_check_circle" app:tint="@color/cc_success" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcSwitchText">
+                    <TextView style="@style/CcStepTitle" android:text="Step 1: Fee Clearance" />
+                    <TextView style="@style/CcStepSub" android:text="Cleared by Finance Department · 100% Paid" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Step 2 (done) -->
+            <LinearLayout style="@style/CcStepCard">
+                <ImageView style="@style/CcStepIcon" android:src="@drawable/ic_ms_check_circle" app:tint="@color/cc_success" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcSwitchText">
+                    <TextView style="@style/CcStepTitle" android:text="Step 2: Module Selection" />
+                    <TextView style="@style/CcStepSub" android:text="5/6 Modules Approved by Head of Department" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Step 3 (active) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/cc_step_active"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_ms_pending"
+                        app:tint="@color/cc_accent_blue"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Step 3: Redeem Lecturer Claim Code"
+                        android:textColor="@color/cc_text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="If your lecturer provided a registration claim code, enter it below to automatically redeem your spot."
+                    android:textColor="@color/cc_text_muted"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/poppins" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilClaimCodeInput"
+                    style="@style/CcInput"
+                    app:startIconDrawable="@drawable/ic_ms_key">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etClaimCodeInput"
+                        style="@style/CcInputEdit"
+                        android:inputType="textCapCharacters"
+                        android:hint="e.g. MU-7F3K-01" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnRedeemClaimCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/cc_btn_navy"
+                    app:backgroundTint="@null"
+                    android:text="Redeem"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+            </LinearLayout>
+
+            <!-- Step 4 -->
+            <LinearLayout style="@style/CcStepCard">
+                <ImageView style="@style/CcStepIcon" android:src="@drawable/ic_ms_groups" app:tint="@color/cc_text_muted" android:contentDescription="@null" />
+                <LinearLayout style="@style/CcSwitchText">
+                    <TextView style="@style/CcStepTitle" android:text="Step 4: Lab Group Allocation" />
+                    <TextView style="@style/CcStepSub" android:text="Assigned by your lecturer after claim code is redeemed" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screen side padding -->
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="auth_padding">24dp</dimen>
+
+    <!-- Radii -->
+    <dimen name="radius_input">14dp</dimen>
+    <dimen name="radius_card">16dp</dimen>
+    <dimen name="radius_hero">20dp</dimen>
+    <dimen name="radius_sheet">28dp</dimen>
+    <dimen name="radius_chip">20dp</dimen>
+    <dimen name="radius_icon_chip">12dp</dimen>
+
+    <!-- Heights -->
+    <dimen name="btn_primary_height">52dp</dimen>
+    <dimen name="btn_secondary_height">48dp</dimen>
+    <dimen name="input_height">52dp</dimen>
+    <dimen name="search_height">48dp</dimen>
+    <dimen name="chip_height">40dp</dimen>
+    <dimen name="appbar_height">56dp</dimen>
+    <dimen name="touch_min">48dp</dimen>
+
+    <!-- Tiles -->
+    <dimen name="tile_min_width">140dp</dimen>
+    <dimen name="tile_height">84dp</dimen>
+</resources>

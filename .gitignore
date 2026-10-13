@@ -1,6 +1,2 @@
 node_modules/
-<<<<<<< HEAD
 .env
-=======
-echo "backend/.env" >> .gitignore
->>>>>>> 65f677a (Update gitkeep files and ignore .env)

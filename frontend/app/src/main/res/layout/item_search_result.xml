@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/cc_card_bordered"
+    android:padding="14dp"
+    android:layout_marginBottom="10dp">
+
+    <ImageView
+        android:id="@+id/ivResultIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/cc_iconchip_blue"
+        android:padding="9dp"
+        android:src="@drawable/ic_ms_search"
+        app:tint="@color/cc_accent_blue"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvResultTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/cc_text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <TextView
+            android:id="@+id/tvResultSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/cc_text_muted"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_ms_chevron_right"
+        app:tint="@color/cc_text_muted"
+        android:contentDescription="@null" />
+</LinearLayout>

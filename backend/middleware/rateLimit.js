@@ -1,5 +1,7 @@
 const rateLimit = require('express-rate-limit');
 
+const num = (v, d) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : d; };
+
 const make = (windowMin, max) =>
   rateLimit({
     windowMs: windowMin * 60 * 1000,
@@ -9,5 +11,6 @@ const make = (windowMin, max) =>
     message: { error: 'Too many requests. Try again later.' },
   });
 
-exports.forgotLimiter = make(15, 5);  // 5 code requests / 15 min
-exports.resetLimiter  = make(15, 10); // 10 reset attempts / 15 min 
+// Defaults unchanged; env-overridable for load tests / per-environment tuning.
+exports.forgotLimiter = make(15, num(process.env.FORGOT_RATELIMIT_MAX, 5));  // code requests / 15 min
+exports.resetLimiter  = make(15, num(process.env.RESET_RATELIMIT_MAX, 10)); // verify+reset attempts / 15 min

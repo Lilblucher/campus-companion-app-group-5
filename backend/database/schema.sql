@@ -84,6 +84,7 @@ CREATE TABLE students (
   lab_group_id      INT          NULL,                      -- NULL = Unassigned
   status            ENUM('active','unassigned','pending','deleted')
                                  NOT NULL DEFAULT 'unassigned',
+  is_group_leader   TINYINT(1)   NOT NULL DEFAULT 0,   -- elevated student (per-group leader), SQL-settable
 
   -- Claim code fields
   claim_code        VARCHAR(20)  NULL,      -- e.g. MEM-001
@@ -290,6 +291,71 @@ CREATE TABLE IF NOT EXISTS password_resets (
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_email (email)
 );
+-- -------------------------------------------------------------
+-- 9. notifications  (Phase 3 — in-app notifications)
+--    Recipient is an account_id (BIGINT, matching accounts.account_id).
+-- -------------------------------------------------------------
+CREATE TABLE notifications (
+  notification_id  BIGINT        NOT NULL AUTO_INCREMENT,
+  account_id       BIGINT        NOT NULL,
+  type             VARCHAR(50)   NOT NULL,
+  title            VARCHAR(100)  NOT NULL,
+  body             VARCHAR(255)  NOT NULL,
+  is_read          TINYINT(1)    NOT NULL DEFAULT 0,
+  created_at       TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (notification_id),
+  KEY idx_notif_account (account_id, is_read),
+  CONSTRAINT fk_notif_account
+    FOREIGN KEY (account_id) REFERENCES accounts (account_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- -------------------------------------------------------------
+-- 10. reminders  (both lecturer and group leader can create)
+--     scope decides recipients: personal (creator), group (target_group_id),
+--     programme (target_programme), all (every student).
+-- -------------------------------------------------------------
+CREATE TABLE reminders (
+  reminder_id      BIGINT       NOT NULL AUTO_INCREMENT,
+  created_by       BIGINT       NOT NULL,                 -- accounts.account_id
+  creator_role     VARCHAR(20)  NOT NULL,                 -- 'lecturer' | 'group_leader'
+  scope            ENUM('personal','group','programme','all') NOT NULL DEFAULT 'personal',
+  target_group_id  INT          NULL,
+  target_programme VARCHAR(10)  NULL,
+  title            VARCHAR(120) NOT NULL,
+  body             VARCHAR(500) NOT NULL DEFAULT '',
+  remind_at        DATETIME     NULL,
+  created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (reminder_id),
+  KEY idx_rem_scope (scope, target_group_id),
+  KEY idx_rem_creator (created_by),
+  CONSTRAINT fk_rem_account FOREIGN KEY (created_by) REFERENCES accounts (account_id) ON DELETE CASCADE,
+  CONSTRAINT fk_rem_group   FOREIGN KEY (target_group_id) REFERENCES lab_groups (group_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- -------------------------------------------------------------
+-- 11. timetable  (lecturer-only writes; everyone reads)
+--     group_id NULL = applies to all groups.
+-- -------------------------------------------------------------
+CREATE TABLE timetable (
+  session_id   BIGINT       NOT NULL AUTO_INCREMENT,
+  course_code  VARCHAR(20)  NOT NULL,
+  title        VARCHAR(120) NOT NULL,
+  group_id     INT          NULL,
+  day_of_week  TINYINT      NOT NULL,                     -- 0=Sun .. 6=Sat
+  start_time   TIME         NOT NULL,
+  end_time     TIME         NOT NULL,
+  venue        VARCHAR(120) NULL,
+  room         VARCHAR(60)  NULL,
+  created_by   BIGINT       NULL,
+  created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (session_id),
+  KEY idx_tt_group_day (group_id, day_of_week),
+  CONSTRAINT fk_tt_group   FOREIGN KEY (group_id) REFERENCES lab_groups (group_id) ON DELETE CASCADE,
+  CONSTRAINT fk_tt_account FOREIGN KEY (created_by) REFERENCES accounts (account_id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
 -- =============================================================
 -- End of schema.sql
 -- ==============================================================================================

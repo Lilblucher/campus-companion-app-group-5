@@ -2,69 +2,555 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_splash_gradient">
+    android:background="@color/cc_navy"
+    tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/ivAppIcon"
-        android:layout_width="142dp"
-        android:layout_height="142dp"
-        android:contentDescription="@string/app_icon_desc"
-        android:src="@mipmap/ic_launcher"
+    <!-- Navy header -->
+    <LinearLayout
+        android:id="@+id/topHeaderSection"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.35" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/tvAppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name_full"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/ivAppIcon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/tvTagline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/splash_tagline"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tvAppName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp" />
+            <!-- Crimson initials avatar -->
+            <FrameLayout
+                android:id="@+id/avatarContainer"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-    <Button
-        android:id="@+id/btnGetStarted"
+                <TextView
+                    android:id="@+id/tvAvatarInitials"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/cc_avatar_crimson"
+                    android:gravity="center"
+                    android:text="CM"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins" />
+
+                <ImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    android:contentDescription="@string/nav_profile" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome back,"
+                    android:textColor="@color/cc_on_navy_muted"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/poppins" />
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    tools:text="Chileshe Mulenga" />
+
+                <TextView
+                    android:id="@+id/tvProgrammeYear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textColor="@color/cc_on_navy_muted"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/poppins" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnBell"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_ms_notifications"
+                app:tint="@color/white"
+                android:contentDescription="@string/nav_alerts" />
+        </LinearLayout>
+
+        <!-- Search pill -->
+        <LinearLayout
+            android:id="@+id/searchPill"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@drawable/cc_search_pill"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_ms_search"
+                app:tint="@color/cc_text_muted"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_hint"
+                android:textColor="@color/cc_text_muted"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Content sheet -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="@string/get_started"
-        android:textColor="#1B55AB"
-        android:textSize="18sp"
-        android:textStyle="normal"
-        android:background="@drawable/bg_button_rounded"
-        android:elevation="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <View
-        android:id="@+id/bottomBar"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/cc_sheet_top"
+            android:clipToPadding="false"
+            android:fillViewport="true">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Skeleton -->
+                <include
+                    android:id="@+id/skeletonDashboard"
+                    layout="@layout/skeleton_dashboard" />
+
+                <!-- Real content -->
+                <LinearLayout
+                    android:id="@+id/dashboardContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="invisible">
+
+                    <!-- Registration card -->
+                    <LinearLayout
+                        android:id="@+id/cardRegistration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/cc_card"
+                        android:elevation="4dp"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tvRegistrationTitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/registration_label"
+                                android:textColor="@color/cc_text_primary"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <TextView
+                                android:id="@+id/tvRegistrationBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/cc_badge_success"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:paddingTop="4dp"
+                                android:paddingBottom="4dp"
+                                android:drawableStart="@drawable/ic_ms_verified"
+                                android:drawablePadding="4dp"
+                                android:drawableTint="@color/cc_success"
+                                android:gravity="center_vertical"
+                                android:text="Verified"
+                                android:textColor="@color/cc_success"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </LinearLayout>
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progressRegistration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            app:trackThickness="8dp"
+                            app:trackCornerRadius="4dp"
+                            app:indicatorColor="@color/cc_accent_blue"
+                            app:trackColor="@color/cc_light_blue"
+                            android:progress="85" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tvRegistrationDetail"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="85% Modules Registered · 5/6 Passed"
+                                android:textColor="@color/cc_text_muted"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Details ›"
+                                android:textColor="@color/cc_accent_blue"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Quick access -->
+                    <TextView
+                        style="@style/CcSectionTitle"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/quick_access" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout android:id="@+id/tileCourses" style="@style/CcTile" android:layout_marginEnd="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_blue" android:src="@drawable/ic_ms_menu_book" app:tint="@color/cc_accent_blue" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="My courses" />
+                            <TextView style="@style/CcTileSub" android:text="3 Courses Active" />
+                        </LinearLayout>
+
+                        <LinearLayout android:id="@+id/tileTimetable" style="@style/CcTile" android:layout_marginStart="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_blue" android:src="@drawable/ic_ms_calendar_month" app:tint="@color/cc_navy" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="Timetable" />
+                            <TextView style="@style/CcTileSub" android:text="Weekly schedule" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout android:id="@+id/tileGroup" style="@style/CcTile" android:layout_marginEnd="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_green" android:src="@drawable/ic_ms_groups" app:tint="@color/cc_success" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="Lab group" />
+                            <TextView android:id="@+id/tvTileGroupSub" style="@style/CcTileSub" android:text="View members" />
+                        </LinearLayout>
+
+                        <LinearLayout android:id="@+id/tileProgramme" style="@style/CcTile" android:layout_marginStart="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_amber" android:src="@drawable/ic_ms_notifications_active" app:tint="@color/cc_warning_strong" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="Reminders" />
+                            <TextView style="@style/CcTileSub" android:text="Stay on track" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Next class -->
+                    <LinearLayout
+                        android:id="@+id/cardNextClass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/cc_card_bordered"
+                        android:padding="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivNextClassIcon"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/cc_iconchip_navy"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_ms_code"
+                            app:tint="@color/white"
+                            android:contentDescription="@null" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/next_class"
+                                android:textColor="@color/cc_crimson"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <TextView
+                                android:id="@+id/tvNextClassName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:textColor="@color/cc_text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins"
+                                tools:text="ICT 361 · Software Engineering" />
+
+                            <TextView
+                                android:id="@+id/tvNextClassDetails"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/cc_text_muted"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins"
+                                tools:text="Wed 10:00 · Computer Lab 2 · PC-14" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_ms_chevron_right"
+                            app:tint="@color/cc_text_muted"
+                            android:contentDescription="@null" />
+                    </LinearLayout>
+
+                    <!-- Announcements -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            style="@style/CcSectionTitle"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:text="@string/announcements" />
+
+                        <TextView
+                            android:id="@+id/tvAnnouncementsSeeAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="See all"
+                            android:textColor="@color/cc_accent_blue"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/cardAnnouncement"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:background="@drawable/cc_card_bordered"
+                        android:padding="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/cc_iconchip_blue"
+                            android:padding="9dp"
+                            android:src="@drawable/ic_ms_campaign"
+                            app:tint="@color/cc_accent_blue"
+                            android:contentDescription="@null" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="ICT 361 Lab Group Instructions"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:textColor="@color/cc_text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tap to see the latest announcements"
+                                android:textColor="@color/cc_text_muted"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Occupancy + Sync -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:orientation="vertical"
+                            android:background="@drawable/cc_card_bordered"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/group_occupancy"
+                                android:textColor="@color/cc_text_secondary"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <TextView
+                                android:id="@+id/tvOccupancy"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="14/15"
+                                android:textColor="@color/cc_text_primary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progressOccupancy"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                app:trackThickness="6dp"
+                                app:trackCornerRadius="3dp"
+                                app:indicatorColor="@color/cc_warning_strong"
+                                app:trackColor="@color/cc_light_blue"
+                                android:max="15"
+                                android:progress="14" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/syncTile"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:orientation="vertical"
+                            android:background="@drawable/cc_card_bordered"
+                            android:padding="14dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sync_status"
+                                android:textColor="@color/cc_text_secondary"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins" />
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginTop="8dp"
+                                android:src="@drawable/ic_ms_cloud_done"
+                                app:tint="@color/cc_success"
+                                android:contentDescription="@null" />
+
+                            <TextView
+                                android:id="@+id/tvSyncStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Synced · tap to sync"
+                                android:textColor="@color/cc_text_muted"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </FrameLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Bottom navigation -->
+    <include
+        layout="@layout/cc_bottom_nav_student"
         android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="#05345F"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNav"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/cc_surface"
+    android:elevation="12dp"
+    android:paddingBottom="8dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cc_divider_strong" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="6dp">
+
+        <LinearLayout android:id="@+id/navDashboard" style="@style/CcNavItem">
+            <FrameLayout style="@style/CcNavPill">
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_home" android:contentDescription="@string/nav_dashboard" />
+            </FrameLayout>
+            <TextView style="@style/CcNavLabel" android:text="Home" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navGroup" style="@style/CcNavItem">
+            <FrameLayout style="@style/CcNavPill">
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_group" android:contentDescription="@string/nav_group" />
+            </FrameLayout>
+            <TextView style="@style/CcNavLabel" android:text="@string/nav_group" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navAlerts" style="@style/CcNavItem">
+            <FrameLayout style="@style/CcNavPill">
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_alerts" android:contentDescription="@string/nav_alerts" />
+                <TextView
+                    android:id="@+id/tvAlertBadge"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_notification_badge"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:fontFamily="@font/poppins" />
+            </FrameLayout>
+            <TextView style="@style/CcNavLabel" android:text="@string/nav_alerts" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navProfile" style="@style/CcNavItem">
+            <FrameLayout style="@style/CcNavPill">
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_profile" android:contentDescription="@string/nav_profile" />
+            </FrameLayout>
+            <TextView style="@style/CcNavLabel" android:text="@string/nav_profile" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navSettings" style="@style/CcNavItem">
+            <FrameLayout style="@style/CcNavPill">
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_settings" android:contentDescription="@string/nav_settings" />
+            </FrameLayout>
+            <TextView style="@style/CcNavLabel" android:text="@string/nav_settings" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
