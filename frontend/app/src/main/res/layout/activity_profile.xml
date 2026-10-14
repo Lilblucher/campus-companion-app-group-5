@@ -74,17 +74,32 @@
                     android:gravity="center"
                     android:padding="24dp">
 
-                    <TextView
-                        android:id="@+id/tvAvatarInitials"
+                    <FrameLayout
                         android:layout_width="88dp"
-                        android:layout_height="88dp"
-                        android:background="@drawable/cc_avatar_crimson"
-                        android:gravity="center"
-                        android:text="CM"
-                        android:textColor="@color/white"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/poppins" />
+                        android:layout_height="88dp">
+
+                        <TextView
+                            android:id="@+id/tvAvatarInitials"
+                            android:layout_width="88dp"
+                            android:layout_height="88dp"
+                            android:background="@drawable/cc_avatar_crimson"
+                            android:gravity="center"
+                            android:text="CM"
+                            android:textColor="@color/white"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins" />
+
+                        <ImageView
+                            android:id="@+id/ivAvatarPhoto"
+                            android:layout_width="88dp"
+                            android:layout_height="88dp"
+                            android:background="@drawable/cc_avatar_crimson"
+                            android:clipToOutline="true"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:contentDescription="Profile photo" />
+                    </FrameLayout>
 
                     <TextView
                         android:id="@+id/tvProfileName"
@@ -130,14 +145,14 @@
                             android:layout_height="18dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/ic_ms_edit"
-                            app:tint="@color/cc_navy"
+                            app:tint="@color/cc_navy_on_surface"
                             android:contentDescription="@null" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/edit_profile"
-                            android:textColor="@color/cc_navy"
+                            android:textColor="@color/cc_navy_on_surface"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             android:fontFamily="@font/poppins" />
@@ -394,7 +409,7 @@
                         app:backgroundTint="@null"
                         android:text="@string/view_fees"
                         android:textAllCaps="false"
-                        android:textColor="@color/cc_navy"
+                        android:textColor="@color/cc_navy_on_surface"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/poppins" />
@@ -419,7 +434,7 @@
                         android:layout_height="24dp"
                         android:layout_marginEnd="14dp"
                         android:src="@drawable/ic_ms_account_balance_wallet"
-                        app:tint="@color/cc_navy"
+                        app:tint="@color/cc_navy_on_surface"
                         android:contentDescription="@null" />
 
                     <TextView

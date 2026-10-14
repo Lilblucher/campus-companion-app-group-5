@@ -104,7 +104,7 @@
                     <LinearLayout style="@style/CcCourseText">
                         <TextView style="@style/CcCourseTitle" android:text="ICT 361 · Software Engineering" />
                         <TextView style="@style/CcCourseMeta" android:text="Dr. Mulenga · 3 Credits · Computer Lab 2" />
-                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy" />
+                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy_on_surface" />
                     </LinearLayout>
                     <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
                 </LinearLayout>
@@ -114,7 +114,7 @@
                     <LinearLayout style="@style/CcCourseText">
                         <TextView style="@style/CcCourseTitle" android:text="CSC 311 · Algorithms &amp; Data Structures" />
                         <TextView style="@style/CcCourseMeta" android:text="Prof. Banda · 4 Credits · Lecture Hall 1" />
-                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy" />
+                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy_on_surface" />
                     </LinearLayout>
                     <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
                 </LinearLayout>
@@ -124,7 +124,7 @@
                     <LinearLayout style="@style/CcCourseText">
                         <TextView style="@style/CcCourseTitle" android:text="CSC 312 · Computer Networks" />
                         <TextView style="@style/CcCourseMeta" android:text="Dr. Phiri · 3 Credits · Lab 3" />
-                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy" />
+                        <TextView style="@style/CcCourseMeta" android:text="4 PDFs available" android:textColor="@color/cc_navy_on_surface" />
                     </LinearLayout>
                     <ImageView style="@style/CcCourseChevron" android:src="@drawable/ic_ms_chevron_right" android:contentDescription="@null" />
                 </LinearLayout>
@@ -139,11 +139,11 @@
                     app:backgroundTint="@null"
                     android:drawableStart="@drawable/ic_ms_picture_as_pdf"
                     android:drawablePadding="8dp"
-                    android:drawableTint="@color/cc_navy"
+                    android:drawableTint="@color/cc_navy_on_surface"
                     android:gravity="center"
                     android:text="View all course materials"
                     android:textAllCaps="false"
-                    android:textColor="@color/cc_navy"
+                    android:textColor="@color/cc_navy_on_surface"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:fontFamily="@font/poppins" />

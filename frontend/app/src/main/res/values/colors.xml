@@ -61,6 +61,9 @@
     <color name="cc_red_fg">#B30D25</color>
     <color name="cc_offline_banner">#334155</color>
 
+    <!-- Navy used as text/tint on the page surface (needs dark-mode override) -->
+    <color name="cc_navy_on_surface">#022F77</color>
+
     <!-- Splash / Welcome (redesign v2 handoff) -->
     <color name="cc_splash_sheet">#0F1F45</color>
     <color name="cc_splash_cta">#CF102D</color>

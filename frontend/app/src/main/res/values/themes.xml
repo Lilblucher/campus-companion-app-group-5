@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/color_navy_sheet</item>
         <item name="colorSecondary">@color/color_crimson_red</item>
         <item name="colorSecondaryVariant">@color/color_crimson_dark</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/cc_navy</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:fontFamily">@font/poppins</item>
     </style>
 
@@ -300,7 +300,7 @@
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_marginEnd">14dp</item>
-        <item name="android:tint">@color/cc_navy</item>
+        <item name="android:tint">@color/cc_navy_on_surface</item>
     </style>
 
     <style name="CcSwitchText">
