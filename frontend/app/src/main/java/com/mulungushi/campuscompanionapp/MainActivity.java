@@ -1,6 +1,8 @@
 package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -55,6 +57,25 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         com.mulungushi.campuscompanionapp.util.NavBadge.refresh(this);
+        loadSavedPhoto();
+    }
+
+    private void loadSavedPhoto() {
+        String path = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+                .getString("profile_photo_path", null);
+        ImageView ivAvatar = findViewById(R.id.ivAvatar);
+        TextView tvInitials = findViewById(R.id.tvAvatarInitials);
+        if (path == null || !new java.io.File(path).exists()) {
+            if (ivAvatar != null) ivAvatar.setVisibility(View.GONE);
+            if (tvInitials != null) tvInitials.setVisibility(View.VISIBLE);
+            return;
+        }
+        Bitmap bmp = BitmapFactory.decodeFile(path);
+        if (bmp != null && ivAvatar != null) {
+            ivAvatar.setImageBitmap(bmp);
+            ivAvatar.setVisibility(View.VISIBLE);
+            if (tvInitials != null) tvInitials.setVisibility(View.GONE);
+        }
     }
 
     /** Replace the placeholder next-class card with the real GET /api/timetable/next. */

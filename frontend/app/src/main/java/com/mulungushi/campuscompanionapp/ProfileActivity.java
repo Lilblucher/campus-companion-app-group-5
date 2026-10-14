@@ -58,7 +58,6 @@ public class ProfileActivity extends BaseActivity {
         findViewById(R.id.btnSignOut).setOnClickListener(v -> showSignOutDialog());
 
         setupBottomNav();
-        loadProfile();
     }
 
     @Override
