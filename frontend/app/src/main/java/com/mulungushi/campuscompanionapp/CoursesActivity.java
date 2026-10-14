@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class CoursesActivity extends AppCompatActivity {
+public class CoursesActivity extends BaseActivity {
 
     private final String[] courses = {
             "ICT 361 - Mobile Application Development",

@@ -36,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ManageGroupsActivity extends AppCompatActivity {
+public class ManageGroupsActivity extends BaseActivity {
 
     private final List<GroupsResponse.Group> groups = new ArrayList<>();
     private GroupCardAdapter adapter;

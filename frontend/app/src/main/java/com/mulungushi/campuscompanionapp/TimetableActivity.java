@@ -30,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TimetableActivity extends AppCompatActivity {
+public class TimetableActivity extends BaseActivity {
 
     static final String[] DAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     private LinearLayout root, list;
@@ -64,7 +64,6 @@ public class TimetableActivity extends AppCompatActivity {
         list.setPadding(p, 0, p, p);
         root.addView(list);
 
-        ConnectivityMonitor.getInstance(this).probe(st -> NetBanner.show(this, root, st));
         reload();
     }
 

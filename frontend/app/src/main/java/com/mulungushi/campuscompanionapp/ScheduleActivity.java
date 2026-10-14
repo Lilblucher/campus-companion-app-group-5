@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends BaseActivity {
 
     private final String[] schedule = {
             "08:00 - 10:00 AM | ICT 361: Mobile App Dev (Lab 2)",

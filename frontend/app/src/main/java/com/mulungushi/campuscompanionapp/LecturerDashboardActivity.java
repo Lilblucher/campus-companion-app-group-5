@@ -30,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LecturerDashboardActivity extends AppCompatActivity {
+public class LecturerDashboardActivity extends BaseActivity {
 
     private View navDashboard, navStudents, navGroups, navProfile, navSettings;
     private View tileGenerateClaimCode, tileMyCourses, tileLabGroups, tilePostAnnouncement;

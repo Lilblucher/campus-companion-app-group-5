@@ -27,7 +27,7 @@ import java.util.List;
  * filters the real, reachable destinations (role-aware) and tapping one navigates
  * there. This is a working search rather than a decorative field.
  */
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
 
     private static class Dest {
         final String title, sub, keywords;

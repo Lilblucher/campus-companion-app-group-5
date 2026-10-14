@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cc_navy"
-    tools:context=".LecturerDashboardActivity">
+    tools:context=".LecturerDashboardActivity"
+    android:fitsSystemWindows="true">
 
     <!-- Navy header -->
     <LinearLayout
@@ -72,8 +73,10 @@
 
                 <TextView
                     android:id="@+id/tvDepartment"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="@string/lecturer_role"
                     android:textColor="@color/cc_on_navy_muted"
                     android:textSize="12sp"

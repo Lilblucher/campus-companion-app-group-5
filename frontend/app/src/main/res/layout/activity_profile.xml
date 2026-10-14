@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cc_navy"
-    tools:context=".ProfileActivity">
+    tools:context=".ProfileActivity"
+    android:fitsSystemWindows="true">
 
     <!-- Navy header -->
     <LinearLayout
@@ -87,9 +88,11 @@
 
                     <TextView
                         android:id="@+id/tvProfileName"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:text="Chileshe Mulenga"
                         android:textColor="@color/cc_text_primary"
                         android:textSize="20sp"
@@ -98,9 +101,11 @@
 
                     <TextView
                         android:id="@+id/tvProfileSubtitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:text="Computer Science · Year 3"
                         android:textColor="@color/cc_text_muted"
                         android:textSize="14sp"
@@ -273,9 +278,11 @@
 
                             <TextView
                                 android:id="@+id/tvIdCardName"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
+                                android:maxLines="1"
+                                android:ellipsize="end"
                                 android:text="Chileshe Mulenga"
                                 android:textColor="@android:color/white"
                                 android:textSize="15sp"
@@ -284,9 +291,11 @@
 
                             <TextView
                                 android:id="@+id/tvIdCardMeta"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
+                                android:maxLines="1"
+                                android:ellipsize="end"
                                 android:text="210482910 · CS · Year 3 · Valid to Dec 2026"
                                 android:textColor="@color/cc_on_navy_muted"
                                 android:textSize="11sp"

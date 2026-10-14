@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     public static final String PREFS = "campus_companion_prefs";
     public static final String KEY_BIOMETRIC = "pref_biometric";
