@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LabRegistrationActivity extends AppCompatActivity {
+public class LabRegistrationActivity extends BaseActivity {
 
     private static final String OWN_STUDENT_NUMBER = "210482910";
     private static final int MAX_TEAM_SIZE = 4;

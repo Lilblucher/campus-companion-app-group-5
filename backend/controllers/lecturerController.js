@@ -4,7 +4,7 @@
 
 const db = require('../config/db');
 const { setStudentGroup, isGroupFull } = require('../utils/membership');
-const { notifyStudent } = require('../utils/notify');
+const { notifyStudent, createNotification } = require('../utils/notify');
 const { buildMembersWorkbook } = require('../utils/xlsx');
 
 const PROGRAMMES = ['CS', 'IT', 'DS'];
@@ -419,8 +419,50 @@ async function listGroupMembers(req, res) {
   }
 }
 
+// POST /api/lecturer/announcements
+// Body: { title, body }
+// Creates a notification for every active student account.
+async function postAnnouncement(req, res) {
+  const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
+  const body  = typeof req.body.body  === 'string' ? req.body.body.trim()  : '';
+  if (!title || !body) {
+    return res.status(400).json({ error: 'Title and body are required' });
+  }
+  if (title.length > 100) {
+    return res.status(400).json({ error: 'Title must be 100 characters or less' });
+  }
+  if (body.length > 255) {
+    return res.status(400).json({ error: 'Body must be 255 characters or less' });
+  }
+  try {
+    const [students] = await db.query(
+      `SELECT account_id FROM accounts WHERE role = 'student' AND is_locked = 0`
+    );
+    if (students.length === 0) {
+      return res.json({ message: 'No students to notify', notified: 0 });
+    }
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+      for (const s of students) {
+        await createNotification(conn, s.account_id, 'ANNOUNCEMENT', title, body);
+      }
+      await conn.commit();
+    } catch (txErr) {
+      await conn.rollback();
+      throw txErr;
+    } finally {
+      conn.release();
+    }
+    return res.json({ message: 'Announcement sent to all students', notified: students.length });
+  } catch (err) {
+    console.error('postAnnouncement error:', err);
+    return res.status(500).json({ error: 'Failed to post announcement' });
+  }
+}
+
 module.exports = {
   listStudents, createStudent, editStudent, softDeleteStudent, assignStudent,
   listGroups, createGroup, deleteGroup, setGroupLeader, listGroupMembers,
-  listRequests, approveRequest, rejectRequest, exportGroupXlsx,
+  listRequests, approveRequest, rejectRequest, exportGroupXlsx, postAnnouncement,
 };

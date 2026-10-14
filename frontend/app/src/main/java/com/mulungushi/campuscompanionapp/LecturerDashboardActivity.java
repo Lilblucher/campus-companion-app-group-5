@@ -30,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LecturerDashboardActivity extends AppCompatActivity {
+public class LecturerDashboardActivity extends BaseActivity {
 
     private View navDashboard, navStudents, navGroups, navProfile, navSettings;
     private View tileGenerateClaimCode, tileMyCourses, tileLabGroups, tilePostAnnouncement;
@@ -186,19 +186,53 @@ public class LecturerDashboardActivity extends AppCompatActivity {
     }
 
     private void showPostAnnouncementDialog() {
-        final EditText input = new EditText(this);
-        input.setHint("Enter announcement text...");
+        android.widget.LinearLayout box = new android.widget.LinearLayout(this);
+        box.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int p = (int) (16 * getResources().getDisplayMetrics().density);
+        box.setPadding(p, p, p, 0);
+
+        final EditText titleInput = new EditText(this);
+        titleInput.setHint("Announcement title");
+        titleInput.setSingleLine(true);
+        box.addView(titleInput);
+
+        final EditText bodyInput = new EditText(this);
+        bodyInput.setHint("Announcement body");
+        bodyInput.setMinLines(3);
+        box.addView(bodyInput);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.post_announcement)
-                .setView(input)
+                .setView(box)
                 .setPositiveButton("Post Broadcast", (dialog, which) -> {
-                    String text = input.getText().toString().trim();
-                    if (!text.isEmpty()) {
-                        Toast.makeText(this, "Announcement posted to Lab Groups G01–G04!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Announcement text cannot be empty", Toast.LENGTH_SHORT).show();
+                    String title = titleInput.getText().toString().trim();
+                    String body = bodyInput.getText().toString().trim();
+                    if (title.isEmpty() || body.isEmpty()) {
+                        Toast.makeText(this, "Title and body are required", Toast.LENGTH_SHORT).show();
+                        return;
                     }
+                    ApiService api = ApiClient.getClient(this).create(ApiService.class);
+                    api.postAnnouncement(new com.mulungushi.campuscompanionapp.network.ApiBodies.PostAnnouncement(title, body))
+                            .enqueue(new Callback<com.mulungushi.campuscompanionapp.network.MessageResponse>() {
+                                @Override
+                                public void onResponse(Call<com.mulungushi.campuscompanionapp.network.MessageResponse> c,
+                                                       Response<com.mulungushi.campuscompanionapp.network.MessageResponse> r) {
+                                    if (r.isSuccessful() && r.body() != null) {
+                                        Toast.makeText(LecturerDashboardActivity.this,
+                                                r.body().message != null ? r.body().message : "Announcement sent",
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(LecturerDashboardActivity.this,
+                                                "Failed to post announcement", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<com.mulungushi.campuscompanionapp.network.MessageResponse> c, Throwable t) {
+                                    Toast.makeText(LecturerDashboardActivity.this,
+                                            "Network error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();

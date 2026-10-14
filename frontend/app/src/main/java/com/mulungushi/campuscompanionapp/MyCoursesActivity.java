@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MyCoursesActivity extends AppCompatActivity {
+public class MyCoursesActivity extends BaseActivity {
 
     private View navDashboard, navGroup, navProfile, navCourses, navSettings;
 

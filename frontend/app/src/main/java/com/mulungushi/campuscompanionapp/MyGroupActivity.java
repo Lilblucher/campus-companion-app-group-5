@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyGroupActivity extends AppCompatActivity {
+public class MyGroupActivity extends BaseActivity {
 
     private View navDashboard, navGroup, navCourses, navProfile, navSettings;
     private ApiService api;

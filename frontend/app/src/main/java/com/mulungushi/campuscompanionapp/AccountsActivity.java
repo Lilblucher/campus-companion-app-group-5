@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-public class AccountsActivity extends AppCompatActivity {
+public class AccountsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

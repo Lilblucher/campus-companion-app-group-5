@@ -31,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RemindersActivity extends AppCompatActivity {
+public class RemindersActivity extends BaseActivity {
 
     private LinearLayout root, list;
     private ApiService api;
@@ -65,7 +65,6 @@ public class RemindersActivity extends AppCompatActivity {
         list.setPadding(p, 0, p, p);
         root.addView(list);
 
-        ConnectivityMonitor.getInstance(this).probe(st -> NetBanner.show(this, root, st));
         reload();
     }
 

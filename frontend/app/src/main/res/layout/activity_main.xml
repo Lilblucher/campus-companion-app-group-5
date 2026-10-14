@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cc_navy"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:fitsSystemWindows="true">
 
     <!-- Navy header -->
     <LinearLayout
@@ -87,8 +88,10 @@
 
                 <TextView
                     android:id="@+id/tvProgrammeYear"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:visibility="gone"
                     android:textColor="@color/cc_on_navy_muted"
                     android:textSize="12sp"

@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class RegistrationProgressActivity extends AppCompatActivity {
+public class RegistrationProgressActivity extends BaseActivity {
 
     private EditText etClaimCodeInput;
     private Button btnRedeemClaimCode;

@@ -22,7 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchStudentActivity extends AppCompatActivity {
+public class SearchStudentActivity extends BaseActivity {
 
     public static class StudentItem {
         public String name;

@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentsActivity extends AppCompatActivity {
+public class StudentsActivity extends BaseActivity {
 
     public static class StudentListItem {
         public String name;

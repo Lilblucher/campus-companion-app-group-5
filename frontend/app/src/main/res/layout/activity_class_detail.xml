@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cc_page_bg"
-    tools:context=".ClassDetailActivity">
+    tools:context=".ClassDetailActivity"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:id="@+id/topHeaderSection"

@@ -41,6 +41,7 @@ public final class NavBadge {
                     }
                 }
                 apply(badge, unread);
+                AppNotifications.maybeNotifyNewAlerts(activity, unread);
             }
 
             @Override

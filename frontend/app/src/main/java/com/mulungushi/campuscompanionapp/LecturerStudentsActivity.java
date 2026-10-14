@@ -30,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LecturerStudentsActivity extends AppCompatActivity {
+public class LecturerStudentsActivity extends BaseActivity {
 
     private ApiService api;
     private LinearLayout groupsBox, list;

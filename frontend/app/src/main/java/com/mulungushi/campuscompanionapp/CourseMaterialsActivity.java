@@ -14,7 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-public class CourseMaterialsActivity extends AppCompatActivity {
+public class CourseMaterialsActivity extends BaseActivity {
 
     private static class PdfFile {
         final String name;

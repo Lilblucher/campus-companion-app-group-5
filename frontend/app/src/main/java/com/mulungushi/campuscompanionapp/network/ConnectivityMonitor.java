@@ -7,6 +7,8 @@ import android.net.NetworkCapabilities;
 
 import com.mulungushi.campuscompanionapp.util.Bg;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -25,12 +27,13 @@ public final class ConnectivityMonitor {
 
     public enum State { OFFLINE, SLOW, GOOD }
     public interface StateCb { void onState(State s); }
+    public interface ConnectivityListener { void onConnectivityChanged(boolean online); }
 
     private static volatile ConnectivityMonitor INSTANCE;
     private final ConnectivityManager cm;
     private volatile boolean online;
+    private final List<ConnectivityListener> listeners = new CopyOnWriteArrayList<>();
 
-    // Quality thresholds
     private static final long SLOW_RTT_MS = 2000;
     private static final int SLOW_KBPS = 200;
 
@@ -45,11 +48,19 @@ public final class ConnectivityMonitor {
         try {
             if (cm != null) {
                 cm.registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback() {
-                    @Override public void onAvailable(Network n) { online = true; }
-                    @Override public void onLost(Network n) { online = computeOnline(); }
+                    @Override public void onAvailable(Network n) {
+                        boolean was = online;
+                        online = true;
+                        if (!was) notifyListeners(true);
+                    }
+                    @Override public void onLost(Network n) {
+                        boolean was = online;
+                        online = computeOnline();
+                        if (was && !online) notifyListeners(false);
+                    }
                 });
             }
-        } catch (Exception ignored) { /* some devices restrict this */ }
+        } catch (Exception ignored) {}
     }
 
     public static ConnectivityMonitor getInstance(Context ctx) {
@@ -73,6 +84,17 @@ public final class ConnectivityMonitor {
 
     public boolean isOnline() { return online || computeOnline(); }
 
+    public void addListener(ConnectivityListener l) { listeners.add(l); }
+    public void removeListener(ConnectivityListener l) { listeners.remove(l); }
+
+    private void notifyListeners(boolean isOnline) {
+        Bg.main(() -> {
+            for (ConnectivityListener l : listeners) {
+                try { l.onConnectivityChanged(isOnline); } catch (Exception ignored) {}
+            }
+        });
+    }
+
     private int downstreamKbps() {
         try {
             Network n = cm.getActiveNetwork();
@@ -81,7 +103,6 @@ public final class ConnectivityMonitor {
         } catch (Exception e) { return -1; }
     }
 
-    /** Measure and deliver the current state on the main thread. */
     public void probe(StateCb cb) {
         Bg.io(() -> {
             if (!isOnline()) { Bg.main(() -> cb.onState(State.OFFLINE)); return; }

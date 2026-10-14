@@ -24,7 +24,7 @@ import com.mulungushi.campuscompanionapp.util.Skeleton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationsActivity extends AppCompatActivity {
+public class NotificationsActivity extends BaseActivity {
 
     private View navDashboard, navGroup, navCourses, navProfile, navSettings;
     private final List<CachedNotification> allItems = new ArrayList<>();
@@ -87,9 +87,6 @@ public class NotificationsActivity extends AppCompatActivity {
             shown++;
         }
         if (shown == 0) container.addView(placeholder("No notifications here yet."));
-        if (!ConnectivityMonitor.getInstance(this).isOnline()) {
-            NetBanner.show(this, container, ConnectivityMonitor.State.OFFLINE);
-        }
     }
 
     /** Replace the hardcoded sample alerts with GET /api/notifications. */

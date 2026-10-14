@@ -24,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     // Timetable / next-class data isn't in the backend yet, so these stay placeholders.
     private static final String STUB_NEXT_CLASS_NAME = "ICT 361 · Software Engineering";

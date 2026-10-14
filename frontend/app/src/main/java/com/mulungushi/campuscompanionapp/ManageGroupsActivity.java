@@ -36,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ManageGroupsActivity extends AppCompatActivity {
+public class ManageGroupsActivity extends BaseActivity {
 
     private final List<GroupsResponse.Group> groups = new ArrayList<>();
     private GroupCardAdapter adapter;
@@ -239,9 +239,9 @@ public class ManageGroupsActivity extends AppCompatActivity {
                 List<GroupMembersResponse.Member> members = r.body().members;
                 StringBuilder sb = new StringBuilder();
                 for (GroupMembersResponse.Member m : members) {
-                    if (m.is_group_leader) sb.append("★ "); // star for leader
+                    if (m.isLeader()) sb.append("★ ");
                     sb.append(m.name).append("  (").append(m.student_number).append(")");
-                    if (m.is_group_leader) sb.append("  - Leader");
+                    if (m.isLeader()) sb.append("  - Leader");
                     sb.append("\n");
                 }
                 new AlertDialog.Builder(ManageGroupsActivity.this)
@@ -269,7 +269,7 @@ public class ManageGroupsActivity extends AppCompatActivity {
                 String[] names = new String[members.size()];
                 for (int i = 0; i < members.size(); i++) {
                     names[i] = members.get(i).name + " (" + members.get(i).student_number + ")"
-                            + (members.get(i).is_group_leader ? " - current leader" : "");
+                            + (members.get(i).isLeader() ? " - current leader" : "");
                 }
                 final int[] chosen = {-1};
                 new AlertDialog.Builder(ManageGroupsActivity.this)

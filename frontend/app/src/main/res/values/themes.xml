@@ -148,9 +148,11 @@
     </style>
 
     <style name="CcTileTitle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">8dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/cc_text_primary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
@@ -158,9 +160,11 @@
     </style>
 
     <style name="CcTileSub">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">2dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/cc_text_muted</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">@font/poppins</item>
@@ -397,9 +401,11 @@
     </style>
 
     <style name="CcInfoValue">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">2dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/cc_text_primary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
