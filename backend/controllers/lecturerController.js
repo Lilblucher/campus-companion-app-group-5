@@ -328,7 +328,99 @@ async function exportGroupXlsx(req, res) {
   }
 }
 
+// POST /api/lecturer/groups  { group_name: "G05", max_members?: 15 }
+async function createGroup(req, res) {
+  const b = req.body || {};
+  const name = typeof b.group_name === 'string' ? b.group_name.trim() : '';
+  if (!name || name.length > 10) return res.status(400).json({ error: 'group_name is required (max 10 chars)' });
+  const max = b.max_members != null ? Number(b.max_members) : 15;
+  if (!Number.isInteger(max) || max < 1 || max > 15) return res.status(400).json({ error: 'max_members must be 1-15' });
+  try {
+    const [result] = await db.query('INSERT INTO lab_groups (group_name, max_members) VALUES (?, ?)', [name, max]);
+    return res.status(201).json({ group_id: result.insertId, group_name: name, max_members: max });
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'A group with that name already exists' });
+    console.error('createGroup error:', err);
+    return res.status(500).json({ error: 'Failed to create group' });
+  }
+}
+
+// DELETE /api/lecturer/groups/:id
+async function deleteGroup(req, res) {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'invalid group id' });
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+    const [g] = await conn.query('SELECT group_id, group_name FROM lab_groups WHERE group_id = ? FOR UPDATE', [id]);
+    if (g.length === 0) { await conn.rollback(); return res.status(404).json({ error: 'Group not found' }); }
+    const [[{ cnt }]] = await conn.query('SELECT COUNT(*) AS cnt FROM group_members WHERE group_id = ? AND is_active = 1', [id]);
+    if (cnt > 0) { await conn.rollback(); return res.status(409).json({ error: 'Remove all ' + cnt + ' members before deleting this group' }); }
+    await conn.query('DELETE FROM lab_groups WHERE group_id = ?', [id]);
+    await conn.commit();
+    return res.json({ group_id: id, deleted: true });
+  } catch (err) {
+    try { await conn.rollback(); } catch (_) {}
+    console.error('deleteGroup error:', err);
+    return res.status(500).json({ error: 'Failed to delete group' });
+  } finally {
+    conn.release();
+  }
+}
+
+// POST /api/lecturer/groups/:id/leader  { student_id: number }
+// Sets one student as group leader (clears previous leader in that group).
+async function setGroupLeader(req, res) {
+  const groupId = parseInt(req.params.id, 10);
+  if (!Number.isInteger(groupId) || groupId < 1) return res.status(400).json({ error: 'invalid group id' });
+  const studentId = req.body ? req.body.student_id : undefined;
+  if (!studentId || !Number.isInteger(Number(studentId))) return res.status(400).json({ error: 'student_id is required' });
+  const sid = Number(studentId);
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+    const [g] = await conn.query('SELECT group_id FROM lab_groups WHERE group_id = ?', [groupId]);
+    if (g.length === 0) { await conn.rollback(); return res.status(404).json({ error: 'Group not found' }); }
+    const [s] = await conn.query('SELECT student_id, lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0', [sid]);
+    if (s.length === 0) { await conn.rollback(); return res.status(404).json({ error: 'Student not found' }); }
+    if (s[0].lab_group_id !== groupId) { await conn.rollback(); return res.status(400).json({ error: 'Student is not in this group' }); }
+    // Clear previous leader(s) in this group
+    await conn.query('UPDATE students SET is_group_leader = 0 WHERE lab_group_id = ? AND is_group_leader = 1', [groupId]);
+    // Set the new leader
+    await conn.query('UPDATE students SET is_group_leader = 1 WHERE student_id = ?', [sid]);
+    await notifyStudent(conn, sid, 'GROUP_LEADER', 'Group leader', 'You have been made group leader.');
+    await conn.commit();
+    return res.json({ group_id: groupId, student_id: sid, is_group_leader: true });
+  } catch (err) {
+    try { await conn.rollback(); } catch (_) {}
+    console.error('setGroupLeader error:', err);
+    return res.status(500).json({ error: 'Failed to set group leader' });
+  } finally {
+    conn.release();
+  }
+}
+
+// GET /api/lecturer/groups/:id/members — list members of a specific group
+async function listGroupMembers(req, res) {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'invalid group id' });
+  try {
+    const [rows] = await db.query(
+      `SELECT s.student_id, s.student_number, s.name, s.programme_code, s.is_group_leader
+         FROM group_members gm JOIN students s ON s.student_id = gm.student_id
+        WHERE gm.group_id = ? AND gm.is_active = 1 AND s.is_deleted = 0
+        ORDER BY s.is_group_leader DESC, s.name`,
+      [id]
+    );
+    return res.json({ members: rows });
+  } catch (err) {
+    console.error('listGroupMembers error:', err);
+    return res.status(500).json({ error: 'Failed to load members' });
+  }
+}
+
 module.exports = {
   listStudents, createStudent, editStudent, softDeleteStudent, assignStudent,
-  listGroups, listRequests, approveRequest, rejectRequest, exportGroupXlsx,
+  listGroups, createGroup, deleteGroup, setGroupLeader, listGroupMembers,
+  listRequests, approveRequest, rejectRequest, exportGroupXlsx,
 };

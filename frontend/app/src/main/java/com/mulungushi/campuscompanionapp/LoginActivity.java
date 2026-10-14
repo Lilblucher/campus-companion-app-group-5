@@ -27,8 +27,10 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etStudentNumber, etPassword;
+    private Button btnLogin;
     private View errorRow;
     private TextView tvError;
+    private boolean loginInFlight;
     // Role segmented control (a routing hint; the server's AuthResponse role still wins)
     private String selectedRole = "student";
 
@@ -43,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         errorRow = findViewById(R.id.errorRow);
         tvError = findViewById(R.id.tvError);
 
-        Button btnLogin = findViewById(R.id.btnLogin);
+        btnLogin = findViewById(R.id.btnLogin);
         if (btnLogin != null) btnLogin.setOnClickListener(v -> attemptLogin());
 
         View btnRegister = findViewById(R.id.btnRegister);
@@ -107,7 +109,16 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
     }
 
+    private void setLoginEnabled(boolean enabled) {
+        loginInFlight = !enabled;
+        if (btnLogin != null) {
+            btnLogin.setEnabled(enabled);
+            btnLogin.setText(enabled ? getString(R.string.login) : "Signing in…");
+        }
+    }
+
     private void attemptLogin() {
+        if (loginInFlight) return;
         clearError();
         String studentNumber = etStudentNumber.getText().toString().trim();
         String password = etPassword.getText().toString();
@@ -117,24 +128,8 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Demo / Stub Credentials Fallback ---
-        if ("123456789".equals(studentNumber) || "210482910".equals(studentNumber)) {
-            if ("password123".equals(password)) {
-                saveSessionAndNavigate("student", "Kellys", studentNumber, "stub-jwt-token-student", false);
-                return;
-            }
-        }
-        if ("LEC100001".equalsIgnoreCase(studentNumber) || "DR100001".equalsIgnoreCase(studentNumber) || "lecturer".equalsIgnoreCase(studentNumber)) {
-            if ("password123".equals(password)) {
-                saveSessionAndNavigate("lecturer", "Dr. Mulenga", "LEC100001", "stub-jwt-token-lecturer", false);
-                return;
-            }
-        }
+        setLoginEnabled(false);
 
-        // --- Live Retrofit API Call ---
-        // Lecturers authenticate with their email as `username`; students with
-        // their `student_number`. Use the role toggle, and also treat an
-        // email-looking value as a lecturer login regardless.
         boolean asLecturer = "lecturer".equals(selectedRole) || studentNumber.contains("@");
         LoginRequest req = asLecturer
                 ? LoginRequest.forLecturer(studentNumber, password)
@@ -146,7 +141,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     AuthResponse auth = response.body();
-                    // Server role wins; fall back to the segmented-control hint only if absent.
                     String role = auth.getRole() != null ? auth.getRole() : selectedRole;
                     String name = auth.getName() != null ? auth.getName() : "User";
                     String studentId = auth.getStudentId() != null ? auth.getStudentId() : studentNumber;
@@ -154,13 +148,15 @@ public class LoginActivity extends AppCompatActivity {
 
                     saveSessionAndNavigate(role, name, studentId, token, auth.isGroupLeader());
                 } else {
+                    setLoginEnabled(true);
                     showError(getString(R.string.error_wrong_credentials));
                 }
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                showError("Network error: " + t.getMessage());
+                setLoginEnabled(true);
+                showError("Couldn't reach the server. Check your connection and try again.");
             }
         });
     }

@@ -33,6 +33,7 @@ public class MyGroupActivity extends AppCompatActivity {
     private View navDashboard, navGroup, navCourses, navProfile, navSettings;
     private ApiService api;
     private boolean leader;
+    private boolean actionInFlight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +99,18 @@ public class MyGroupActivity extends AppCompatActivity {
                             .enqueue(new Callback<MessageResponse>() {
                                 @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> resp) {
                                     if (resp.isSuccessful()) Toast.makeText(MyGroupActivity.this, "Group change request sent to lecturer", Toast.LENGTH_SHORT).show();
-                                    else Toast.makeText(MyGroupActivity.this, resp.body() != null && resp.body().error != null ? resp.body().error : "Request failed", Toast.LENGTH_SHORT).show();
+                                    else {
+                                        String msg = "Couldn't send the request right now";
+                                        try {
+                                            MessageResponse body = resp.errorBody() != null
+                                                    ? new com.google.gson.Gson().fromJson(resp.errorBody().charStream(), MessageResponse.class)
+                                                    : resp.body();
+                                            if (body != null && body.error != null) msg = body.error;
+                                        } catch (Exception ignored) { }
+                                        Toast.makeText(MyGroupActivity.this, msg, Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                                @Override public void onFailure(Call<MessageResponse> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show(); }
+                                @Override public void onFailure(Call<MessageResponse> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show(); }
                             });
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -243,8 +253,11 @@ public class MyGroupActivity extends AppCompatActivity {
     }
 
     private void doJoinGroup(int groupId) {
+        if (actionInFlight) return;
+        actionInFlight = true;
         api.joinGroup(new ApiBodies.JoinGroup(groupId)).enqueue(new Callback<MessageResponse>() {
             @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                actionInFlight = false;
                 if (r.isSuccessful()) {
                     Toast.makeText(MyGroupActivity.this, "You're in! Welcome to your lab group.", Toast.LENGTH_SHORT).show();
                     loadGroup();
@@ -255,13 +268,14 @@ public class MyGroupActivity extends AppCompatActivity {
                                 ? new com.google.gson.Gson().fromJson(r.errorBody().charStream(), MessageResponse.class)
                                 : r.body();
                         if (body != null && body.error != null) msg = body.error;
-                    } catch (Exception ignored) { /* fall back to default message */ }
+                    } catch (Exception ignored) { }
                     Toast.makeText(MyGroupActivity.this, msg, Toast.LENGTH_SHORT).show();
                     loadGroup();
                 }
             }
             @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
-                Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                actionInFlight = false;
+                Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -274,21 +288,42 @@ public class MyGroupActivity extends AppCompatActivity {
 
         Button add = new Button(this); add.setAllCaps(false); add.setText("+ Add member");
         add.setOnClickListener(v -> showAddMemberDialog());
+
         Button exp = new Button(this); exp.setAllCaps(false); exp.setText("Export members (.xlsx)");
-        exp.setOnClickListener(v -> api.exportMyGroupXlsx().enqueue(new Callback<ResponseBody>() {
-            @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
-                if (r.isSuccessful() && r.body() != null) FileShare.saveAndShare(MyGroupActivity.this, r.body(), "group-members.xlsx");
-                else Toast.makeText(MyGroupActivity.this, "Export failed (" + r.code() + ")", Toast.LENGTH_SHORT).show();
-            }
-            @Override public void onFailure(Call<ResponseBody> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show(); }
-        }));
+        exp.setOnClickListener(v -> {
+            if (actionInFlight) return;
+            actionInFlight = true;
+            exp.setEnabled(false);
+            api.exportMyGroupXlsx().enqueue(new Callback<ResponseBody>() {
+                @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
+                    actionInFlight = false; exp.setEnabled(true);
+                    if (r.isSuccessful() && r.body() != null) FileShare.saveAndShare(MyGroupActivity.this, r.body(), "group-members.xlsx");
+                    else Toast.makeText(MyGroupActivity.this, "Export failed", Toast.LENGTH_SHORT).show();
+                }
+                @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
+                    actionInFlight = false; exp.setEnabled(true);
+                    Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
         Button send = new Button(this); send.setAllCaps(false); send.setText("Send roster to lecturer");
-        send.setOnClickListener(v -> api.sendRosterToLecturer().enqueue(new Callback<MessageResponse>() {
-            @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
-                Toast.makeText(MyGroupActivity.this, r.isSuccessful() ? "Sent to lecturer" : "Failed", Toast.LENGTH_SHORT).show();
-            }
-            @Override public void onFailure(Call<MessageResponse> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show(); }
-        }));
+        send.setOnClickListener(v -> {
+            if (actionInFlight) return;
+            actionInFlight = true;
+            send.setEnabled(false);
+            api.sendRosterToLecturer().enqueue(new Callback<MessageResponse>() {
+                @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                    actionInFlight = false; send.setEnabled(true);
+                    Toast.makeText(MyGroupActivity.this, r.isSuccessful() ? "Sent to lecturer" : "Couldn't send the roster right now", Toast.LENGTH_SHORT).show();
+                }
+                @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                    actionInFlight = false; send.setEnabled(true);
+                    Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
         box.addView(add); box.addView(exp); box.addView(send);
         return box;
     }
@@ -301,12 +336,28 @@ public class MyGroupActivity extends AppCompatActivity {
                 .setView(input)
                 .setPositiveButton("Add", (d, w) -> {
                     String sn = input.getText().toString().trim();
+                    if (sn.isEmpty()) { Toast.makeText(MyGroupActivity.this, "Enter a student number", Toast.LENGTH_SHORT).show(); return; }
+                    if (actionInFlight) return;
+                    actionInFlight = true;
                     api.addMember(new ApiBodies.AddMember(sn)).enqueue(new Callback<MessageResponse>() {
                         @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                            actionInFlight = false;
                             if (r.isSuccessful()) { Toast.makeText(MyGroupActivity.this, "Member added", Toast.LENGTH_SHORT).show(); loadGroup(); }
-                            else Toast.makeText(MyGroupActivity.this, r.body() != null && r.body().error != null ? r.body().error : "Failed (" + r.code() + ")", Toast.LENGTH_SHORT).show();
+                            else {
+                                String msg = "Couldn't add that student";
+                                try {
+                                    MessageResponse body = r.errorBody() != null
+                                            ? new com.google.gson.Gson().fromJson(r.errorBody().charStream(), MessageResponse.class)
+                                            : r.body();
+                                    if (body != null && body.error != null) msg = body.error;
+                                } catch (Exception ignored) { }
+                                Toast.makeText(MyGroupActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        @Override public void onFailure(Call<MessageResponse> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show(); }
+                        @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                            actionInFlight = false;
+                            Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
+                        }
                     });
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -314,12 +365,18 @@ public class MyGroupActivity extends AppCompatActivity {
     }
 
     private void removeMember(long studentId) {
+        if (actionInFlight) return;
+        actionInFlight = true;
         api.removeMember(studentId).enqueue(new Callback<MessageResponse>() {
             @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                actionInFlight = false;
                 if (r.isSuccessful()) { Toast.makeText(MyGroupActivity.this, "Removed", Toast.LENGTH_SHORT).show(); loadGroup(); }
-                else Toast.makeText(MyGroupActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(MyGroupActivity.this, "Couldn't remove that member right now", Toast.LENGTH_SHORT).show();
             }
-            @Override public void onFailure(Call<MessageResponse> c, Throwable t) { Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show(); }
+            @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                actionInFlight = false;
+                Toast.makeText(MyGroupActivity.this, "Couldn't reach the server. Check your connection and try again.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
