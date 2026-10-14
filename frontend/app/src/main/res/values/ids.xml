@@ -4,4 +4,6 @@
     <item name="etPhoneNumber" type="id" />
     <item name="etConfirmPassword" type="id" />
     <item name="spProgramme" type="id" />
+    <item name="tvAlertBadge" type="id" />
+    <item name="tvTileGroupSub" type="id" />
 </resources>

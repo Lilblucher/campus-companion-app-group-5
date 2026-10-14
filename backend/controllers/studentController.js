@@ -5,6 +5,7 @@
 
 const db = require('../config/db');
 const { notifyAllLecturers } = require('../utils/notify');
+const { setStudentGroup, isGroupFull } = require('../utils/membership');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?\d{7,15}$/; // same rule as register
@@ -248,4 +249,79 @@ async function requestGroupChange(req, res) {
   }
 }
 
-module.exports = { studentOnly, getMe, updateMe, getMyGroup, requestGroupChange };
+// GET /api/students/groups
+// Lists every lab group with live capacity, so an unassigned student can pick
+// one to join. Anyone already in a group can still see this list (e.g. to
+// gauge where there's room before asking for a change), but only an
+// unassigned student can actually self-join via joinGroup below.
+async function listOpenGroups(req, res) {
+  try {
+    const [groups] = await db.query(
+      'SELECT group_id, group_name, max_members, active_members, places_left FROM v_group_summary ORDER BY group_name'
+    );
+    return res.json({ groups });
+  } catch (err) {
+    console.error('listOpenGroups error:', err);
+    return res.status(500).json({ error: 'Failed to load groups' });
+  }
+}
+
+// POST /api/students/me/group/join   body: { group_id }
+// Self-service join: only while the student is currently unassigned. Once
+// placed, moving groups goes through requestGroupChange (lecturer-approved)
+// above, not back through here. The 15-member cap is enforced by the
+// trg_gm_group_capacity trigger (schema.sql) via setStudentGroup/isGroupFull,
+// same as every other path that places a student into a group.
+async function joinGroup(req, res) {
+  const raw = req.body && req.body.group_id;
+  const groupId =
+    typeof raw === 'number' ? raw
+    : typeof raw === 'string' && /^\d+$/.test(raw.trim()) ? Number(raw.trim())
+    : NaN;
+  if (!Number.isInteger(groupId) || groupId < 1) {
+    return res.status(400).json({ error: 'group_id must be a positive integer' });
+  }
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [studentRows] = await conn.query(
+      'SELECT lab_group_id FROM students WHERE student_id = ? AND is_deleted = 0 FOR UPDATE',
+      [req.user.student_id]
+    );
+    if (studentRows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    if (studentRows[0].lab_group_id !== null) {
+      await conn.rollback();
+      return res.status(409).json({ error: 'You are already in a group. Request a group change to move.' });
+    }
+
+    const [groupRows] = await conn.query(
+      'SELECT group_id, group_name FROM lab_groups WHERE group_id = ?',
+      [groupId]
+    );
+    if (groupRows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ error: 'Group not found' });
+    }
+
+    await setStudentGroup(conn, req.user.student_id, groupId);
+    await conn.commit();
+
+    return res.status(201).json({ group_id: groupId, group_name: groupRows[0].group_name });
+  } catch (err) {
+    try { await conn.rollback(); } catch (_) { /* ignore */ }
+    if (isGroupFull(err)) return res.status(409).json({ error: 'That group is full' });
+    console.error('joinGroup error:', err);
+    return res.status(500).json({ error: 'Failed to join group' });
+  } finally {
+    conn.release();
+  }
+}
+
+module.exports = {
+  studentOnly, getMe, updateMe, getMyGroup, requestGroupChange, listOpenGroups, joinGroup,
+};

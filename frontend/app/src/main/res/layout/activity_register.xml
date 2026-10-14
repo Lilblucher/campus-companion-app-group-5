@@ -79,6 +79,37 @@
                     android:hint="Full name" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Same-name info banner (hidden by default) -->
+            <LinearLayout
+                android:id="@+id/sameNameBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/cc_banner_info"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_ms_groups"
+                    app:tint="#022F77"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/same_name_banner"
+                    android:textColor="#022F77"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/poppins" />
+            </LinearLayout>
+
             <!-- Student Number -->
             <TextView style="@style/CcFieldLabel" android:text="@string/student_number" />
             <com.google.android.material.textfield.TextInputLayout
@@ -139,6 +170,32 @@
                     style="@style/CcInputEdit"
                     android:inputType="none"
                     android:hint="Select Programme" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Year of Study -->
+            <TextView style="@style/CcFieldLabel" android:text="@string/year_of_study_label" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilYearOfStudy"
+                style="@style/CcInputDropdown"
+                app:startIconDrawable="@drawable/ic_ms_calendar_today">
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actYearOfStudy"
+                    style="@style/CcInputEdit"
+                    android:inputType="none"
+                    android:hint="Select Year" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Lab Group -->
+            <TextView style="@style/CcFieldLabel" android:text="@string/lab_group_label" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLabGroup"
+                style="@style/CcInputDropdown"
+                app:startIconDrawable="@drawable/ic_ms_groups">
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actLabGroup"
+                    style="@style/CcInputEdit"
+                    android:inputType="none"
+                    android:hint="Select Lab Group" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Claim code (optional) -->

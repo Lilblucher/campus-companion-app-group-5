@@ -26,7 +26,7 @@ import java.util.List;
 
 public class NotificationsActivity extends AppCompatActivity {
 
-    private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
+    private View navDashboard, navGroup, navCourses, navProfile, navSettings;
     private final List<CachedNotification> allItems = new ArrayList<>();
     private String filter = "all";
 
@@ -37,7 +37,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            overridePendingTransition(0, 0);
         });
 
         Skeleton.start(findViewById(R.id.skeletonList));
@@ -228,17 +228,15 @@ public class NotificationsActivity extends AppCompatActivity {
     private void setupBottomNav() {
         navDashboard = findViewById(R.id.navDashboard);
         navGroup = findViewById(R.id.navGroup);
+        navCourses = findViewById(R.id.navCourses);
         navProfile = findViewById(R.id.navProfile);
-        navAlerts = findViewById(R.id.navAlerts);
         navSettings = findViewById(R.id.navSettings);
 
         if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(MainActivity.class));
         if (navGroup != null) navGroup.setOnClickListener(v -> navigateTo(MyGroupActivity.class));
+        if (navCourses != null) navCourses.setOnClickListener(v -> navigateTo(MyCoursesActivity.class));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigateTo(ProfileActivity.class));
-        if (navAlerts != null) selectNav(navAlerts);
         if (navSettings != null) navSettings.setOnClickListener(v -> navigateTo(SettingsActivity.class));
-
-        selectNav(navAlerts);
     }
 
     @Override
@@ -253,7 +251,7 @@ public class NotificationsActivity extends AppCompatActivity {
     }
 
     private void selectNav(View selected) {
-        View[] allNavItems = {navDashboard, navGroup, navProfile, navAlerts, navSettings};
+        View[] allNavItems = {navDashboard, navGroup, navCourses, navProfile, navSettings};
         for (View item : allNavItems) {
             if (item == null) continue;
             boolean isSelected = (item == selected);

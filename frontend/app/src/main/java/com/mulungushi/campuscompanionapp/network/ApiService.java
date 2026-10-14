@@ -42,6 +42,12 @@ public interface ApiService {
     @POST("api/students/me/group-change-request")
     Call<MessageResponse> requestGroupChange(@Body ApiBodies.GroupChangeRequest body);
 
+    @GET("api/students/groups")
+    Call<GroupsResponse> getOpenGroups();
+
+    @POST("api/students/me/group/join")
+    Call<MessageResponse> joinGroup(@Body ApiBodies.JoinGroup body);
+
     @GET("api/notifications")
     Call<NotificationsResponse> getNotifications();
 

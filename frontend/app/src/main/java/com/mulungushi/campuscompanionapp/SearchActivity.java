@@ -60,7 +60,7 @@ public class SearchActivity extends AppCompatActivity {
         list.setAdapter(adapter);
         list.setOnItemClickListener((p, v, pos, id) -> {
             startActivity(new Intent(this, shown.get(pos).target));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            overridePendingTransition(0, 0);
         });
 
         et.addTextChangedListener(new TextWatcher() {

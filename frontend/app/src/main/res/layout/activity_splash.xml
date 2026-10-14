@@ -1,143 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cc_navy"
     tools:context=".SplashActivity">
 
-    <!-- Centred brand block -->
-    <LinearLayout
-        android:id="@+id/brandBlock"
+    <!-- 1. Full-bleed campus photo -->
+    <ImageView
+        android:id="@+id/ivBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBlock"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_campus"
+        android:contentDescription="@null" />
 
-        <FrameLayout
-            android:id="@+id/logoTile"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:background="@drawable/cc_logo_tile"
-            android:elevation="6dp">
+    <!-- 2. Tint overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_splash_tint" />
+
+    <!-- Content: brand block + helper + sheet -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- 3. Brand block (vertically centred in space above sheet) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
 
             <ImageView
                 android:id="@+id/ivAppIcon"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_gravity="center"
+                android:layout_width="116dp"
+                android:layout_height="116dp"
                 android:contentDescription="@string/app_icon_desc"
                 android:src="@drawable/ic_app_logo" />
-        </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvAppName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins" />
+            <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                android:fontFamily="@font/poppins"
+                android:textFontWeight="500" />
 
-        <TextView
-            android:id="@+id/tvTagline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:fontFamily="@font/poppins"
-            android:text="@string/splash_tagline"
-            android:textColor="@color/cc_on_navy_muted"
-            android:textSize="15sp" />
-
-        <ImageView
-            android:id="@+id/ivSchoolIllustration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="300dp"
-            android:maxHeight="220dp"
-            android:layout_marginTop="28dp"
-            android:contentDescription="@string/illustration_description"
-            android:src="@drawable/ic_school_illustration" />
-
-    </LinearLayout>
-
-    <!-- Bottom caption + actions -->
-    <LinearLayout
-        android:id="@+id/bottomBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingStart="28dp"
-        android:paddingEnd="28dp"
-        android:paddingBottom="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Animated loading dots -->
-        <LinearLayout
-            android:id="@+id/loadingDotsContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <View android:id="@+id/dot1" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
-            <View android:id="@+id/dot2" android:layout_width="8dp" android:layout_height="8dp" android:layout_marginEnd="6dp" android:background="@drawable/shape_loading_dot" />
-            <View android:id="@+id/dot3" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/shape_loading_dot" />
+            <TextView
+                android:id="@+id/tvTagline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/splash_tagline"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins" />
         </LinearLayout>
 
+        <!-- 4. Helper line -->
         <TextView
+            android:id="@+id/tvHelper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
-            android:text="Get Started · Sign up or sign in"
-            android:textColor="@color/cc_on_navy_muted"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:text="@string/splash_helper"
+            android:textColor="@android:color/white"
             android:textSize="12sp"
             android:fontFamily="@font/poppins" />
 
-        <Button
-            android:id="@+id/btnSignUp"
+        <!-- 5. Bottom sheet -->
+        <LinearLayout
+            android:id="@+id/bottomSheet"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/cc_btn_crimson"
-            app:backgroundTint="@null"
-            android:text="Sign up"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins"
-            android:elevation="4dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_splash_sheet"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:paddingTop="60dp"
+            android:paddingBottom="48dp">
 
-        <Button
-            android:id="@+id/btnSignIn"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/cc_btn_outline_white"
-            app:backgroundTint="@null"
-            android:text="Sign in"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppins" />
+            <Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/cc_btn_splash_signup"
+                android:text="@string/sign_up"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:fontFamily="@font/poppins"
+                android:textFontWeight="500"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
 
+            <Button
+                android:id="@+id/btnSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/cc_btn_splash_signin"
+                android:text="@string/sign_in"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:fontFamily="@font/poppins"
+                android:textFontWeight="500"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

@@ -18,6 +18,7 @@ import com.mulungushi.campuscompanionapp.network.ApiBodies;
 import com.mulungushi.campuscompanionapp.network.ApiClient;
 import com.mulungushi.campuscompanionapp.network.ApiService;
 import com.mulungushi.campuscompanionapp.network.GroupInfo;
+import com.mulungushi.campuscompanionapp.network.GroupsResponse;
 import com.mulungushi.campuscompanionapp.network.MessageResponse;
 import com.mulungushi.campuscompanionapp.network.SessionManager;
 import com.mulungushi.campuscompanionapp.util.FileShare;
@@ -29,7 +30,7 @@ import retrofit2.Response;
 
 public class MyGroupActivity extends AppCompatActivity {
 
-    private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
+    private View navDashboard, navGroup, navCourses, navProfile, navSettings;
     private ApiService api;
     private boolean leader;
 
@@ -43,7 +44,7 @@ public class MyGroupActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            overridePendingTransition(0, 0);
         });
 
         com.mulungushi.campuscompanionapp.util.Skeleton.start(findViewById(R.id.skeletonDetail));
@@ -139,8 +140,12 @@ public class MyGroupActivity extends AppCompatActivity {
         if (!g.isAssigned()) {
             if (tvGroupName != null) tvGroupName.setText("Not assigned yet");
             if (tvMembersPill != null) tvMembersPill.setText("—");
-            if (tvMembersHeader != null) tvMembersHeader.setText("Group Members");
-            if (container != null) container.addView(placeholder("You'll see your lab group here once a lecturer assigns you."));
+            if (tvMembersHeader != null) tvMembersHeader.setText("Join a lab group");
+            if (occ != null) { occ.setMax(1); occ.setProgressCompat(0, false); }
+            if (container != null) {
+                container.addView(placeholder("Pick a lab group below. Each group holds at most 15 students."));
+                loadOpenGroups(container);
+            }
             return;
         }
         if (tvGroupName != null) tvGroupName.setText("Lab Group " + g.getGroupName());
@@ -159,6 +164,106 @@ public class MyGroupActivity extends AppCompatActivity {
                 container.addView(memberRow(m, isMe));
             }
         }
+    }
+
+    /** Lists every lab group with live seats-left and a Join button, for an
+     *  unassigned student to pick one themselves (server still enforces the
+     *  15-member cap, so a race against another joiner just surfaces as a
+     *  "that group is full" toast and a refreshed list). */
+    private void loadOpenGroups(ViewGroup container) {
+        TextView loading = placeholder("Loading groups…");
+        container.addView(loading);
+        api.getOpenGroups().enqueue(new Callback<GroupsResponse>() {
+            @Override public void onResponse(Call<GroupsResponse> c, Response<GroupsResponse> r) {
+                container.removeView(loading);
+                if (!r.isSuccessful() || r.body() == null || r.body().groups == null) {
+                    container.addView(placeholder("Couldn't load groups right now."));
+                    return;
+                }
+                for (GroupsResponse.Group grp : r.body().groups) {
+                    container.addView(groupPickRow(grp));
+                }
+            }
+            @Override public void onFailure(Call<GroupsResponse> c, Throwable t) {
+                container.removeView(loading);
+                container.addView(placeholder("Couldn't load groups. Check your connection."));
+            }
+        });
+    }
+
+    private View groupPickRow(GroupsResponse.Group grp) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = dp(10);
+        row.setLayoutParams(lp);
+        row.setBackgroundResource(R.drawable.cc_card_bordered);
+        row.setPadding(dp(14), dp(12), dp(14), dp(12));
+
+        LinearLayout texts = new LinearLayout(this);
+        texts.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        texts.setLayoutParams(tlp);
+
+        TextView name = new TextView(this);
+        name.setText("Lab Group " + grp.group_name);
+        name.setTextColor(0xFF0F172A);
+        name.setTextSize(14);
+        name.setTypeface(name.getTypeface(), Typeface.BOLD);
+
+        boolean full = grp.places_left <= 0;
+        TextView sub = new TextView(this);
+        sub.setText(grp.active_members + "/" + grp.max_members + " members" + (full ? " · Full" : " · " + grp.places_left + " seats left"));
+        sub.setTextColor(full ? 0xFFB30D25 : 0xFF64748B);
+        sub.setTextSize(12);
+
+        texts.addView(name);
+        texts.addView(sub);
+
+        Button join = new Button(this);
+        join.setAllCaps(false);
+        join.setText(full ? "Full" : "Join");
+        join.setEnabled(!full);
+        join.setOnClickListener(v -> confirmJoinGroup(grp));
+
+        row.addView(texts);
+        row.addView(join);
+        return row;
+    }
+
+    private void confirmJoinGroup(GroupsResponse.Group grp) {
+        new AlertDialog.Builder(this)
+                .setTitle("Join Lab Group " + grp.group_name + "?")
+                .setMessage("You'll be placed with the other " + grp.active_members + " member" + (grp.active_members == 1 ? "" : "s") + " already in this group.")
+                .setPositiveButton("Join", (d, w) -> doJoinGroup(grp.group_id))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void doJoinGroup(int groupId) {
+        api.joinGroup(new ApiBodies.JoinGroup(groupId)).enqueue(new Callback<MessageResponse>() {
+            @Override public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                if (r.isSuccessful()) {
+                    Toast.makeText(MyGroupActivity.this, "You're in! Welcome to your lab group.", Toast.LENGTH_SHORT).show();
+                    loadGroup();
+                } else {
+                    String msg = "Couldn't join that group";
+                    try {
+                        MessageResponse body = r.errorBody() != null
+                                ? new com.google.gson.Gson().fromJson(r.errorBody().charStream(), MessageResponse.class)
+                                : r.body();
+                        if (body != null && body.error != null) msg = body.error;
+                    } catch (Exception ignored) { /* fall back to default message */ }
+                    Toast.makeText(MyGroupActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    loadGroup();
+                }
+            }
+            @Override public void onFailure(Call<MessageResponse> c, Throwable t) {
+                Toast.makeText(MyGroupActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private View leaderActions() {
@@ -308,14 +413,14 @@ public class MyGroupActivity extends AppCompatActivity {
     private void setupBottomNav() {
         navDashboard = findViewById(R.id.navDashboard);
         navGroup = findViewById(R.id.navGroup);
+        navCourses = findViewById(R.id.navCourses);
         navProfile = findViewById(R.id.navProfile);
-        navAlerts = findViewById(R.id.navAlerts);
         navSettings = findViewById(R.id.navSettings);
 
         if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(MainActivity.class));
         if (navGroup != null) selectNav(navGroup);
+        if (navCourses != null) navCourses.setOnClickListener(v -> navigateTo(MyCoursesActivity.class));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigateTo(ProfileActivity.class));
-        if (navAlerts != null) navAlerts.setOnClickListener(v -> navigateTo(NotificationsActivity.class));
         if (navSettings != null) navSettings.setOnClickListener(v -> navigateTo(SettingsActivity.class));
 
         selectNav(navGroup);
@@ -333,7 +438,7 @@ public class MyGroupActivity extends AppCompatActivity {
     }
 
     private void selectNav(View selected) {
-        View[] allNavItems = {navDashboard, navGroup, navProfile, navAlerts, navSettings};
+        View[] allNavItems = {navDashboard, navGroup, navCourses, navProfile, navSettings};
         for (View item : allNavItems) {
             if (item == null) continue;
             boolean isSelected = (item == selected);

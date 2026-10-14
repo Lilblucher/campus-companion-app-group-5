@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name_full">Campus Companion App</string>
     <string name="splash_tagline">Get Connected.</string>
+    <string name="splash_helper">Get Started · Sign Up or Sign In</string>
     <string name="get_started">Get Started</string>
     <string name="app_icon_desc">App icon</string>
     <string name="app_name">Campus Companion</string>
@@ -138,4 +139,76 @@
     <string name="registration_progress_title">Registration Progress</string>
     <string name="class_details_title">Class Details</string>
     <string name="courses_title">My Courses</string>
+
+    <!-- v2 nav -->
+    <string name="nav_courses">Courses</string>
+
+    <!-- v2 Register -->
+    <string name="year_of_study_label">Year of Study</string>
+    <string name="lab_group_label">Lab Group</string>
+    <string name="same_name_banner">Another student is already registered with this name. Your account is identified by your student number, so check it carefully below.</string>
+
+    <!-- v2 Dashboard -->
+    <string name="materials_tile">Materials</string>
+    <string name="accounts_tile">Accounts</string>
+    <string name="lab_reg_open">%1$s lab registration is open</string>
+    <string name="lab_reg_desc">Register with your team so you\'re all placed in the same lab group. Closes Oct 20.</string>
+
+    <!-- v2 Course Materials -->
+    <string name="course_materials_title">Course Materials</string>
+    <string name="materials_info">%1$d of %2$d PDFs saved. Saved files open without a connection.</string>
+    <string name="download_all">Download all (%1$d PDFs)</string>
+    <string name="all_saved">All materials saved offline</string>
+
+    <!-- v2 Lab Registration -->
+    <string name="lab_registration_title">Lab Group Registration</string>
+    <string name="your_team">Your team</string>
+    <string name="team_lead">Team lead</string>
+    <string name="add_teammate_hint">Teammate\'s student number</string>
+    <string name="register_team">Register team (%1$d)</string>
+    <string name="choose_lab_slot">Choose a lab slot</string>
+    <string name="seats_left">%1$d seats left</string>
+    <string name="slot_full">Full</string>
+    <string name="err_9_digits">Enter a 9-digit student number</string>
+    <string name="err_own_number">That\'s your number. You\'re already the team lead</string>
+    <string name="err_not_found">No student found with that number</string>
+    <string name="err_already_in_team">Already in your team</string>
+    <string name="err_team_full">Teams have at most 4 members</string>
+    <string name="err_need_teammate">Add at least one teammate to register as a group</string>
+    <string name="team_registered">Team registered for %1$s</string>
+    <string name="team_registered_info">Your teammates have been notified and must confirm within 48 hours. Your lecturer approves the final list.</string>
+
+    <!-- v2 Accounts & Fees -->
+    <string name="accounts_title">Accounts &amp; Fees</string>
+    <string name="tuition_label">%1$s tuition · %2$s Year %3$d</string>
+    <string name="paid_of">paid of K%1$s</string>
+    <string name="credentials_unlocked_msg">Over 50%% paid. Your student ID, exam number and portal login are visible in Profile.</string>
+    <string name="credentials_locked_msg">Pay K%1$s more to reach 50%% and unlock your student credentials.</string>
+    <string name="payment_history">Payment history</string>
+    <string name="no_payments">No payments recorded yet</string>
+    <string name="make_payment">Make a payment</string>
+
+    <!-- v2 Profile -->
+    <string name="edit_profile">Edit profile</string>
+    <string name="student_credentials">Student credentials</string>
+    <string name="credentials_unlocked">Unlocked</string>
+    <string name="credentials_locked">Locked</string>
+    <string name="credentials_locked_info">Pay at least 50%% of your fees to view your credentials</string>
+    <string name="view_fees">View fees</string>
+    <string name="accounts_fees_row">Accounts &amp; fees</string>
+
+    <!-- v2 Edit Profile -->
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="choose_photo">Choose photo</string>
+    <string name="remove_photo">Remove</string>
+    <string name="student_number_helper">Used to sign in and to tell you apart from students with the same name.</string>
+    <string name="year_locked_helper">Set by the Registrar each academic year. Contact Academic Office if it\'s wrong.</string>
+    <string name="save_changes">Save changes</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="profile_saved_courses">Profile saved · courses updated to %1$s Year %2$d</string>
+
+    <!-- v2 Offline -->
+    <string name="offline_banner">You\'re offline · showing saved data</string>
+    <string name="retry">Retry</string>
+    <string name="back_online">Back online · synced %1$d changes</string>
 </resources>

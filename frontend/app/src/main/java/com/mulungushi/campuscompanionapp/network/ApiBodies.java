@@ -25,6 +25,11 @@ public class ApiBodies {
         public AddMember(String sn) { this.student_number = sn; }
     }
 
+    public static class JoinGroup {
+        public Integer group_id;
+        public JoinGroup(Integer gid) { this.group_id = gid; }
+    }
+
     public static class GroupChangeRequest {
         public Integer requested_group_id;
         public String reason;

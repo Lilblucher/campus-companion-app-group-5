@@ -1,19 +1,18 @@
 package com.mulungushi.campuscompanionapp;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
 
 import com.mulungushi.campuscompanionapp.network.SessionManager;
 
@@ -21,76 +20,62 @@ import java.util.concurrent.Executor;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final long SPLASH_DELAY_MS = 1800;
-    private static final String PREFS_NAME = "campus_companion_prefs";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-    private static final String KEY_USER_ROLE = "user_role";
-
-    private final Handler handler = new Handler(Looper.getMainLooper());
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Apply the saved dark-theme preference app-wide before drawing.
         boolean dark = getSharedPreferences(SettingsActivity.PREFS, MODE_PRIVATE)
                 .getBoolean(SettingsActivity.KEY_DARK, false);
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
                 dark ? androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
                      : androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
 
-        setContentView(R.layout.activity_splash);
-
-        animateLoadingDots();
-
-        View btnSignUp = findViewById(R.id.btnSignUp);
-        if (btnSignUp != null) {
-            btnSignUp.setOnClickListener(v -> {
-                handler.removeCallbacksAndMessages(null);
-                startActivity(new Intent(SplashActivity.this, RegisterActivity.class));
-            });
+        // Edge-to-edge: photo runs behind status bar
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        Window w = getWindow();
+        w.setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        w.setNavigationBarColor(0xFF0F1F45);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            w.setDecorFitsSystemWindows(false);
         }
 
-        View btnSignIn = findViewById(R.id.btnSignIn);
-        if (btnSignIn != null) {
-            btnSignIn.setOnClickListener(v -> {
-                handler.removeCallbacksAndMessages(null);
-                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            });
-        }
-
-        handler.postDelayed(this::decideNextScreen, SPLASH_DELAY_MS);
-    }
-
-    private void animateLoadingDots() {
-        View dot1 = findViewById(R.id.dot1);
-        View dot2 = findViewById(R.id.dot2);
-        View dot3 = findViewById(R.id.dot3);
-
-        bounce(dot1, 0);
-        bounce(dot2, 150);
-        bounce(dot3, 300);
-    }
-
-    private void bounce(View dot, long startDelay) {
-        if (dot == null) return;
-        ObjectAnimator animator = ObjectAnimator.ofFloat(dot, "translationY", 0f, -16f);
-        animator.setDuration(300);
-        animator.setStartDelay(startDelay);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.start();
-    }
-
-    private void decideNextScreen() {
-        boolean isLoggedIn = SessionManager.getInstance(this).isLoggedIn();
-
-        if (!isLoggedIn) {
-            // Stay on splash screen with interactive SIGN UP / SIGN IN buttons
+        // If already logged in, skip straight to dashboard
+        if (SessionManager.getInstance(this).isLoggedIn()) {
+            promptBiometricUnlock();
             return;
         }
 
-        promptBiometricUnlock();
+        setContentView(R.layout.activity_splash);
+        applyNavBarInset();
+
+        findViewById(R.id.btnSignUp).setOnClickListener(v -> {
+            startActivity(new Intent(this, RegisterActivity.class));
+            overridePendingTransition(0, 0);
+        });
+
+        findViewById(R.id.btnSignIn).setOnClickListener(v -> {
+            startActivity(new Intent(this, LoginActivity.class));
+            overridePendingTransition(0, 0);
+        });
+    }
+
+    private void applyNavBarInset() {
+        View sheet = findViewById(R.id.bottomSheet);
+        if (sheet != null) {
+            sheet.setOnApplyWindowInsetsListener((v, insets) -> {
+                int bottomInset = 0;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    bottomInset = insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom;
+                } else {
+                    bottomInset = insets.getSystemWindowInsetBottom();
+                }
+                v.setPadding(v.getPaddingLeft(), v.getPaddingTop(),
+                        v.getPaddingRight(),
+                        (int) (48 * getResources().getDisplayMetrics().density) + bottomInset);
+                return insets;
+            });
+            sheet.requestApplyInsets();
+        }
     }
 
     private void promptBiometricUnlock() {
@@ -104,6 +89,10 @@ public class SplashActivity extends AppCompatActivity {
             goToDashboard();
             return;
         }
+
+        // Show the layout briefly while the biometric prompt is up
+        setContentView(R.layout.activity_splash);
+        applyNavBarInset();
 
         Executor executor = ContextCompat.getMainExecutor(this);
         BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor,
@@ -140,26 +129,21 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
+        overridePendingTransition(0, 0);
         finish();
     }
 
     private void goToDashboard() {
         String role = SessionManager.getInstance(this).getUserRole();
-
         Intent intent;
         if ("lecturer".equalsIgnoreCase(role)) {
-            intent = new Intent(SplashActivity.this, LecturerDashboardActivity.class);
+            intent = new Intent(this, LecturerDashboardActivity.class);
         } else {
-            intent = new Intent(SplashActivity.this, MainActivity.class);
+            intent = new Intent(this, MainActivity.class);
         }
         startActivity(intent);
+        overridePendingTransition(0, 0);
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
     }
 }
