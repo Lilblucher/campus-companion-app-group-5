@@ -83,7 +83,7 @@
                         android:layout_width="104dp"
                         android:layout_height="104dp">
 
-                        <!-- Circular avatar -->
+                        <!-- Circular avatar (initials) -->
                         <TextView
                             android:id="@+id/tvAvatarInitials"
                             android:layout_width="104dp"
@@ -95,6 +95,17 @@
                             android:textSize="36sp"
                             android:textStyle="bold"
                             android:fontFamily="@font/poppins" />
+
+                        <!-- Circular avatar (photo, shown when a picture is set) -->
+                        <ImageView
+                            android:id="@+id/ivAvatarPhoto"
+                            android:layout_width="104dp"
+                            android:layout_height="104dp"
+                            android:background="@drawable/cc_avatar_crimson"
+                            android:clipToOutline="true"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:contentDescription="Profile photo" />
 
                         <!-- Camera button -->
                         <ImageButton

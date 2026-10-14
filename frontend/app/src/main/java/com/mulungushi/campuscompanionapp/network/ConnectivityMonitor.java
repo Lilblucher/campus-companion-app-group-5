@@ -105,7 +105,7 @@ public final class ConnectivityMonitor {
 
     public void probe(StateCb cb) {
         Bg.io(() -> {
-            if (!isOnline()) { Bg.main(() -> cb.onState(State.OFFLINE)); return; }
+            boolean systemOnline = isOnline();
             State s;
             int kbps = downstreamKbps();
             long start = System.currentTimeMillis();
@@ -114,8 +114,15 @@ public final class ConnectivityMonitor {
                 ok = r.isSuccessful();
             } catch (Exception ignored) { ok = false; }
             long rtt = System.currentTimeMillis() - start;
-            if (!ok || rtt > SLOW_RTT_MS || (kbps > 0 && kbps < SLOW_KBPS)) s = State.SLOW;
-            else s = State.GOOD;
+            if (ok) {
+                if (rtt > SLOW_RTT_MS || (kbps > 0 && kbps < SLOW_KBPS)) s = State.SLOW;
+                else s = State.GOOD;
+                online = true;
+            } else if (!systemOnline) {
+                s = State.OFFLINE;
+            } else {
+                s = State.SLOW;
+            }
             final State out = s;
             Bg.main(() -> cb.onState(out));
         });

@@ -1,6 +1,8 @@
 package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +66,25 @@ public class ProfileActivity extends BaseActivity {
         super.onResume();
         com.mulungushi.campuscompanionapp.util.NavBadge.refresh(this);
         loadProfile();
+        loadSavedPhoto();
+    }
+
+    private void loadSavedPhoto() {
+        String path = getSharedPreferences("profile_prefs", MODE_PRIVATE)
+                .getString("profile_photo_path", null);
+        ImageView ivPhoto = findViewById(R.id.ivAvatarPhoto);
+        TextView tvInitials = findViewById(R.id.tvAvatarInitials);
+        if (path == null || !new java.io.File(path).exists()) {
+            if (ivPhoto != null) ivPhoto.setVisibility(View.GONE);
+            if (tvInitials != null) tvInitials.setVisibility(View.VISIBLE);
+            return;
+        }
+        Bitmap bmp = BitmapFactory.decodeFile(path);
+        if (bmp != null && ivPhoto != null) {
+            ivPhoto.setImageBitmap(bmp);
+            ivPhoto.setVisibility(View.VISIBLE);
+            if (tvInitials != null) tvInitials.setVisibility(View.GONE);
+        }
     }
 
     private void setInitials(String name) {
