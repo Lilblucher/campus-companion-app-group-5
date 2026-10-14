@@ -97,6 +97,9 @@ public interface ApiService {
     @POST("api/lecturer/requests/{id}/reject")
     Call<MessageResponse> rejectRequest(@Path("id") long id);
 
+    @POST("api/lecturer/announcements")
+    Call<MessageResponse> postAnnouncement(@Body ApiBodies.PostAnnouncement body);
+
     // ---- group leader ----
     @GET("api/group/members")
     Call<GroupInfo> getGroupMembers();

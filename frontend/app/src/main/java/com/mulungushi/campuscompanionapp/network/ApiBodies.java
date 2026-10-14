@@ -84,4 +84,11 @@ public class ApiBodies {
         public long student_id;
         public SetLeader(long sid) { this.student_id = sid; }
     }
+
+    public static class PostAnnouncement {
+        public String title, body;
+        public PostAnnouncement(String title, String body) {
+            this.title = title; this.body = body;
+        }
+    }
 }

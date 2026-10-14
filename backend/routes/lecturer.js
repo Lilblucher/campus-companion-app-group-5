@@ -24,4 +24,6 @@ router.get('/requests', c.listRequests);
 router.post('/requests/:id/approve', c.approveRequest);
 router.post('/requests/:id/reject', c.rejectRequest);
 
+router.post('/announcements', c.postAnnouncement);
+
 module.exports = router;
