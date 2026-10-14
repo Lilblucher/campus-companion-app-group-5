@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="year_of_study_options">
+        <item>Year 1</item>
+        <item>Year 2</item>
+        <item>Year 3</item>
+        <item>Year 4</item>
+    </string-array>
+
     <string-array name="programme_options">
         <item>Computer Science</item>
         <item>Cyber Security</item>
@@ -14,21 +21,21 @@
          differs from the brief and matches whichever scheme the group actually
          implements server-side. -->
     <string-array name="lab_group_options">
-        <item>Lab Group 1</item>
-        <item>Lab Group 2</item>
-        <item>Lab Group 3</item>
-        <item>Lab Group 4</item>
-        <item>Lab Group 5</item>
-        <item>Lab Group 6</item>
-        <item>Lab Group 7</item>
-        <item>Lab Group 8</item>
-        <item>Lab Group 9</item>
-        <item>Lab Group 10</item>
-        <item>Lab Group 11</item>
-        <item>Lab Group 12</item>
-        <item>Lab Group 13</item>
-        <item>Lab Group 14</item>
-        <item>Lab Group 15</item>
+        <item>G01</item>
+        <item>G02</item>
+        <item>G03</item>
+        <item>G04</item>
+        <item>G05</item>
+        <item>G06</item>
+        <item>G07</item>
+        <item>G08</item>
+        <item>G09</item>
+        <item>G10</item>
+        <item>G11</item>
+        <item>G12</item>
+        <item>G13</item>
+        <item>G14</item>
+        <item>G15</item>
     </string-array>
 
     <!-- Lab-group scheme from the ICT361 brief / redesign handoff (G01–G04 + Unassigned). -->

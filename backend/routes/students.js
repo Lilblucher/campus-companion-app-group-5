@@ -2,7 +2,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const {
-  studentOnly, getMe, updateMe, getMyGroup, requestGroupChange,
+  studentOnly, getMe, updateMe, getMyGroup, requestGroupChange, listOpenGroups, joinGroup,
 } = require('../controllers/studentController');
 
 const router = express.Router();
@@ -14,6 +14,8 @@ router.get('/me', getMe);
 router.put('/me', updateMe);
 router.get('/me/group', getMyGroup);
 router.post('/me/group-change-request', requestGroupChange);
+router.get('/groups', listOpenGroups);
+router.post('/me/group/join', joinGroup);
 
 // Existing placeholder, not part of Phase 1 — left as-is
 router.post('/me/student-number-correction', (req, res) => {

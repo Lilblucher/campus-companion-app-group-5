@@ -268,6 +268,16 @@
                         android:layout_marginTop="20dp"
                         android:text="@string/quick_access" />
 
+                    <TextView
+                        android:id="@+id/tvQuickAccessSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/cc_text_muted"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins"
+                        tools:text="Year 2 · 6 courses" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -281,7 +291,7 @@
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/tileTimetable" style="@style/CcTile" android:layout_marginStart="6dp">
-                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_blue" android:src="@drawable/ic_ms_calendar_month" app:tint="@color/cc_navy" android:contentDescription="@null" />
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_amber" android:src="@drawable/ic_ms_calendar_month" app:tint="@color/cc_warning_strong" android:contentDescription="@null" />
                             <TextView style="@style/CcTileTitle" android:text="Timetable" />
                             <TextView style="@style/CcTileSub" android:text="Weekly schedule" />
                         </LinearLayout>
@@ -293,17 +303,81 @@
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
-                        <LinearLayout android:id="@+id/tileGroup" style="@style/CcTile" android:layout_marginEnd="6dp">
-                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_green" android:src="@drawable/ic_ms_groups" app:tint="@color/cc_success" android:contentDescription="@null" />
-                            <TextView style="@style/CcTileTitle" android:text="Lab group" />
-                            <TextView android:id="@+id/tvTileGroupSub" style="@style/CcTileSub" android:text="View members" />
+                        <LinearLayout android:id="@+id/tileMaterials" style="@style/CcTile" android:layout_marginEnd="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_green" android:src="@drawable/ic_ms_download_for_offline" app:tint="@color/cc_success" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="@string/materials_tile" />
+                            <TextView style="@style/CcTileSub" android:text="Saved PDFs" />
                         </LinearLayout>
 
-                        <LinearLayout android:id="@+id/tileProgramme" style="@style/CcTile" android:layout_marginStart="6dp">
-                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_amber" android:src="@drawable/ic_ms_notifications_active" app:tint="@color/cc_warning_strong" android:contentDescription="@null" />
-                            <TextView style="@style/CcTileTitle" android:text="Reminders" />
-                            <TextView style="@style/CcTileSub" android:text="Stay on track" />
+                        <LinearLayout android:id="@+id/tileAccounts" style="@style/CcTile" android:layout_marginStart="6dp">
+                            <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_crimson" android:src="@drawable/ic_ms_account_balance_wallet" app:tint="@color/cc_crimson" android:contentDescription="@null" />
+                            <TextView style="@style/CcTileTitle" android:text="@string/accounts_tile" />
+                            <TextView style="@style/CcTileSub" android:text="Fees &amp; payments" />
                         </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Lab registration banner -->
+                    <LinearLayout
+                        android:id="@+id/cardLabRegistration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/cc_card_lab_reg"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="6dp"
+                                    android:src="@drawable/ic_ms_group_add"
+                                    app:tint="@color/cc_accent_blue"
+                                    android:contentDescription="@null" />
+
+                                <TextView
+                                    android:id="@+id/tvLabRegTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/cc_text_primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:fontFamily="@font/poppins"
+                                    tools:text="ICT 361 lab registration is open" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvLabRegDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/lab_reg_desc"
+                                android:textColor="@color/cc_text_muted"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_ms_chevron_right"
+                            app:tint="@color/cc_text_muted"
+                            android:contentDescription="@null" />
                     </LinearLayout>
 
                     <!-- Next class -->

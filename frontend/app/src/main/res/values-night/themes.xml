@@ -1,7 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CampusCompanionApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- The light theme hardcodes a white, dark-icon status bar for the
+             (currently all-white app-bar) screens; in dark mode that reads as a
+             stray white strip above a dark page, so swap to a dark bar with
+             light icons instead. -->
+        <item name="android:statusBarColor">@color/cc_page_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

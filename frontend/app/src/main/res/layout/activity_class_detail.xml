@@ -166,6 +166,63 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Course materials -->
+            <TextView style="@style/CcSectionTitle" android:layout_marginTop="20dp" android:text="Course Materials" />
+
+            <LinearLayout
+                android:id="@+id/btnCourseMaterials"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="14dp"
+                    android:src="@drawable/ic_ms_picture_as_pdf"
+                    app:tint="@color/cc_crimson"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View course materials"
+                        android:textColor="@color/cc_text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="4 PDFs available for download"
+                        android:textColor="@color/cc_text_muted"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_ms_chevron_right"
+                    app:tint="@color/cc_text_muted"
+                    android:contentDescription="@null" />
+            </LinearLayout>
+
             <!-- Download -->
             <Button
                 android:id="@+id/btnDownloadManual"

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cc_navy"
+    tools:context=".LabRegistrationActivity">
+
+    <!-- Navy header bar -->
+    <LinearLayout
+        android:id="@+id/topHeaderSection"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cc_navy"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_ms_arrow_back"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Lab Group Registration"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins" />
+
+        <ImageButton
+            android:id="@+id/btnBell"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Notifications"
+            android:src="@drawable/ic_ms_notifications"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <!-- Curved sheet -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:background="@drawable/cc_sheet_top"
+        app:layout_constraintTop_toBottomOf="@id/topHeaderSection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingTop="24dp">
+
+            <!-- Hero card (navy bg) -->
+            <LinearLayout
+                android:id="@+id/heroCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/cc_card_hero"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Crimson pill -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CSC 311 · Lab"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:background="@drawable/cc_badge_crimson"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Algorithms &amp; Data Structures"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Register as a team of 2 to 4. Everyone in the team is placed in the same lab group. Closes Oct 20."
+                    android:textColor="@color/cc_on_navy_muted"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins"
+                    android:lineSpacingExtra="3dp" />
+            </LinearLayout>
+
+            <!-- Your team card -->
+            <LinearLayout
+                android:id="@+id/teamCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Header row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Your team"
+                        android:textColor="@color/cc_text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins" />
+
+                    <TextView
+                        android:id="@+id/tvMemberCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1/4 members"
+                        android:textColor="@color/cc_text_secondary"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/poppins" />
+                </LinearLayout>
+
+                <!-- Team members container (lead + added members) -->
+                <LinearLayout
+                    android:id="@+id/containerTeamMembers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- Add teammate row -->
+                <LinearLayout
+                    android:id="@+id/addTeammateRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <EditText
+                            android:id="@+id/etTeammateNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/cc_input"
+                            android:hint="Teammate’s student number"
+                            android:textColor="@color/cc_text_primary"
+                            android:textColorHint="@color/cc_text_muted"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins"
+                            android:inputType="number"
+                            android:maxLength="9"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:layout_marginEnd="10dp" />
+
+                        <TextView
+                            android:id="@+id/btnAddTeammate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="Add"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins"
+                            android:background="@drawable/cc_btn_navy"
+                            android:paddingStart="24dp"
+                            android:paddingEnd="24dp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvAddError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/cc_crimson"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="6dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Add teammates by student number so the right person joins, even when names match."
+                        android:textColor="@color/cc_text_muted"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Choose a lab slot section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose a lab slot"
+                android:textColor="@color/cc_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="12dp" />
+
+            <!-- 2-column grid of lab slots -->
+            <GridLayout
+                android:id="@+id/gridSlots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:layout_marginBottom="20dp"
+                android:useDefaultMargins="false" />
+
+            <!-- Submit button -->
+            <TextView
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="Register team (1)"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/cc_btn_navy"
+                android:drawableStart="@drawable/ic_ms_how_to_reg"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/white"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Success state (initially hidden) -->
+            <LinearLayout
+                android:id="@+id/successCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/cc_card_bordered"
+                android:padding="20dp"
+                android:visibility="gone"
+                android:layout_marginBottom="24dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_ms_check_circle"
+                    app:tint="@color/cc_success"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tvSuccessTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/cc_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvSuccessBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Your team will receive a confirmation within 48 hours. Check your notifications for updates."
+                    android:textColor="@color/cc_text_secondary"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins"
+                    android:lineSpacingExtra="3dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

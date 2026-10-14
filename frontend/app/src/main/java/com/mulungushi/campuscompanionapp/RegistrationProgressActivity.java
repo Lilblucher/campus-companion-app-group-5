@@ -19,7 +19,7 @@ public class RegistrationProgressActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            overridePendingTransition(0, 0);
         });
 
         etClaimCodeInput = findViewById(R.id.etClaimCodeInput);

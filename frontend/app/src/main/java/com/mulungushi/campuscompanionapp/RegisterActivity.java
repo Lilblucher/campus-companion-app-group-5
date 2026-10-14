@@ -21,6 +21,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.mulungushi.campuscompanionapp.network.ApiClient;
 import com.mulungushi.campuscompanionapp.network.ApiService;
+import com.mulungushi.campuscompanionapp.network.AuthResponse;
+import com.mulungushi.campuscompanionapp.network.LoginRequest;
 import com.mulungushi.campuscompanionapp.network.RegisterRequest;
 import com.mulungushi.campuscompanionapp.network.RegisterResponse;
 import com.mulungushi.campuscompanionapp.network.SessionManager;
@@ -34,13 +36,14 @@ import retrofit2.Response;
 public class RegisterActivity extends AppCompatActivity {
 
     private SharedPreferences draftPrefs;
-    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilPassword, tilConfirmPassword,
-            tilPhone, tilEmail;
+    private TextInputLayout tilStudentName, tilStudentId, tilProgramme, tilYearOfStudy, tilLabGroup,
+            tilPassword, tilConfirmPassword, tilPhone, tilEmail;
     private TextInputEditText etStudentName, etStudentId, etClaimCode, etPassword, etConfirmPassword,
             etPhone, etEmail;
-    private AutoCompleteTextView actProgramme;
+    private AutoCompleteTextView actProgramme, actYearOfStudy, actLabGroup;
     private TextView tvPasswordStrength, tvPasswordMatch;
     private View strengthDot1, strengthDot2, strengthDot3;
+    private View sameNameBanner;
 
     private static final String DRAFT_PREFS_NAME = "register_draft";
     private static final String KEY_DRAFT_NAME = "draft_name";
@@ -49,6 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String KEY_DRAFT_PROGRAMME = "draft_programme";
     private static final String KEY_DRAFT_PHONE = "draft_phone";
     private static final String KEY_DRAFT_EMAIL = "draft_email";
+    private static final String KEY_DRAFT_YEAR = "draft_year";
+    private static final String KEY_DRAFT_LAB_GROUP = "draft_lab_group";
 
     private static final Pattern UPPERCASE = Pattern.compile(".*[A-Z].*");
     private static final Pattern LOWERCASE = Pattern.compile(".*[a-z].*");
@@ -71,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 finish();
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                overridePendingTransition(0, 0);
             });
         }
 
@@ -101,6 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
         tilStudentName = findViewById(R.id.tilStudentName);
         tilStudentId = findViewById(R.id.tilStudentId);
         tilProgramme = findViewById(R.id.tilProgramme);
+        tilYearOfStudy = findViewById(R.id.tilYearOfStudy);
+        tilLabGroup = findViewById(R.id.tilLabGroup);
         tilPassword = findViewById(R.id.tilPassword);
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword);
         tilPhone = findViewById(R.id.tilPhone);
@@ -115,6 +122,10 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
 
         actProgramme = findViewById(R.id.actProgramme);
+        actYearOfStudy = findViewById(R.id.actYearOfStudy);
+        actLabGroup = findViewById(R.id.actLabGroup);
+
+        sameNameBanner = findViewById(R.id.sameNameBanner);
 
         tvPasswordStrength = findViewById(R.id.tvPasswordStrength);
         tvPasswordMatch = findViewById(R.id.tvPasswordMatch);
@@ -131,6 +142,26 @@ public class RegisterActivity extends AppCompatActivity {
             actProgramme.setAdapter(programmeAdapter);
             actProgramme.setOnItemClickListener((parent, view, position, id) -> {
                 if (tilProgramme != null) tilProgramme.setError(null);
+            });
+        }
+
+        if (actYearOfStudy != null) {
+            ArrayAdapter<CharSequence> yearAdapter = ArrayAdapter.createFromResource(
+                    this, R.array.year_of_study_options, android.R.layout.simple_list_item_1);
+            actYearOfStudy.setAdapter(yearAdapter);
+            actYearOfStudy.setOnItemClickListener((parent, view, position, id) -> {
+                if (tilYearOfStudy != null) tilYearOfStudy.setError(null);
+                saveDraft();
+            });
+        }
+
+        if (actLabGroup != null) {
+            ArrayAdapter<CharSequence> labGroupAdapter = ArrayAdapter.createFromResource(
+                    this, R.array.lab_group_options, android.R.layout.simple_list_item_1);
+            actLabGroup.setAdapter(labGroupAdapter);
+            actLabGroup.setOnItemClickListener((parent, view, position, id) -> {
+                if (tilLabGroup != null) tilLabGroup.setError(null);
+                saveDraft();
             });
         }
     }
@@ -281,6 +312,8 @@ public class RegisterActivity extends AppCompatActivity {
         String password = getText(etPassword);
         String confirmPassword = getText(etConfirmPassword);
         String programme = actProgramme != null ? actProgramme.getText().toString().trim() : "";
+        String yearOfStudyStr = actYearOfStudy != null ? actYearOfStudy.getText().toString().trim() : "";
+        String labGroup = actLabGroup != null ? actLabGroup.getText().toString().trim() : "";
         String phone = getText(etPhone);
         String email = getText(etEmail);
         String claimCode = getText(etClaimCode);
@@ -299,6 +332,16 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (programme.isEmpty()) {
             if (tilProgramme != null) tilProgramme.setError(getString(R.string.error_programme_required));
+            isValid = false;
+        }
+
+        if (yearOfStudyStr.isEmpty()) {
+            if (tilYearOfStudy != null) tilYearOfStudy.setError("Select a year of study");
+            isValid = false;
+        }
+
+        if (labGroup.isEmpty()) {
+            if (tilLabGroup != null) tilLabGroup.setError(getString(R.string.error_lab_group_required));
             isValid = false;
         }
 
@@ -347,28 +390,30 @@ public class RegisterActivity extends AppCompatActivity {
 
         String phoneNormalized = phone.replaceAll("[^0-9+]", "");
 
+        // Parse "Year 1" -> 1, "Year 2" -> 2, etc.
+        int yearOfStudy = 0;
+        if (!yearOfStudyStr.isEmpty()) {
+            try {
+                yearOfStudy = Integer.parseInt(yearOfStudyStr.replaceAll("[^0-9]", ""));
+            } catch (NumberFormatException ignored) { }
+        }
+
         ApiService apiService = ApiClient.getClient(this).create(ApiService.class);
-        RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phoneNormalized, password, claimCode);
+        RegisterRequest request = new RegisterRequest(name, studentId, programmeCode, email, phoneNormalized, password, claimCode, yearOfStudy, labGroup);
 
         apiService.register(request).enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                btnRegisterSetEnabled(true);
-
                 if (response.isSuccessful() && response.body() != null) {
-                    String msg = response.body().getMessage();
-                    Toast.makeText(RegisterActivity.this,
-                            msg != null ? msg : "Registered successfully",
-                            Toast.LENGTH_SHORT).show();
-
-                    SessionManager.getInstance(RegisterActivity.this)
-                            .saveUserSession("student", name, studentId, "stub-token");
-
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                    finish();
+                    // The register endpoint only confirms the account was created; it
+                    // issues no token. Sign the student straight in with the same
+                    // credentials so they land in the app with a real session instead
+                    // of the old fake "stub-token" (which 401s on every real API call).
+                    signInAfterRegister(studentId, password);
                     return;
                 }
 
+                btnRegisterSetEnabled(true);
                 String errorMsg = "Registration failed";
                 if (response.errorBody() != null) {
                     try {
@@ -387,16 +432,51 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 btnRegisterSetEnabled(true);
-
-                // Fallback for offline/demo registration
-                SessionManager.getInstance(RegisterActivity.this)
-                        .saveUserSession("student", name, studentId, "stub-token");
-
-                Toast.makeText(RegisterActivity.this, "Registered successfully (Demo Mode)", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                finish();
+                Toast.makeText(RegisterActivity.this,
+                        "Couldn't reach the server. Check your connection and try again.",
+                        Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /** Register has no token of its own, so log in with the just-created credentials
+     *  to get a real session, then go straight to joining a lab group. */
+    private void signInAfterRegister(String studentId, String password) {
+        ApiService apiService = ApiClient.getClient(this).create(ApiService.class);
+        apiService.login(LoginRequest.forStudent(studentId, password)).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                btnRegisterSetEnabled(true);
+                if (response.isSuccessful() && response.body() != null) {
+                    AuthResponse auth = response.body();
+                    String role = auth.getRole() != null ? auth.getRole() : "student";
+                    String name = auth.getName() != null ? auth.getName() : getText(etStudentName);
+                    String sid = auth.getStudentId() != null ? auth.getStudentId() : studentId;
+                    String token = auth.getToken() != null ? auth.getToken() : "";
+
+                    SessionManager.getInstance(RegisterActivity.this)
+                            .saveUserSession(role, name, sid, token, auth.isGroupLeader());
+
+                    Toast.makeText(RegisterActivity.this, "Account created. Let's join your lab group.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, MyGroupActivity.class));
+                    finish();
+                } else {
+                    goToLoginAfterRegister();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                btnRegisterSetEnabled(true);
+                goToLoginAfterRegister();
+            }
+        });
+    }
+
+    private void goToLoginAfterRegister() {
+        Toast.makeText(RegisterActivity.this, "Account created. Please sign in.", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        finish();
     }
 
     private void btnRegisterSetEnabled(boolean enabled) {
@@ -415,6 +495,8 @@ public class RegisterActivity extends AppCompatActivity {
                 .putString(KEY_DRAFT_ID, getText(etStudentId))
                 .putString(KEY_DRAFT_CLAIM_CODE, getText(etClaimCode))
                 .putString(KEY_DRAFT_PROGRAMME, actProgramme != null ? actProgramme.getText().toString() : "")
+                .putString(KEY_DRAFT_YEAR, actYearOfStudy != null ? actYearOfStudy.getText().toString() : "")
+                .putString(KEY_DRAFT_LAB_GROUP, actLabGroup != null ? actLabGroup.getText().toString() : "")
                 .putString(KEY_DRAFT_PHONE, getText(etPhone))
                 .putString(KEY_DRAFT_EMAIL, getText(etEmail))
                 .apply();
@@ -426,6 +508,8 @@ public class RegisterActivity extends AppCompatActivity {
         if (etStudentId != null) etStudentId.setText(draftPrefs.getString(KEY_DRAFT_ID, ""));
         if (etClaimCode != null) etClaimCode.setText(draftPrefs.getString(KEY_DRAFT_CLAIM_CODE, ""));
         if (actProgramme != null) actProgramme.setText(draftPrefs.getString(KEY_DRAFT_PROGRAMME, ""), false);
+        if (actYearOfStudy != null) actYearOfStudy.setText(draftPrefs.getString(KEY_DRAFT_YEAR, ""), false);
+        if (actLabGroup != null) actLabGroup.setText(draftPrefs.getString(KEY_DRAFT_LAB_GROUP, ""), false);
         if (etPhone != null) etPhone.setText(draftPrefs.getString(KEY_DRAFT_PHONE, ""));
         if (etEmail != null) etEmail.setText(draftPrefs.getString(KEY_DRAFT_EMAIL, ""));
     }

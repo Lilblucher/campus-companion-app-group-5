@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String STUB_NEXT_CLASS_NAME = "ICT 361 · Software Engineering";
     private static final String STUB_NEXT_CLASS_DETAILS = "10:00 AM · Computer Lab 2 · PC-14";
 
-    private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
+    private View navDashboard, navGroup, navProfile, navCourses, navSettings;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         navDashboard = findViewById(R.id.navDashboard);
         navGroup = findViewById(R.id.navGroup);
         navProfile = findViewById(R.id.navProfile);
-        navAlerts = findViewById(R.id.navAlerts);
+        navCourses = findViewById(R.id.navCourses);
         navSettings = findViewById(R.id.navSettings);
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -222,11 +222,6 @@ public class MainActivity extends AppCompatActivity {
             cardNextClass.setOnClickListener(v -> navigateInternal(ClassDetailActivity.class));
         }
 
-        View tileProgramme = findViewById(R.id.tileProgramme);
-        if (tileProgramme != null) {
-            tileProgramme.setOnClickListener(v -> navigateInternal(RemindersActivity.class));
-        }
-
         View tileTimetable = findViewById(R.id.tileTimetable);
         if (tileTimetable != null) {
             tileTimetable.setOnClickListener(v -> navigateInternal(TimetableActivity.class));
@@ -237,9 +232,19 @@ public class MainActivity extends AppCompatActivity {
             tileCourses.setOnClickListener(v -> navigateInternal(MyCoursesActivity.class));
         }
 
-        View tileGroup = findViewById(R.id.tileGroup);
-        if (tileGroup != null) {
-            tileGroup.setOnClickListener(v -> navigatePage(MyGroupActivity.class));
+        View tileMaterials = findViewById(R.id.tileMaterials);
+        if (tileMaterials != null) {
+            tileMaterials.setOnClickListener(v -> navigateInternal(CourseMaterialsActivity.class));
+        }
+
+        View tileAccounts = findViewById(R.id.tileAccounts);
+        if (tileAccounts != null) {
+            tileAccounts.setOnClickListener(v -> navigateInternal(AccountsActivity.class));
+        }
+
+        View cardLabRegistration = findViewById(R.id.cardLabRegistration);
+        if (cardLabRegistration != null) {
+            cardLabRegistration.setOnClickListener(v -> navigateInternal(LabRegistrationActivity.class));
         }
 
         View btnBell = findViewById(R.id.btnBell);
@@ -273,8 +278,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (navDashboard != null) navDashboard.setOnClickListener(v -> selectNav(navDashboard));
         if (navGroup != null) navGroup.setOnClickListener(v -> navigatePage(MyGroupActivity.class));
+        View navCourses = findViewById(R.id.navCourses);
+        if (navCourses != null) navCourses.setOnClickListener(v -> navigatePage(MyCoursesActivity.class));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigatePage(ProfileActivity.class));
-        if (navAlerts != null) navAlerts.setOnClickListener(v -> navigatePage(NotificationsActivity.class));
         if (navSettings != null) navSettings.setOnClickListener(v -> navigatePage(SettingsActivity.class));
 
         selectNav(navDashboard);
@@ -286,11 +292,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateInternal(Class<?> targetActivity) {
         startActivity(new Intent(this, targetActivity));
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        overridePendingTransition(0, 0);
     }
 
     private void selectNav(View selected) {
-        View[] allNavItems = {navDashboard, navGroup, navProfile, navAlerts, navSettings};
+        View[] allNavItems = {navDashboard, navGroup, navCourses, navProfile, navSettings};
         for (View item : allNavItems) {
             if (item == null) continue;
             boolean isSelected = (item == selected);

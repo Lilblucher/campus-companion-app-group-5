@@ -26,32 +26,18 @@
             <TextView style="@style/CcNavLabel" android:text="Home" />
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/navGroup" style="@style/CcNavItem">
+        <LinearLayout android:id="@+id/navStudents" style="@style/CcNavItem">
             <FrameLayout style="@style/CcNavPill">
                 <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_students" android:contentDescription="Students" />
             </FrameLayout>
             <TextView style="@style/CcNavLabel" android:text="Students" />
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/navAlerts" style="@style/CcNavItem">
+        <LinearLayout android:id="@+id/navGroups" style="@style/CcNavItem">
             <FrameLayout style="@style/CcNavPill">
-                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_alerts" android:contentDescription="@string/nav_alerts" />
-                <TextView
-                    android:id="@+id/tvAlertBadge"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_notification_badge"
-                    android:gravity="center"
-                    android:text="0"
-                    android:textColor="@color/white"
-                    android:textSize="9sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    android:fontFamily="@font/poppins" />
+                <ImageView style="@style/CcNavIcon" android:src="@drawable/nav_ic_groups" android:contentDescription="Groups" />
             </FrameLayout>
-            <TextView style="@style/CcNavLabel" android:text="@string/nav_alerts" />
+            <TextView style="@style/CcNavLabel" android:text="Groups" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/navProfile" style="@style/CcNavItem">

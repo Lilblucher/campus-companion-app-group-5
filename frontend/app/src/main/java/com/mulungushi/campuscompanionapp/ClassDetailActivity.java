@@ -1,5 +1,6 @@
 package com.mulungushi.campuscompanionapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,13 +16,21 @@ public class ClassDetailActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> {
             finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            overridePendingTransition(0, 0);
         });
 
         Button btnDownload = findViewById(R.id.btnDownloadManual);
         if (btnDownload != null) {
             btnDownload.setOnClickListener(v ->
                     Toast.makeText(this, "Lab Manual downloading...", Toast.LENGTH_SHORT).show());
+        }
+
+        android.view.View btnMaterials = findViewById(R.id.btnCourseMaterials);
+        if (btnMaterials != null) {
+            btnMaterials.setOnClickListener(v -> {
+                startActivity(new Intent(this, CourseMaterialsActivity.class));
+                overridePendingTransition(0, 0);
+            });
         }
     }
 }

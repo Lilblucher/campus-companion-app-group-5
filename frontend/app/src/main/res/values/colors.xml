@@ -48,4 +48,21 @@
     <color name="cc_skeleton_block">#E2E8F0</color>
     <color name="cc_skeleton_line">#EEF2F7</color>
     <color name="cc_skeleton_hero">#DCE3EE</color>
+
+    <!-- v2 additions -->
+    <color name="cc_text_faint">#94A3B8</color>
+    <color name="cc_link">#0457DD</color>
+    <color name="cc_navy_dark">#1F4A9E</color>
+    <color name="cc_amber_bg">#FEF3C7</color>
+    <color name="cc_amber_fg">#B45309</color>
+    <color name="cc_green_bg">#DCFCE7</color>
+    <color name="cc_green_fg">#15803D</color>
+    <color name="cc_red_bg">#FDE2E6</color>
+    <color name="cc_red_fg">#B30D25</color>
+    <color name="cc_offline_banner">#334155</color>
+
+    <!-- Splash / Welcome (redesign v2 handoff) -->
+    <color name="cc_splash_sheet">#0F1F45</color>
+    <color name="cc_splash_cta">#CF102D</color>
+    <color name="cc_splash_dot">#3B5BDB</color>
 </resources>

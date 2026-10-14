@@ -32,7 +32,7 @@ import retrofit2.Response;
 
 public class LecturerDashboardActivity extends AppCompatActivity {
 
-    private View navDashboard, navGroup, navProfile, navAlerts, navSettings;
+    private View navDashboard, navStudents, navGroups, navProfile, navSettings;
     private View tileGenerateClaimCode, tileMyCourses, tileLabGroups, tilePostAnnouncement;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -80,9 +80,9 @@ public class LecturerDashboardActivity extends AppCompatActivity {
 
     private void initViews() {
         navDashboard = findViewById(R.id.navDashboard);
-        navGroup = findViewById(R.id.navGroup);
+        navStudents = findViewById(R.id.navStudents);
+        navGroups = findViewById(R.id.navGroups);
         navProfile = findViewById(R.id.navProfile);
-        navAlerts = findViewById(R.id.navAlerts);
         navSettings = findViewById(R.id.navSettings);
 
         tileGenerateClaimCode = findViewById(R.id.tileGenerateClaimCode);
@@ -211,9 +211,9 @@ public class LecturerDashboardActivity extends AppCompatActivity {
         }
 
         if (navDashboard != null) navDashboard.setOnClickListener(v -> selectNav(navDashboard));
-        if (navGroup != null) navGroup.setOnClickListener(v -> navigatePage(LecturerStudentsActivity.class));
+        if (navStudents != null) navStudents.setOnClickListener(v -> navigatePage(LecturerStudentsActivity.class));
+        if (navGroups != null) navGroups.setOnClickListener(v -> navigatePage(ManageGroupsActivity.class));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigatePage(ProfileActivity.class));
-        if (navAlerts != null) navAlerts.setOnClickListener(v -> navigatePage(PendingRequestsActivity.class));
         if (navSettings != null) navSettings.setOnClickListener(v -> navigatePage(SettingsActivity.class));
 
         selectNav(navDashboard);
@@ -231,11 +231,11 @@ public class LecturerDashboardActivity extends AppCompatActivity {
 
     private void navigateInternal(Class<?> targetActivity) {
         startActivity(new Intent(this, targetActivity));
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        overridePendingTransition(0, 0);
     }
 
     private void selectNav(View selected) {
-        View[] allNavItems = {navDashboard, navGroup, navProfile, navAlerts, navSettings};
+        View[] allNavItems = {navDashboard, navStudents, navGroups, navProfile, navSettings};
         for (View item : allNavItems) {
             if (item == null) continue;
             boolean isSelected = (item == selected);

@@ -17,6 +17,12 @@ public class StudentProfile {
     private String status;
     private int record_version;
     private int is_group_leader;
+    private int year_of_study;
+    private String photo_uri;
+    private int fees_paid_pct;
+    private int fees_total;
+    private String exam_number;
+    private String portal_username;
 
     public long getStudentId() { return student_id; }
     public String getStudentNumber() { return student_number; }
@@ -28,6 +34,12 @@ public class StudentProfile {
     public String getStatus() { return status; }
     public int getRecordVersion() { return record_version; }
     public boolean isGroupLeader() { return is_group_leader == 1; }
+    public int getYearOfStudy() { return year_of_study > 0 ? year_of_study : 3; }
+    public String getPhotoUri() { return photo_uri; }
+    public int getFeesPaidPct() { return fees_paid_pct; }
+    public int getFeesTotal() { return fees_total > 0 ? fees_total : 12000; }
+    public String getExamNumber() { return exam_number; }
+    public String getPortalUsername() { return portal_username; }
 
     /** CS/IT/DS -> full programme name for display. */
     public String getProgrammeName() {

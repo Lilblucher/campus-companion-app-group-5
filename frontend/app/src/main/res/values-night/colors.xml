@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark-theme overrides for the redesign tokens (values/colors.xml), per the
+         v2 handoff's Light/Dark design-token table. Every screen reads @color/cc_*
+         (never a hardcoded hex), so overriding just these makes the whole app
+         follow the Settings > Dark Theme switch instead of only flipping
+         AppCompatDelegate's night mode with nothing visually changing. -->
+    <color name="cc_page_bg">#0B1220</color>
+    <color name="cc_surface">#151E2E</color>
+    <color name="cc_text_primary">#E6EDF7</color>
+    <color name="cc_text_secondary">#B6C2D4</color>
+    <color name="cc_text_muted">#8E9BB0</color>
+    <color name="cc_border">#334155</color>
+    <color name="cc_divider">#1E2839</color>
+    <color name="cc_divider_strong">#273349</color>
+    <color name="cc_light_blue">#1C3157</color>
+    <color name="cc_accent_blue">#86AEFF</color>
+    <color name="cc_skeleton_hero">#2A3650</color>
+    <color name="cc_skeleton_block">#243047</color>
+    <color name="cc_skeleton_line">#1E2839</color>
+    <color name="cc_success">#4ADE80</color>
+    <color name="cc_success_bg">#0F3321</color>
+    <color name="cc_warning">#FBBF24</color>
+    <color name="cc_warning_bg">#3A2A0E</color>
+    <color name="cc_error_tint">#3D1620</color>
+    <color name="cc_crimson_dark">#FB7185</color>
+
+    <!-- v2 additions -->
+    <color name="cc_text_faint">#6B7890</color>
+    <color name="cc_link">#86AEFF</color>
+    <color name="cc_navy_dark">#1F4A9E</color>
+    <color name="cc_amber_bg">#3A2A0E</color>
+    <color name="cc_amber_fg">#FBBF24</color>
+    <color name="cc_green_bg">#0F3321</color>
+    <color name="cc_green_fg">#4ADE80</color>
+    <color name="cc_red_bg">#3D1620</color>
+    <color name="cc_red_fg">#FB7185</color>
+</resources>
