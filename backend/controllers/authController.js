@@ -8,7 +8,7 @@ const db = require('../config/db');
 
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = '2h';
+const JWT_EXPIRES_IN = '8h';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?\d{7,15}$/;

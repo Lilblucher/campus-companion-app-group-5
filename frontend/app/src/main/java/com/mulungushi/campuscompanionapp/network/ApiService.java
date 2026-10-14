@@ -72,6 +72,18 @@ public interface ApiService {
     @GET("api/lecturer/groups")
     Call<GroupsResponse> getGroups();
 
+    @POST("api/lecturer/groups")
+    Call<MessageResponse> createLecturerGroup(@Body ApiBodies.CreateGroup body);
+
+    @DELETE("api/lecturer/groups/{id}")
+    Call<MessageResponse> deleteLecturerGroup(@Path("id") int groupId);
+
+    @GET("api/lecturer/groups/{id}/members")
+    Call<GroupMembersResponse> getGroupMembersForLecturer(@Path("id") int groupId);
+
+    @POST("api/lecturer/groups/{id}/leader")
+    Call<MessageResponse> setGroupLeader(@Path("id") int groupId, @Body ApiBodies.SetLeader body);
+
     @Streaming
     @GET("api/lecturer/groups/{id}/export.xlsx")
     Call<ResponseBody> exportGroupXlsx(@Path("id") int groupId);

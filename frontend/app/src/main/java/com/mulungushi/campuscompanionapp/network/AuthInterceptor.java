@@ -1,6 +1,9 @@
 package com.mulungushi.campuscompanionapp.network;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
@@ -31,6 +34,19 @@ public class AuthInterceptor implements Interceptor {
             builder.header("Authorization", "Bearer " + token);
         }
 
-        return chain.proceed(builder.build());
+        Response response = chain.proceed(builder.build());
+
+        if (response.code() == 401 && token != null && !token.isEmpty()) {
+            SessionManager.getInstance(context).clearSession();
+            new Handler(Looper.getMainLooper()).post(() -> {
+                try {
+                    Intent intent = new Intent(context, Class.forName("com.mulungushi.campuscompanionapp.LoginActivity"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    context.startActivity(intent);
+                } catch (ClassNotFoundException ignored) { }
+            });
+        }
+
+        return response;
     }
 }

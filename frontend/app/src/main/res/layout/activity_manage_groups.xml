@@ -117,7 +117,7 @@
         android:paddingTop="4dp"
         android:paddingBottom="8dp" />
 
-    <!-- Assign a student -->
+    <!-- Create group -->
     <Button
         android:id="@+id/btnCreateGroup"
         android:layout_width="match_parent"
@@ -125,11 +125,11 @@
         android:layout_margin="16dp"
         android:background="@drawable/cc_btn_navy"
         app:backgroundTint="@null"
-        android:drawableStart="@drawable/ic_ms_person_add"
+        android:drawableStart="@drawable/ic_ms_group_add"
         android:drawablePadding="8dp"
         android:drawableTint="@color/white"
         android:gravity="center"
-        android:text="Assign a student"
+        android:text="Create Group"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"

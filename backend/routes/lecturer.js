@@ -14,6 +14,10 @@ router.delete('/students/:id', c.softDeleteStudent);
 router.post('/students/:id/assign', c.assignStudent);
 
 router.get('/groups', c.listGroups);
+router.post('/groups', c.createGroup);
+router.delete('/groups/:id', c.deleteGroup);
+router.get('/groups/:id/members', c.listGroupMembers);
+router.post('/groups/:id/leader', c.setGroupLeader);
 router.get('/groups/:id/export.xlsx', c.exportGroupXlsx);
 
 router.get('/requests', c.listRequests);

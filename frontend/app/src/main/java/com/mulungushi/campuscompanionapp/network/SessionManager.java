@@ -12,6 +12,9 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_STUDENT_ID = "student_id";
     private static final String KEY_IS_GROUP_LEADER = "is_group_leader";
+    private static final String KEY_TOKEN_CREATED_AT = "token_created_at";
+
+    private static final long SESSION_LIFETIME_MS = 8 * 60 * 60 * 1000L; // 8 hours
 
     private static SessionManager instance;
     private final SharedPreferences sharedPreferences;
@@ -40,7 +43,15 @@ public class SessionManager {
                 .putString(KEY_STUDENT_ID, studentId)
                 .putString(KEY_AUTH_TOKEN, token)
                 .putBoolean(KEY_IS_GROUP_LEADER, isGroupLeader)
+                .putLong(KEY_TOKEN_CREATED_AT, System.currentTimeMillis())
                 .apply();
+    }
+
+    public boolean isSessionExpired() {
+        if (sharedPreferences == null) return true;
+        long createdAt = sharedPreferences.getLong(KEY_TOKEN_CREATED_AT, 0);
+        if (createdAt == 0) return true;
+        return (System.currentTimeMillis() - createdAt) >= SESSION_LIFETIME_MS;
     }
 
     public boolean isGroupLeader() {
@@ -52,7 +63,13 @@ public class SessionManager {
     }
 
     public boolean isLoggedIn() {
-        return sharedPreferences != null && sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
+        if (sharedPreferences == null) return false;
+        if (!sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false)) return false;
+        if (isSessionExpired()) {
+            clearSession();
+            return false;
+        }
+        return true;
     }
 
     public String getAuthToken() {

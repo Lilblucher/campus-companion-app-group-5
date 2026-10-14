@@ -73,4 +73,15 @@ public class ApiBodies {
         public String course_code, title, start_time, end_time, venue, room;
         public Integer group_id, day_of_week;
     }
+
+    public static class CreateGroup {
+        public String group_name;
+        public int max_members;
+        public CreateGroup(String name, int max) { this.group_name = name; this.max_members = max; }
+    }
+
+    public static class SetLeader {
+        public long student_id;
+        public SetLeader(long sid) { this.student_id = sid; }
+    }
 }
