@@ -79,6 +79,14 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void promptBiometricUnlock() {
+        boolean biometricEnabled = getSharedPreferences(SettingsActivity.PREFS, MODE_PRIVATE)
+                .getBoolean(SettingsActivity.KEY_BIOMETRIC, false);
+
+        if (!biometricEnabled) {
+            goToDashboard();
+            return;
+        }
+
         BiometricManager biometricManager = BiometricManager.from(this);
         int canAuthenticate = biometricManager.canAuthenticate(
                 BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -90,7 +98,6 @@ public class SplashActivity extends AppCompatActivity {
             return;
         }
 
-        // Show the layout briefly while the biometric prompt is up
         setContentView(R.layout.activity_splash);
         applyNavBarInset();
 
@@ -106,8 +113,13 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticationError(int errorCode, CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
-                        Toast.makeText(SplashActivity.this, errString, Toast.LENGTH_SHORT).show();
-                        goToLogin();
+                        if (errorCode == BiometricPrompt.ERROR_USER_CANCELED
+                                || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                            finishAffinity();
+                        } else {
+                            Toast.makeText(SplashActivity.this, errString, Toast.LENGTH_SHORT).show();
+                            finishAffinity();
+                        }
                     }
 
                     @Override

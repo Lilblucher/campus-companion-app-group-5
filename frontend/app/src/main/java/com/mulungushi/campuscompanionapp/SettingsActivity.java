@@ -46,7 +46,7 @@ public class SettingsActivity extends BaseActivity {
         MaterialSwitch offline = findViewById(R.id.switchOfflineSync);
 
         if (bio != null) {
-            bio.setChecked(prefs.getBoolean(KEY_BIOMETRIC, true));
+            bio.setChecked(prefs.getBoolean(KEY_BIOMETRIC, false));
             bio.setOnCheckedChangeListener((b, c) -> prefs.edit().putBoolean(KEY_BIOMETRIC, c).apply());
         }
         if (notif != null) {
