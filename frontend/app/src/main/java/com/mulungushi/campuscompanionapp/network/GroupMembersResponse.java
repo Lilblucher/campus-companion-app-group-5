@@ -10,6 +10,8 @@ public class GroupMembersResponse {
         public String student_number;
         public String name;
         public String programme_code;
-        public boolean is_group_leader;
+        public int is_group_leader;
+
+        public boolean isLeader() { return is_group_leader == 1; }
     }
 }
