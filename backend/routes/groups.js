@@ -2,12 +2,20 @@ const express = require('express');
 
 const router = express.Router();
 
+const auth = require('../middleware/auth');
+const { requireLecturer } = require('../middleware/roles');
+const c = require('../controllers/groupsController');
+
 // Get all lab groups
 router.get('/', (req, res) => {
     res.json({
         message: 'Get all groups route is working'
     });
 });
+
+router.get('/assignable-students', auth, requireLecturer, c.getAssignableStudents);
+router.post('/:groupId/members', auth, requireLecturer, c.addMembers);
+
 
 // Student requests to change lab group
 router.post('/request', (req, res) => {

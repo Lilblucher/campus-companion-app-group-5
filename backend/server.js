@@ -21,6 +21,8 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
+
+
 // ── Global middleware ──────────────────────────────────────────
 
 // helmet() sets secure HTTP headers (e.g. hides that this is Express)
@@ -73,6 +75,7 @@ app.use("/api/lecturer", lecturerRoutes);
 app.use("/api/group", groupLeaderRoutes);
 app.use("/api/reminders", reminderRoutes);
 app.use("/api/timetable", timetableRoutes);
+app.use('/api/groups', require('./routes/groups'));
 
 // Catches any request that didn't match a route above.
 app.use((_req, res) => {

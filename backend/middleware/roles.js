@@ -58,5 +58,7 @@ function gate(allowed, message) {
 
 const requireLecturer = gate(['lecturer'], 'Lecturer access required');
 const requireLeaderOrLecturer = gate(['lecturer', 'group_leader'], 'Group leader or lecturer access required');
+//router.get('/assignable-students', requireLecturer, c.getAssignableStudents);
+//router.post('/:group_id/members', requireLecturer, c.addGroupMembers);
 
 module.exports = { resolveActor, requireLecturer, requireLeaderOrLecturer };

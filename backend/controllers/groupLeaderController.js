@@ -7,6 +7,7 @@ const db = require('../config/db');
 const { setStudentGroup, isGroupFull } = require('../utils/membership');
 const { notifyStudent, notifyAllLecturers } = require('../utils/notify');
 const { buildMembersWorkbook } = require('../utils/xlsx');
+const { query, withTransaction } = require('../config/db');
 
 // Resolve the group this request acts on. null => caller must specify / has none.
 function targetGroupId(req) {
@@ -148,5 +149,98 @@ async function sendToLecturer(req, res) {
     return res.status(500).json({ error: 'Failed to send roster to lecturer' });
   }
 }
+
+
+exports.addGroupMembers = async (req, res) => {
+  const groupId = Number(req.params.group_id);
+  let ids = req.body.student_ids ?? (req.body.student_id ? [req.body.student_id] : []);
+  ids = [...new Set(ids.map(Number))];
+
+  if (!Number.isInteger(groupId) || ids.length === 0 || ids.some((n) => !Number.isInteger(n) || n <= 0)) {
+    return res.status(400).json({ error: 'INVALID_INPUT', message: 'group_id and a non-empty student_ids array are required.' });
+  }
+
+  try {
+    const result = await withTransaction(async (conn) => {
+      const [[group]] = await conn.execute(
+        'SELECT group_id, group_name, max_members FROM lab_groups WHERE group_id = ? FOR UPDATE',
+        [groupId]
+      );
+      if (!group) throw { http: 404, code: 'GROUP_NOT_FOUND' };
+
+      const [[{ active }]] = await conn.execute(
+        'SELECT COUNT(*) AS active FROM group_members WHERE group_id = ? AND is_active = 1',
+        [groupId]
+      );
+      const seatsLeft = group.max_members - active;
+      if (ids.length > seatsLeft) throw { http: 409, code: 'GROUP_FULL', extra: { seats_left: seatsLeft, requested: ids.length } };
+
+      const ph = ids.map(() => '?').join(',');
+      const [students] = await conn.execute(
+        `SELECT student_id, name, student_number, status, is_deleted, lab_group_id
+           FROM students WHERE student_id IN (${ph}) FOR UPDATE`,
+        ids
+      );
+      const found = new Map(students.map((s) => [s.student_id, s]));
+
+      const notFound = ids.filter((id) => !found.has(id) || found.get(id).is_deleted);
+      if (notFound.length) throw { http: 404, code: 'STUDENT_NOT_FOUND', extra: { student_ids: notFound } };
+
+      const [activeRows] = await conn.execute(
+        `SELECT student_id FROM group_members WHERE student_id IN (${ph}) AND is_active = 1`,
+        ids
+      );
+      if (activeRows.length) {
+        throw { http: 409, code: 'STUDENT_ALREADY_IN_ACTIVE_GROUP', extra: { student_ids: activeRows.map((r) => r.student_id) } };
+      }
+
+      for (const id of ids) {
+        await conn.execute('INSERT INTO group_members (student_id, group_id, is_active) VALUES (?, ?, 1)', [id, groupId]);
+        await conn.execute(
+          `UPDATE students
+              SET lab_group_id = ?,
+                  status = IF(status = 'unassigned', 'active', status),
+                  record_version = record_version + 1
+            WHERE student_id = ?`,
+          [groupId, id]
+        );
+      }
+
+      return {
+        group_id: groupId,
+        group_name: group.group_name,
+        added: students.map((s) => ({ student_id: s.student_id, name: s.name, student_number: s.student_number })),
+        active_members: active + ids.length,
+        max_members: group.max_members,
+      };
+    });
+
+    return res.status(201).json(result);
+  } catch (err) {
+    if (err.http) return res.status(err.http).json({ error: err.code, ...(err.extra || {}) });
+    if (err.sqlState === '45000') return res.status(409).json({ error: err.sqlMessage });
+    console.error('[groups] addGroupMembers', err);
+    return res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+};
+
+// Picker data for the button: students who can be added (no active group)
+exports.getAssignableStudents = async (req, res) => {
+  const q = `%${(req.query.q || '').trim()}%`;
+  const programme = req.query.programme || null;
+  const [rows] = await query(
+    `SELECT s.student_id, s.name, s.student_number, s.programme_code
+       FROM students s
+      WHERE s.is_deleted = 0
+        AND s.lab_group_id IS NULL
+        AND NOT EXISTS (SELECT 1 FROM group_members gm WHERE gm.student_id = s.student_id AND gm.is_active = 1)
+        AND (s.name LIKE ? OR s.student_number LIKE ?)
+        AND (? IS NULL OR s.programme_code = ?)
+      ORDER BY s.name
+      LIMIT 100`,
+    [q, q, programme, programme]
+  );
+  res.json({ students: rows });
+};
 
 module.exports = { getMembers, addMember, removeMember, exportXlsx, sendToLecturer };
