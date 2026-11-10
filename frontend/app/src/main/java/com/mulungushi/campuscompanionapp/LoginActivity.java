@@ -167,11 +167,7 @@ public class LoginActivity extends BaseActivity {
         SessionManager.getInstance(this).saveUserSession(role, userName, studentId, token, isGroupLeader);
 
         Intent intent;
-        if ("lecturer".equalsIgnoreCase(role)) {
-            intent = new Intent(LoginActivity.this, LecturerDashboardActivity.class);
-        } else {
-            intent = new Intent(LoginActivity.this, MainActivity.class);
-        }
+        intent = new Intent(LoginActivity.this, com.mulungushi.campuscompanionapp.util.Nav.homeFor(this));
         startActivity(intent);
         finish();
     }

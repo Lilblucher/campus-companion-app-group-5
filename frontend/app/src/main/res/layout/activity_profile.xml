@@ -160,9 +160,10 @@
                 </LinearLayout>
 
                 <!-- ===== Personal Information ===== -->
-                <TextView style="@style/CcSectionTitle" android:layout_marginTop="8dp" android:text="@string/personal_info" />
+                <TextView android:id="@+id/personalInfoTitle" style="@style/CcSectionTitle" android:layout_marginTop="8dp" android:text="@string/personal_info" />
 
                 <LinearLayout
+                    android:id="@+id/personalInfoCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -201,6 +202,7 @@
 
                 <!-- ===== Student credentials ===== -->
                 <LinearLayout
+                    android:id="@+id/credentialsHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"

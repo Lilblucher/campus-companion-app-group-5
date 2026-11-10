@@ -208,6 +208,11 @@ public class ProfileActivity extends BaseActivity {
             setInitials(savedName);
         }
 
+        if (SessionManager.getInstance(this).isStaff()) {
+            showStaffProfile();
+            return;
+        }
+
         ApiService api = ApiClient.getClient(this).create(ApiService.class);
         api.getMe().enqueue(new Callback<StudentProfile>() {
             @Override
@@ -220,6 +225,24 @@ public class ProfileActivity extends BaseActivity {
             public void onFailure(Call<StudentProfile> call, Throwable t) {
             }
         });
+    }
+
+    private void showStaffProfile() {
+        int[] studentOnly = {
+                R.id.personalInfoTitle, R.id.personalInfoCard,
+                R.id.credentialsHeader, R.id.credentialsUnlocked, R.id.credentialsLocked,
+                R.id.rowAccounts, R.id.btnEditProfile
+        };
+        for (int id : studentOnly) {
+            View v = findViewById(id);
+            if (v != null) v.setVisibility(View.GONE);
+        }
+
+        TextView sub = findViewById(R.id.tvProfileSubtitle);
+        String role = SessionManager.getInstance(this).getUserRole();
+        if (sub != null && role != null && !role.isEmpty()) {
+            sub.setText(role.substring(0, 1).toUpperCase() + role.substring(1));
+        }
     }
 
     private void showSignOutDialog() {
@@ -244,13 +267,15 @@ public class ProfileActivity extends BaseActivity {
         navCourses = findViewById(R.id.navCourses);
         navSettings = findViewById(R.id.navSettings);
 
-        if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(MainActivity.class));
+        if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(com.mulungushi.campuscompanionapp.util.Nav.homeFor(this)));
         if (navGroup != null) navGroup.setOnClickListener(v -> navigateTo(MyGroupActivity.class));
         if (navCourses != null) navCourses.setOnClickListener(v -> navigateTo(MyCoursesActivity.class));
         if (navProfile != null) selectNav(navProfile);
         if (navSettings != null) navSettings.setOnClickListener(v -> navigateTo(SettingsActivity.class));
 
         selectNav(navProfile);
+
+        com.mulungushi.campuscompanionapp.util.Nav.adaptBottomNav(this);
     }
 
     private void navigateTo(Class<?> targetActivity) {

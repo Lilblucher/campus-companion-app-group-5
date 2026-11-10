@@ -72,6 +72,10 @@ public class SessionManager {
         return true;
     }
 
+    public boolean isStaff() {
+        return !"student".equalsIgnoreCase(getUserRole());
+    }
+
     public String getAuthToken() {
         return sharedPreferences != null ? sharedPreferences.getString(KEY_AUTH_TOKEN, "") : "";
     }

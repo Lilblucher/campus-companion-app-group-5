@@ -82,14 +82,14 @@ public class SettingsActivity extends BaseActivity {
         navCourses = findViewById(R.id.navCourses);
         navProfile = findViewById(R.id.navProfile);
         navSettings = findViewById(R.id.navSettings);
-
-        if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(MainActivity.class));
-        if (navGroup != null) navGroup.setOnClickListener(v -> navigateTo(MyGroupActivity.class));
-        if (navCourses != null) navCourses.setOnClickListener(v -> navigateTo(MyCoursesActivity.class));
+        if (navDashboard != null) navDashboard.setOnClickListener(v -> navigateTo(com.mulungushi.campuscompanionapp.util.Nav.homeFor(this)));
+        if (navGroup != null) navGroup.setOnClickListener(v -> navigateTo(com.mulungushi.campuscompanionapp.util.Nav.groupFor(this)));
+        if (navCourses != null) navCourses.setOnClickListener(v -> navigateTo(com.mulungushi.campuscompanionapp.util.Nav.coursesFor(this)));
         if (navProfile != null) navProfile.setOnClickListener(v -> navigateTo(ProfileActivity.class));
         if (navSettings != null) selectNav(navSettings);
 
         selectNav(navSettings);
+        com.mulungushi.campuscompanionapp.util.Nav.adaptBottomNav(this);
     }
 
     @Override
