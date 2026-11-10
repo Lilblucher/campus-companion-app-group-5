@@ -88,6 +88,10 @@ public interface ApiService {
     @GET("api/lecturer/groups/{id}/export.xlsx")
     Call<ResponseBody> exportGroupXlsx(@Path("id") int groupId);
 
+    @Streaming
+    @GET("api/lecturer/groups/export-all.xlsx")
+    Call<ResponseBody> exportAllGroupsXlsx();
+
     @GET("api/lecturer/requests")
     Call<RequestsResponse> getRequests(@Query("status") String status);
 

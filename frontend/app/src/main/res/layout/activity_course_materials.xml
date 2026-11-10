@@ -54,6 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/bg_curved_light_sheet">
 
         <androidx.core.widget.NestedScrollView
@@ -110,4 +111,10 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </FrameLayout>
+
+    <include
+        layout="@layout/cc_bottom_nav_student"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 </FrameLayout>

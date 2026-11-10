@@ -68,4 +68,63 @@
         android:textColor="@color/cc_text_muted"
         android:textSize="12sp"
         android:fontFamily="@font/poppins" />
+
+    <!-- Group action buttons for lecturer -->
+    <LinearLayout
+        android:id="@+id/layoutGroupActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <Button
+            android:id="@+id/btnCardAddMember"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/cc_btn_outline"
+            app:backgroundTint="@null"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="+ Add"
+            android:textColor="@color/cc_navy"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:fontFamily="@font/poppins" />
+
+        <Button
+            android:id="@+id/btnCardRemoveMember"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/cc_btn_outline"
+            app:backgroundTint="@null"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="Remove"
+            android:textColor="@color/cc_crimson"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:fontFamily="@font/poppins" />
+
+        <Button
+            android:id="@+id/btnCardExportExcel"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:background="@drawable/cc_btn_navy"
+            app:backgroundTint="@null"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="Export Excel"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:fontFamily="@font/poppins" />
+    </LinearLayout>
 </LinearLayout>

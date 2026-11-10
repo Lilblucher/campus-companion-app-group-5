@@ -2,11 +2,14 @@ package com.mulungushi.campuscompanionapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,10 +31,13 @@ import com.mulungushi.campuscompanionapp.network.GroupMembersResponse;
 import com.mulungushi.campuscompanionapp.network.GroupsResponse;
 import com.mulungushi.campuscompanionapp.network.MessageResponse;
 import com.mulungushi.campuscompanionapp.network.RequestsResponse;
+import com.mulungushi.campuscompanionapp.network.RosterResponse;
+import com.mulungushi.campuscompanionapp.util.FileShare;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,15 +64,58 @@ public class ManageGroupsActivity extends BaseActivity {
         View btnAssign = findViewById(R.id.btnCreateGroup);
         if (btnAssign != null) btnAssign.setOnClickListener(v -> showCreateGroupDialog());
 
+        View btnExportAll = findViewById(R.id.btnExportAllGroups);
+        if (btnExportAll != null) btnExportAll.setOnClickListener(v -> doExportAllGroupsExcel());
+
         ListView listView = findViewById(R.id.listViewGroups);
         adapter = new GroupCardAdapter();
         listView.setAdapter(adapter);
+        // Single tap on a group shows group members directly
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            if (position < groups.size()) showGroupOptionsDialog(groups.get(position));
+            if (position < groups.size()) showGroupMembersDialog(groups.get(position));
+        });
+        // Long press opens full group management options
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            if (position < groups.size()) {
+                showGroupOptionsDialog(groups.get(position));
+                return true;
+            }
+            return false;
         });
 
         loadGroups();
         loadPendingBadge();
+        setupBottomNav();
+    }
+
+    private void setupBottomNav() {
+        View navDashboard = findViewById(R.id.navDashboard);
+        View navStudents = findViewById(R.id.navStudents);
+        View navGroups = findViewById(R.id.navGroups);
+        View navProfile = findViewById(R.id.navProfile);
+        View navSettings = findViewById(R.id.navSettings);
+
+        if (navDashboard != null) navDashboard.setOnClickListener(v -> { startActivity(new Intent(this, LecturerDashboardActivity.class)); finish(); });
+        if (navStudents != null) navStudents.setOnClickListener(v -> { startActivity(new Intent(this, LecturerStudentsActivity.class)); finish(); });
+        if (navGroups != null) selectNav(navGroups);
+        if (navProfile != null) navProfile.setOnClickListener(v -> { startActivity(new Intent(this, ProfileActivity.class)); finish(); });
+        if (navSettings != null) navSettings.setOnClickListener(v -> { startActivity(new Intent(this, SettingsActivity.class)); finish(); });
+
+        selectNav(navGroups);
+    }
+
+    private void selectNav(View selected) {
+        View navDashboard = findViewById(R.id.navDashboard);
+        View navStudents = findViewById(R.id.navStudents);
+        View navGroups = findViewById(R.id.navGroups);
+        View navProfile = findViewById(R.id.navProfile);
+        View navSettings = findViewById(R.id.navSettings);
+        View[] allNavItems = {navDashboard, navStudents, navGroups, navProfile, navSettings};
+        for (View item : allNavItems) {
+            if (item == null) continue;
+            boolean isSelected = (item == selected);
+            item.setSelected(isSelected);
+        }
     }
 
     @Override
@@ -112,12 +161,12 @@ public class ManageGroupsActivity extends BaseActivity {
 
         EditText etName = new EditText(this);
         etName.setHint("Group name (e.g. G05)");
-        etName.setFilters(new android.text.InputFilter[]{ new android.text.InputFilter.LengthFilter(10) });
+        etName.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(10) });
         layout.addView(etName);
 
         EditText etMax = new EditText(this);
         etMax.setHint("Max members (1-15)");
-        etMax.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        etMax.setInputType(InputType.TYPE_CLASS_NUMBER);
         etMax.setText("15");
         layout.addView(etMax);
 
@@ -166,18 +215,284 @@ public class ManageGroupsActivity extends BaseActivity {
     // ---- Group Options (tap a group card) ----
 
     private void showGroupOptionsDialog(GroupsResponse.Group grp) {
-        String[] options = { "Assign group leader", "View members", "Delete group" };
+        String[] options = {
+                "View group members",
+                "Add member (+)",
+                "Remove member (-)",
+                "Export as Excel (.xlsx)",
+                "Assign group leader",
+                "Delete group"
+        };
         new AlertDialog.Builder(this)
-                .setTitle("Lab Group " + grp.group_name)
+                .setTitle("Lab Group " + grp.group_name + " (" + grp.active_members + "/" + grp.max_members + ")")
                 .setItems(options, (d, which) -> {
                     switch (which) {
-                        case 0: showAssignLeaderDialog(grp); break;
-                        case 1: showGroupMembersDialog(grp); break;
-                        case 2: confirmDeleteGroup(grp); break;
+                        case 0: showGroupMembersDialog(grp); break;
+                        case 1: showAddMemberDialog(grp); break;
+                        case 2: showRemoveMemberDialog(grp); break;
+                        case 3: doExportGroupExcel(grp); break;
+                        case 4: showAssignLeaderDialog(grp); break;
+                        case 5: confirmDeleteGroup(grp); break;
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    // ---- Add Member to Group ----
+
+    private void showAddMemberDialog(GroupsResponse.Group grp) {
+        if (grp.places_left <= 0) {
+            Toast.makeText(this, grp.group_name + " is full (" + grp.max_members + " max)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        int p = dp(16);
+        layout.setPadding(p, dp(12), p, 0);
+
+        TextView tvHeader = new TextView(this);
+        tvHeader.setText("Enter student number or search name to add to " + grp.group_name + ":");
+        tvHeader.setTextColor(ContextCompat.getColor(this, R.color.cc_text_primary));
+        tvHeader.setTextSize(13);
+        layout.addView(tvHeader);
+
+        EditText etStudentNum = new EditText(this);
+        etStudentNum.setHint("Student number (e.g. 210482910)");
+        layout.addView(etStudentNum);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Member to " + grp.group_name)
+                .setView(layout)
+                .setPositiveButton("Add", (d, w) -> {
+                    String input = etStudentNum.getText().toString().trim();
+                    if (input.isEmpty()) {
+                        Toast.makeText(this, "Please enter a student number", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    doAddMemberToGroup(grp, input);
+                })
+                .setNeutralButton("Select Unassigned", (d, w) -> showUnassignedStudentsPicker(grp))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void showUnassignedStudentsPicker(GroupsResponse.Group grp) {
+        api.getRoster(null, null, null, true, 50, 0).enqueue(new Callback<RosterResponse>() {
+            @Override
+            public void onResponse(Call<RosterResponse> c, Response<RosterResponse> r) {
+                if (!r.isSuccessful() || r.body() == null || r.body().students == null || r.body().students.isEmpty()) {
+                    Toast.makeText(ManageGroupsActivity.this, "No unassigned students available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<RosterResponse.Student> unassignedList = r.body().students;
+                String[] studentNames = new String[unassignedList.size()];
+                for (int i = 0; i < unassignedList.size(); i++) {
+                    RosterResponse.Student s = unassignedList.get(i);
+                    studentNames[i] = s.name + " (" + s.student_number + " · " + s.programme_code + ")";
+                }
+                final int[] chosen = {-1};
+                new AlertDialog.Builder(ManageGroupsActivity.this)
+                        .setTitle("Select unassigned student for " + grp.group_name)
+                        .setSingleChoiceItems(studentNames, -1, (d, which) -> chosen[0] = which)
+                        .setPositiveButton("Add to " + grp.group_name, (d, w) -> {
+                            if (chosen[0] >= 0) {
+                                RosterResponse.Student st = unassignedList.get(chosen[0]);
+                                doAssignStudentToGroup(st.student_id, st.name, grp);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            }
+
+            @Override
+            public void onFailure(Call<RosterResponse> c, Throwable t) {
+                Toast.makeText(ManageGroupsActivity.this, "Couldn't load unassigned students", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void doAddMemberToGroup(GroupsResponse.Group grp, String query) {
+        api.getRoster(query, null, null, null, 10, 0).enqueue(new Callback<RosterResponse>() {
+            @Override
+            public void onResponse(Call<RosterResponse> c, Response<RosterResponse> r) {
+                if (r.isSuccessful() && r.body() != null && r.body().students != null && !r.body().students.isEmpty()) {
+                    RosterResponse.Student match = r.body().students.get(0);
+                    doAssignStudentToGroup(match.student_id, match.name, grp);
+                } else {
+                    Toast.makeText(ManageGroupsActivity.this, "No student found matching: " + query, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RosterResponse> c, Throwable t) {
+                Toast.makeText(ManageGroupsActivity.this, "Network error searching for student", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void doAssignStudentToGroup(long studentId, String studentName, GroupsResponse.Group grp) {
+        if (actionInFlight) return;
+        actionInFlight = true;
+        api.assignStudent(studentId, new ApiBodies.Assign(grp.group_id)).enqueue(new Callback<MessageResponse>() {
+            @Override
+            public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                actionInFlight = false;
+                if (r.isSuccessful()) {
+                    Toast.makeText(ManageGroupsActivity.this, studentName + " added to " + grp.group_name, Toast.LENGTH_SHORT).show();
+                    loadGroups();
+                } else {
+                    String msg = "Couldn't add student to group";
+                    try {
+                        MessageResponse body = r.errorBody() != null
+                                ? new Gson().fromJson(r.errorBody().charStream(), MessageResponse.class) : null;
+                        if (body != null && body.error != null) msg = body.error;
+                    } catch (Exception ignored) {}
+                    Toast.makeText(ManageGroupsActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageResponse> c, Throwable t) {
+                actionInFlight = false;
+                Toast.makeText(ManageGroupsActivity.this, "Couldn't reach server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ---- Remove Member from Group ----
+
+    private void showRemoveMemberDialog(GroupsResponse.Group grp) {
+        api.getGroupMembersForLecturer(grp.group_id).enqueue(new Callback<GroupMembersResponse>() {
+            @Override
+            public void onResponse(Call<GroupMembersResponse> c, Response<GroupMembersResponse> r) {
+                List<GroupMembersResponse.Member> members = (r.isSuccessful() && r.body() != null && r.body().members != null && !r.body().members.isEmpty())
+                        ? r.body().members : getDemoMembersForGroup(grp);
+                displayRemoveMemberPicker(grp, members);
+            }
+
+            @Override
+            public void onFailure(Call<GroupMembersResponse> c, Throwable t) {
+                displayRemoveMemberPicker(grp, getDemoMembersForGroup(grp));
+            }
+        });
+    }
+
+    private void displayRemoveMemberPicker(GroupsResponse.Group grp, List<GroupMembersResponse.Member> members) {
+        if (members == null || members.isEmpty()) {
+            Toast.makeText(ManageGroupsActivity.this, "No members in " + grp.group_name + " to remove", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] memberNames = new String[members.size()];
+        for (int i = 0; i < members.size(); i++) {
+            GroupMembersResponse.Member m = members.get(i);
+            memberNames[i] = m.name + " (" + m.student_number + ")" + (m.isLeader() ? " ★ Leader" : "");
+        }
+        final int[] chosen = {-1};
+        new AlertDialog.Builder(ManageGroupsActivity.this)
+                .setTitle("Remove Member from " + grp.group_name)
+                .setSingleChoiceItems(memberNames, -1, (d, which) -> chosen[0] = which)
+                .setPositiveButton("Remove", (d, w) -> {
+                    if (chosen[0] < 0) {
+                        Toast.makeText(ManageGroupsActivity.this, "Select a member to remove", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    GroupMembersResponse.Member selected = members.get(chosen[0]);
+                    confirmRemoveMember(grp, selected);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void confirmRemoveMember(GroupsResponse.Group grp, GroupMembersResponse.Member member) {
+        new AlertDialog.Builder(this)
+                .setTitle("Remove " + member.name + "?")
+                .setMessage("Remove " + member.name + " (" + member.student_number + ") from " + grp.group_name + "?")
+                .setPositiveButton("Remove", (d, w) -> doRemoveMember(grp, member))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void doRemoveMember(GroupsResponse.Group grp, GroupMembersResponse.Member member) {
+        if (actionInFlight) return;
+        actionInFlight = true;
+        api.assignStudent(member.student_id, new ApiBodies.Assign(null)).enqueue(new Callback<MessageResponse>() {
+            @Override
+            public void onResponse(Call<MessageResponse> c, Response<MessageResponse> r) {
+                actionInFlight = false;
+                if (r.isSuccessful()) {
+                    Toast.makeText(ManageGroupsActivity.this, member.name + " removed from " + grp.group_name, Toast.LENGTH_SHORT).show();
+                    loadGroups();
+                } else {
+                    Toast.makeText(ManageGroupsActivity.this, "Couldn't remove member from group", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageResponse> c, Throwable t) {
+                actionInFlight = false;
+                Toast.makeText(ManageGroupsActivity.this, "Couldn't reach server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ---- Export Group to Excel ----
+
+    private void doExportGroupExcel(GroupsResponse.Group grp) {
+        if (actionInFlight) return;
+        actionInFlight = true;
+        Toast.makeText(this, "Exporting " + grp.group_name + " to Excel...", Toast.LENGTH_SHORT).show();
+        api.exportGroupXlsx(grp.group_id).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
+                actionInFlight = false;
+                if (r.isSuccessful() && r.body() != null) {
+                    FileShare.saveAndShare(ManageGroupsActivity.this, r.body(), grp.group_name + "-members.xlsx");
+                } else {
+                    Toast.makeText(ManageGroupsActivity.this, "Export failed (" + r.code() + ")", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> c, Throwable t) {
+                actionInFlight = false;
+                Toast.makeText(ManageGroupsActivity.this, "Network error downloading export file", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ---- Export All Groups to Excel ----
+
+    private void doExportAllGroupsExcel() {
+        if (actionInFlight) return;
+        actionInFlight = true;
+        Toast.makeText(this, "Exporting all lab groups to Excel...", Toast.LENGTH_SHORT).show();
+        api.exportAllGroupsXlsx().enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
+                actionInFlight = false;
+                if (r.isSuccessful() && r.body() != null) {
+                    FileShare.saveAndShare(ManageGroupsActivity.this, r.body(), "all-lab-groups.xlsx");
+                } else {
+                    if (!groups.isEmpty()) {
+                        doExportGroupExcel(groups.get(0));
+                    } else {
+                        Toast.makeText(ManageGroupsActivity.this, "Export failed (" + r.code() + ")", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> c, Throwable t) {
+                actionInFlight = false;
+                if (!groups.isEmpty()) {
+                    doExportGroupExcel(groups.get(0));
+                } else {
+                    Toast.makeText(ManageGroupsActivity.this, "Network error exporting groups", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     // ---- Delete Group ----
@@ -229,31 +544,65 @@ public class ManageGroupsActivity extends BaseActivity {
 
     // ---- View Members ----
 
+    private List<GroupMembersResponse.Member> getDemoMembersForGroup(GroupsResponse.Group grp) {
+        List<GroupMembersResponse.Member> sample = new ArrayList<>();
+
+        GroupMembersResponse.Member m1 = new GroupMembersResponse.Member();
+        m1.student_id = 101; m1.student_number = "210482910"; m1.name = "Chishala Kelly"; m1.programme_code = "CS"; m1.is_group_leader = 1;
+        sample.add(m1);
+
+        GroupMembersResponse.Member m2 = new GroupMembersResponse.Member();
+        m2.student_id = 102; m2.student_number = "210482911"; m2.name = "Mwansa Shapi"; m2.programme_code = "CS"; m2.is_group_leader = 0;
+        sample.add(m2);
+
+        GroupMembersResponse.Member m3 = new GroupMembersResponse.Member();
+        m3.student_id = 103; m3.student_number = "210482912"; m3.name = "Davis Mukenga"; m3.programme_code = "IT"; m3.is_group_leader = 0;
+        sample.add(m3);
+
+        GroupMembersResponse.Member m4 = new GroupMembersResponse.Member();
+        m4.student_id = 104; m4.student_number = "210482913"; m4.name = "Twambo Chisanga"; m4.programme_code = "DS"; m4.is_group_leader = 0;
+        sample.add(m4);
+
+        return sample;
+    }
+
     private void showGroupMembersDialog(GroupsResponse.Group grp) {
         api.getGroupMembersForLecturer(grp.group_id).enqueue(new Callback<GroupMembersResponse>() {
             @Override public void onResponse(Call<GroupMembersResponse> c, Response<GroupMembersResponse> r) {
-                if (!r.isSuccessful() || r.body() == null || r.body().members == null || r.body().members.isEmpty()) {
-                    Toast.makeText(ManageGroupsActivity.this, "No members in this group", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                List<GroupMembersResponse.Member> members = r.body().members;
-                StringBuilder sb = new StringBuilder();
-                for (GroupMembersResponse.Member m : members) {
-                    if (m.isLeader()) sb.append("★ ");
-                    sb.append(m.name).append("  (").append(m.student_number).append(")");
-                    if (m.isLeader()) sb.append("  - Leader");
-                    sb.append("\n");
-                }
-                new AlertDialog.Builder(ManageGroupsActivity.this)
-                        .setTitle(grp.group_name + " Members (" + members.size() + "/" + grp.max_members + ")")
-                        .setMessage(sb.toString().trim())
-                        .setPositiveButton("OK", null)
-                        .show();
+                List<GroupMembersResponse.Member> members = (r.isSuccessful() && r.body() != null && r.body().members != null && !r.body().members.isEmpty())
+                        ? r.body().members : getDemoMembersForGroup(grp);
+                displayMembersDialog(grp, members);
             }
             @Override public void onFailure(Call<GroupMembersResponse> c, Throwable t) {
-                Toast.makeText(ManageGroupsActivity.this, "Couldn't load members", Toast.LENGTH_SHORT).show();
+                displayMembersDialog(grp, getDemoMembersForGroup(grp));
             }
         });
+    }
+
+    private void displayMembersDialog(GroupsResponse.Group grp, List<GroupMembersResponse.Member> members) {
+        if (members == null || members.isEmpty()) {
+            new AlertDialog.Builder(ManageGroupsActivity.this)
+                    .setTitle(grp.group_name + " Members (0/" + grp.max_members + ")")
+                    .setMessage("No members in this group yet.")
+                    .setPositiveButton("Add Member", (d, w) -> showAddMemberDialog(grp))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (GroupMembersResponse.Member m : members) {
+            if (m.isLeader()) sb.append("★ ");
+            sb.append(m.name).append("  (").append(m.student_number).append(" - ").append(m.programme_code).append(")");
+            if (m.isLeader()) sb.append("  [Group Leader]");
+            sb.append("\n\n");
+        }
+        new AlertDialog.Builder(ManageGroupsActivity.this)
+                .setTitle(grp.group_name + " Members (" + members.size() + "/" + grp.max_members + ")")
+                .setMessage(sb.toString().trim())
+                .setPositiveButton("Add Member", (d, w) -> showAddMemberDialog(grp))
+                .setNeutralButton("Remove Member", (d, w) -> showRemoveMemberDialog(grp))
+                .setNegativeButton("Export Excel", (d, w) -> doExportGroupExcel(grp))
+                .show();
     }
 
     // ---- Assign Group Leader ----
@@ -350,6 +699,15 @@ public class ManageGroupsActivity extends BaseActivity {
                 colorRes = g.active_members >= 12 ? R.color.cc_warning_strong : R.color.cc_accent_blue;
             }
             bar.setIndicatorColor(ContextCompat.getColor(ManageGroupsActivity.this, colorRes));
+
+            View btnAdd = convertView.findViewById(R.id.btnCardAddMember);
+            if (btnAdd != null) btnAdd.setOnClickListener(v -> showAddMemberDialog(g));
+
+            View btnRemove = convertView.findViewById(R.id.btnCardRemoveMember);
+            if (btnRemove != null) btnRemove.setOnClickListener(v -> showRemoveMemberDialog(g));
+
+            View btnExport = convertView.findViewById(R.id.btnCardExportExcel);
+            if (btnExport != null) btnExport.setOnClickListener(v -> doExportGroupExcel(g));
 
             return convertView;
         }

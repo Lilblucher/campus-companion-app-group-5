@@ -201,14 +201,30 @@
                         <TextView style="@style/CcTileSub" android:text="Manage G01–G04" />
                     </LinearLayout>
 
-                    <LinearLayout android:id="@+id/tilePostAnnouncement" style="@style/CcTile" android:layout_marginStart="6dp">
-                        <ImageView style="@style/CcTileIcon" android:background="@drawable/cc_iconchip_amber" android:src="@drawable/ic_ms_campaign" app:tint="@color/cc_warning_strong" android:contentDescription="@null" />
-                        <TextView style="@style/CcTileTitle" android:text="@string/post_announcement" />
-                        <TextView style="@style/CcTileSub" android:text="Broadcast to students" />
-                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- Upcoming lecture -->
+                <LinearLayout
+                    android:id="@+id/tilePostAnnouncement"
+                    style="@style/CcTile"
+                    android:layout_marginStart="6dp">
+
+                    <ImageView
+                        style="@style/CcTileIcon"
+                        android:background="@drawable/cc_iconchip_amber"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_ms_campaign"
+                        app:tint="@color/cc_warning_strong" />
+
+                    <TextView
+                        style="@style/CcTileTitle"
+                        android:text="@string/post_announcement" />
+
+                    <TextView
+                        style="@style/CcTileSub"
+                        android:text="Broadcast to students" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/tvUpcomingLectureHeader"
                     style="@style/CcSectionTitle"

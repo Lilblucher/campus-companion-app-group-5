@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.mulungushi.campuscompanionapp"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mulungushi.campuscompanionapp"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
