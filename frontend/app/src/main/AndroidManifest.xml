@@ -120,6 +120,22 @@
             android:name=".LabRegistrationActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".CoursesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ScheduleActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SearchStudentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StudentsActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
